@@ -5,12 +5,11 @@
     "sectionIdx": -1,
     "offsetX": 0,
     "offsetY": 0,
-    "fixedTop": 103,
-    "fixedLeft": 729,
     "text": "一个考试中多个班级、多个作文题目，支持切换查看；切换后展示对应班级+对应题目的数据",
     "createdAt": "2026/7/30 15:31:25",
     "updatedAt": "2026/7/30 15:31:55",
-    "done": true
+    "done": true,
+    "view": "class"
   },
   {
     "id": "p1785396761165",
@@ -18,12 +17,11 @@
     "sectionIdx": 0,
     "offsetX": 253,
     "offsetY": 410,
-    "fixedTop": 0,
-    "fixedLeft": 0,
     "text": "5分一段，按整数取整，【0，5）、【5.10）。。。【20，25】",
     "createdAt": "2026/7/30 15:32:41",
     "updatedAt": "2026/7/30 15:35:11",
-    "done": true
+    "done": true,
+    "view": "class"
   },
   {
     "id": "p1785396919045",
@@ -31,12 +29,11 @@
     "sectionIdx": 0,
     "offsetX": 983,
     "offsetY": 313,
-    "fixedTop": 0,
-    "fixedLeft": 0,
     "text": "展示打分维度中各个维度的评分",
     "createdAt": "2026/7/30 15:35:19",
     "updatedAt": "2026/7/30 15:35:29",
-    "done": true
+    "done": true,
+    "view": "class"
   },
   {
     "id": "p1785396941109",
@@ -44,12 +41,11 @@
     "sectionIdx": 1,
     "offsetX": 476,
     "offsetY": 38,
-    "fixedTop": 0,
-    "fixedLeft": 0,
     "text": "默认展示全班共性的错误类型前三名及每个错误类型对应出现的次数，点击可以下拉展开全部错误及对应次数",
     "createdAt": "2026/7/30 15:35:41",
     "updatedAt": "2026/7/30 15:36:24",
-    "done": true
+    "done": true,
+    "view": "class"
   },
   {
     "id": "p1785398845198",
@@ -57,12 +53,11 @@
     "sectionIdx": 2,
     "offsetX": 188,
     "offsetY": 46,
-    "fixedTop": 0,
-    "fixedLeft": 0,
     "text": "默认展示最高分的作文，如果有多个取前5个；老师也可以在学生报告页面手动标记范文",
     "createdAt": "2026/7/30 16:07:25",
     "updatedAt": "2026/7/30 16:08:07",
-    "done": true
+    "done": true,
+    "view": "class"
   },
   {
     "id": "p1785398903205",
@@ -70,12 +65,11 @@
     "sectionIdx": 3,
     "offsetX": 1327,
     "offsetY": 505,
-    "fixedTop": 0,
-    "fixedLeft": 0,
     "text": "",
     "createdAt": "2026/7/30 16:08:23",
     "updatedAt": "",
-    "done": false
+    "done": false,
+    "view": "class"
   },
   {
     "id": "p1785398910618",
@@ -83,12 +77,11 @@
     "sectionIdx": 3,
     "offsetX": 1009,
     "offsetY": 62,
-    "fixedTop": 0,
-    "fixedLeft": 0,
     "text": "点击导出，批量导出当前班级所有的学生报告，按pdf格式导出",
     "createdAt": "2026/7/30 16:08:30",
     "updatedAt": "2026/7/30 16:08:51",
-    "done": true
+    "done": true,
+    "view": "class"
   },
   {
     "id": "p1785400702007",
@@ -99,7 +92,8 @@
     "text": "支持按当前的学生列表点击按钮切换查看上一个学生和下一个学生",
     "createdAt": "2026/7/30 16:38:22",
     "updatedAt": "2026/7/30 16:38:37",
-    "done": true
+    "done": true,
+    "view": "individual"
   },
   {
     "id": "p1785400722299",
@@ -110,7 +104,8 @@
     "text": "支持切换同一个学生的不同题目的作文，并且进行记录，查看上一个下一个学生的时候，默认保持相同的题号",
     "createdAt": "2026/7/30 16:38:42",
     "updatedAt": "2026/7/30 16:39:12",
-    "done": true
+    "done": true,
+    "view": "individual"
   },
   {
     "id": "p1785400756147",
@@ -121,7 +116,8 @@
     "text": "展示AI对当前作文的整体评价和各个评分维度的雷达图（没有评分维度则不展示）",
     "createdAt": "2026/7/30 16:39:16",
     "updatedAt": "2026/7/30 16:39:40",
-    "done": true
+    "done": true,
+    "view": "individual"
   },
   {
     "id": "p1785400786035",
@@ -132,7 +128,8 @@
     "text": "展示学生原文，并在原文的基础上展示亮点句词、待改进、以及常见错误，对错误进行标注，并展示优化后的写法",
     "createdAt": "2026/7/30 16:39:46",
     "updatedAt": "2026/7/30 16:40:44",
-    "done": true
+    "done": true,
+    "view": "individual"
   },
   {
     "id": "p1785400851660",
@@ -143,6 +140,7 @@
     "text": "针对原文中的问题语句，按条列出并展示改进意见，默认展开第一条",
     "createdAt": "2026/7/30 16:40:51",
     "updatedAt": "2026/7/30 16:41:42",
-    "done": true
+    "done": true,
+    "view": "individual"
   }
 ]

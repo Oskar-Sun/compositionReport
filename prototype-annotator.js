@@ -113,6 +113,7 @@
     if (window.__pa_data && Array.isArray(window.__pa_data)) {
       _annotations = window.__pa_data;
       _jsonLoaded = true;
+      migrateAnnotations();
       return;
     }
 
@@ -133,6 +134,7 @@
           try {
             _annotations = JSON.parse(xhr.responseText);
             _jsonLoaded = true;
+            migrateAnnotations();
             renderSidebar();
           } catch(e) {}
         } else {
@@ -143,14 +145,14 @@
       xhr.onerror = function() {
         _jsonLoaded = true;
         // 降级：尝试从 localStorage 恢复旧数据
-        try { var old = JSON.parse(localStorage.getItem('pa_annotations') || '{}'); var arr = old[window.location.pathname] || []; if (arr.length) { _annotations = arr; } } catch(e) {}
+        try { var old = JSON.parse(localStorage.getItem('pa_annotations') || '{}'); var arr = old[window.location.pathname] || []; if (arr.length) { _annotations = arr; migrateAnnotations(); } } catch(e) {}
         renderSidebar();
       };
       xhr.send();
     } catch(e) {
       _jsonLoaded = true;
       // 降级：尝试从 localStorage 恢复旧数据
-      try { var old = JSON.parse(localStorage.getItem('pa_annotations') || '{}'); var arr = old[window.location.pathname] || []; if (arr.length) { _annotations = arr; } } catch(e) {}
+      try { var old = JSON.parse(localStorage.getItem('pa_annotations') || '{}'); var arr = old[window.location.pathname] || []; if (arr.length) { _annotations = arr; migrateAnnotations(); } } catch(e) {}
       renderSidebar();
     }
   }
@@ -178,15 +180,43 @@
   // ============================================================
   function getReqs() { return _annotations; }
   function saveReqs(arr) { _annotations = arr; }
+  // 迁移旧数据：为没有 view 字段的标注自动分类
+  function migrateAnnotations() {
+    var changed = false;
+    _annotations.forEach(function(r){
+      if (r.view) return;
+      changed = true;
+      if (r.sectionIdx >= 4) r.view = 'individual';
+      else if (r.sectionIdx >= 0 && r.sectionIdx <= 3) r.view = 'class';
+      else r.view = 'unknown';
+      delete r.fixedTop;
+      delete r.fixedLeft;
+    });
+    if (changed) renderSidebar();
+  }
 
   // ============================================================
   // Pins
   // ============================================================
+  function getCurrentView() {
+    var _cv = document.getElementById('classView');
+    var _iv = document.getElementById('individualView');
+    if (_cv && !_cv.classList.contains('page-hidden')) return 'class';
+    if (_iv && !_iv.classList.contains('page-hidden')) return 'individual';
+    return 'unknown';
+  }
+  function getCurrentViewContainer() {
+    var v = getCurrentView();
+    return document.getElementById(v === 'individual' ? 'individualView' : 'classView');
+  }
   function renderPins() {
     document.querySelectorAll('.pa-pin').forEach(function (el) { el.remove(); });
+    var curView = getCurrentView();
+    // 只显示当前视图的标注
+    var filtered = _annotations.filter(function(r){ return !r.view || r.view === curView || r.view === 'unknown'; });
     var scrollContainer = document.querySelector('.container, .pa-container, main, #app, .app') || document.body;
     if (scrollContainer && getComputedStyle(scrollContainer).position === 'static') scrollContainer.style.position = 'relative';
-    _annotations.forEach(function (r) {
+    filtered.forEach(function (r) {
       var p = document.createElement('div');
       p.className = 'pa-pin' + (r.done ? ' done' : '');
       p.textContent = r.num || '?';
@@ -194,8 +224,10 @@
 
       var parent = null;
       if (r.sectionIdx >= 0) {
-        var sections = document.querySelectorAll('.pa-section, section, .report-section, .card, .block, .module');
-        parent = sections[r.sectionIdx];
+        // 根据 view 字段选择正确的容器查找 section
+        var _viewContainer = (r.view === 'individual') ? document.getElementById('individualView') : document.getElementById('classView');
+        var _allSections = (_viewContainer ? _viewContainer : document).querySelectorAll('.pa-section, section, .report-section, .card, .block, .module');
+        parent = _allSections[r.sectionIdx];
       }
       if (!parent) parent = scrollContainer;
 
@@ -227,27 +259,32 @@
   // ============================================================
   function renderSidebar() {
     if (!list) return;
-    count.textContent = _annotations.length;
-    if (!_annotations.length) {
+    var curView = getCurrentView();
+    var visible = _annotations.filter(function(r){ return !r.view || r.view === curView || r.view === 'unknown'; });
+    count.textContent = visible.length;
+    if (!visible.length) {
       list.innerHTML = '<div style="padding:20px;text-align:center;color:#98a2b3;font-size:12px;">点击页面任意位置<br>添加标注</div>';
       renderPins();
       return;
     }
-    _annotations.sort(function (a, b) { return (a.num || 0) - (b.num || 0); });
+    visible.sort(function (a, b) { return (a.num || 0) - (b.num || 0); });
     var h = '';
-    for (var i = 0; i < _annotations.length; i++) {
-      var r = _annotations[i];
+    for (var i = 0; i < visible.length; i++) {
+      var r = visible[i];
       var preview = (r.text || '(空)').substring(0, 40);
       var dn = r.done ? ' done' : '';
-      h += '<div class="pa-s-item" onclick="window.__pa.' + (editMode ? 'openEdit' : 'openView') + '(' + i + ')"><div class="pa-si-hdr"><span class="pa-si-n' + dn + '">' + (r.num || (i + 1)) + '</span><span class="pa-si-l">#' + (r.num || (i + 1)) + '</span></div><div class="pa-si-t">' + preview + '</div></div>';
+      h += '<div class="pa-s-item" onclick="window.__pa.' + (editMode ? 'openEditById' : 'openViewById') + '(\'' + r.id + '\')"><div class="pa-si-hdr"><span class="pa-si-n' + dn + '">' + (r.num || (i + 1)) + '</span><span class="pa-si-l">#' + (r.num || (i + 1)) + '</span></div><div class="pa-si-t">' + preview + '</div></div>';
     }
     list.innerHTML = h;
     renderPins();
   }
 
+  function findReq(id) { for (var i = 0; i < _annotations.length; i++) { if (_annotations[i].id === id) return _annotations[i]; } return null; }
   window.__pa = {
     openEdit: function (idx) { if (_annotations[idx]) openEdit(_annotations[idx]); },
-    openView: function (idx) { if (_annotations[idx]) openView(_annotations[idx]); }
+    openView: function (idx) { if (_annotations[idx]) openView(_annotations[idx]); },
+    openEditById: function (id) { var r = findReq(id); if (r) openEdit(r); },
+    openViewById: function (id) { var r = findReq(id); if (r) openView(r); }
   };
 
   // ============================================================
@@ -368,11 +405,30 @@
       offsetX = Math.round(e.clientX - cr.left);
       offsetY = Math.round(e.clientY - cr.top);
     }
+    // 判断当前是哪个视图
+    var _cv = document.getElementById('classView');
+    var _iv = document.getElementById('individualView');
+    var _view = 'unknown';
+    if (_cv && _iv) {
+      if (!_cv.classList.contains('page-hidden')) _view = 'class';
+      else if (!_iv.classList.contains('page-hidden')) _view = 'individual';
+    }
+    // 如果是 individual 视图，sectionIdx 只算 individualView 内的 .report-section
+    if (_view === 'individual' && sec) {
+      var _container = document.getElementById('individualView');
+      if (_container) {
+        var _secs = _container.querySelectorAll('.report-section');
+        var _newIdx = -1;
+        for (var _si = 0; _si < _secs.length; _si++) { if (_secs[_si] === sec) { _newIdx = _si; break; } }
+        if (_newIdx >= 0) sectionIdx = _newIdx;
+      }
+    }
     var mn = 0;
     _annotations.forEach(function (r) { if ((r.num || 0) > mn) mn = r.num; });
     var r = {
       id: 'p' + Date.now(),
       num: mn + 1,
+      view: _view,
       sectionIdx: sectionIdx,
       offsetX: offsetX,
       offsetY: offsetY,
