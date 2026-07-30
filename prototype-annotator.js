@@ -119,14 +119,22 @@
 
   // ============================================================
   // Data (per-page, so different pages don't conflict)
+  // 优先使用硬编码数据（window.__pa_data），其次使用 localStorage
   // ============================================================
   function getReqs() {
     try {
+      // 检查是否有硬编码标注数据
+      if (window.__pa_data && Array.isArray(window.__pa_data)) {
+        return window.__pa_data;
+      }
+      // 回退到 localStorage
       var all = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
       return all[pageUrl] || [];
     } catch (e) { return []; }
   }
   function saveReqs(arr) {
+    // 如果有硬编码数据，不保存到 localStorage（只读模式）
+    if (window.__pa_data && Array.isArray(window.__pa_data)) return;
     try {
       var all = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
       all[pageUrl] = arr;
@@ -140,6 +148,8 @@
   function renderPins() {
     document.querySelectorAll('.pa-pin').forEach(function (el) { el.remove(); });
     var reqs = getReqs();
+    var scrollContainer = document.querySelector('.container, .pa-container, main, #app, .app') || document.body;
+    if (scrollContainer && getComputedStyle(scrollContainer).position === 'static') scrollContainer.style.position = 'relative';
     reqs.forEach(function (r) {
       var p = document.createElement('div');
       p.className = 'pa-pin' + (r.done ? ' done' : '');
@@ -152,23 +162,18 @@
         parent = sections[r.sectionIdx];
       }
       if (!parent) {
-        parent = document.querySelector('.container, .pa-container, main, #app, .app') || document.body;
+        parent = scrollContainer;
       }
 
       var top = r.offsetY || 0;
       var left = r.offsetX || 0;
       if (!top && !left && (r.y || r.x)) { top = r.y || 0; left = r.x || 0; }
 
-      var isPageLevel = (parent === document.body || parent === document.querySelector('.container'));
-      if (isPageLevel || r.fixedTop || r.fixedLeft) {
-        p.style.position = 'fixed';
-        p.style.top = (r.fixedTop || top) + 'px';
-        p.style.left = (r.fixedLeft || left) + 'px';
-      } else {
-        if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
-        p.style.top = top + 'px';
-        p.style.left = left + 'px';
-      }
+      // All pins use absolute positioning relative to their parent
+      if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+      p.style.position = 'absolute';
+      p.style.top = top + 'px';
+      p.style.left = left + 'px';
 
       p.onclick = function () {
         var a = getReqs();
@@ -364,7 +369,7 @@
     var sec = e.target.closest('.pa-section, section, .report-section, .card, .block, .module');
     var sectionIdx = -1;
     var offsetX = 0, offsetY = 0;
-    var fixedTop = 0, fixedLeft = 0;
+    
 
     if (sec) {
       var sections = document.querySelectorAll('.pa-section, section, .report-section, .card, .block, .module');
@@ -373,8 +378,10 @@
       offsetX = Math.round(e.clientX - rect.left);
       offsetY = Math.round(e.clientY - rect.top);
     } else {
-      fixedTop = Math.round(e.clientY);
-      fixedLeft = Math.round(e.clientX);
+      var ct = document.querySelector('.container, .pa-container, main, #app, .app') || document.body;
+      var cr = ct.getBoundingClientRect();
+      offsetX = Math.round(e.clientX - cr.left);
+      offsetY = Math.round(e.clientY - cr.top);
     }
 
     var reqs = getReqs();
@@ -386,9 +393,7 @@
       sectionIdx: sectionIdx,
       offsetX: offsetX,
       offsetY: offsetY,
-      fixedTop: fixedTop,
-      fixedLeft: fixedLeft,
-      text: '',
+            text: '',
       createdAt: new Date().toLocaleString('zh-CN'),
       updatedAt: '',
       done: false
@@ -431,6 +436,29 @@
     if (rt) clearTimeout(rt);
     rt = setTimeout(function () { renderPins(); }, 200);
   });
+
+  // ============================================================
+  // 导出标注数据（?export-annotations）
+  // ============================================================
+  if (window.location.search.indexOf('export-annotations') >= 0) {
+    try {
+      var _allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      document.addEventListener('DOMContentLoaded', function() {
+        var _json = JSON.stringify(_allData[pageUrl] || [], null, 2);
+        var _html = '<script>\nwindow.__pa_data = ' + _json + ';\n</' + 'script>';
+        var _box = document.createElement('div');
+        _box.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;';
+        _box.innerHTML = '<div style="background:#fff;border-radius:10px;padding:24px;max-width:800px;width:90vw;max-height:90vh;overflow:auto;">' +
+          '<h3 style="margin:0 0 8px;font-size:16px;">📌 标注数据导出</h3>' +
+          '<p style="font-size:13px;color:#667085;margin-bottom:12px;">复制下面的代码，粘贴到HTML的 <span style="background:#f2f4f7;padding:1px 6px;border-radius:3px;font-family:monospace;">&lt;/head&gt;</span> 前，然后上传到 GitHub。</p>' +
+          '<pre style="background:#f8f9fa;border:1px solid #d0d5dd;border-radius:6px;padding:12px;font-size:12px;line-height:1.5;overflow:auto;white-space:pre;user-select:all;" id="paExportCode">' + _html.replace(/</g, '&lt;') + '</pre>' +
+          '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">' +
+          '<button onclick="navigator.clipboard.writeText(document.getElementById(\'paExportCode\').textContent);this.textContent=\'✅ 已复制\'" style="padding:6px 16px;border-radius:6px;border:1px solid #d0d5dd;background:#fff;font-size:13px;cursor:pointer;">📋 复制代码</button>' +
+          '<button onclick="this.closest(\'div[style]\').remove()" style="padding:6px 16px;border-radius:6px;border:none;background:#1a73e8;color:#fff;font-size:13px;cursor:pointer;">关闭</button></div></div>';
+        document.body.appendChild(_box);
+      });
+    } catch(e) {}
+  }
 
   // ============================================================
   // Init
