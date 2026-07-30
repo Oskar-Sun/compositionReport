@@ -25,9 +25,14 @@
  * ============================================================
  */
 (function () {
-  window.__pa_enable = function(){ console.warn("PA: not yet initialized"); };
-  window.__pa_disable = function(){ console.warn("PA: not yet initialized"); };
   'use strict';
+  // 全局入口：不管脚本是否成功加载，保证控制台可用
+  window.__pa_enable = window.__pa_enable || function(){ console.warn('PA: 脚本加载中，请稍后再试或刷新页面'); };
+  window.__pa_disable = window.__pa_disable || function(){ console.warn('PA: 脚本加载中'); };
+  var _pa_ready = false;
+
+  // 整体保护：file:// 协议下 localStorage 可能异常，不影响核心功能
+  try {
 
   // ===== 0. 预检测：URL 参数后门 =====
   if (window.location.search.indexOf('annotate') >= 0) {
@@ -319,9 +324,6 @@
   });
 
   // 3) 控制台后门：任意时候执行 __pa() 开启
-  window.__pa_enable = enableEdit;
-  window.__pa_disable = disableEdit;
-
   // 4) URL 参数后门：在网址后加 ?annotate 刷新自动开启
   if (sessionStorage.getItem('__pa_auto')) {
     sessionStorage.removeItem('__pa_auto');
@@ -437,5 +439,11 @@
   console.log('   快捷键 Ctrl+Shift+. → 开启编辑模式');
   console.log('   控制台 __pa_enable() → 开启 / __pa_disable() → 关闭');
   console.log('   URL 加 ?annotate → 刷新后自动开启');
+
+  _pa_ready = true;
+  window.__pa_enable = enableEdit;
+  window.__pa_disable = disableEdit;
+
+  } catch(e) { console.warn('📌 PA init error:', e.message); }
 
 })();
