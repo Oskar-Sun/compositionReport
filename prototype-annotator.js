@@ -121,38 +121,35 @@
     try {
       var basePath = '';
       var scripts = document.getElementsByTagName('script');
-      var currentScript = scripts[scripts.length - 1];
-      if (currentScript && currentScript.src) {
-        basePath = currentScript.src.replace(/\/[^/]*$/, '/');
+      for (var si = 0; si < scripts.length; si++) {
+        var s = scripts[si];
+        if (s.src && s.src.indexOf('prototype-annotator') >= 0) {
+          basePath = s.src.replace(/\/[^/]*$/, '/');
+          break;
+        }
       }
       var jsonPath = basePath + 'annotations.json';
 
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', jsonPath, true);
-      xhr.onload = function() {
-        if (xhr.status === 200) {
-          try {
-            _annotations = JSON.parse(xhr.responseText);
-            _jsonLoaded = true;
-            migrateAnnotations();
-            renderSidebar();
-          } catch(e) {}
-        } else {
-          _jsonLoaded = true;
-          renderSidebar();
-        }
-      };
-      xhr.onerror = function() {
+      // file:// 协议用 fetch（XHR 在 file:// 下因 CORS 不可用）
+      fetch(jsonPath).then(function(resp){
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        return resp.text();
+      }).then(function(text){
+        try {
+          _annotations = JSON.parse(text);
+        } catch(e) {}
         _jsonLoaded = true;
-        // 降级：尝试从 localStorage 恢复旧数据
+        migrateAnnotations();
+        renderSidebar();
+      }).catch(function(){
+        _jsonLoaded = true;
+        // 降级：从 localStorage 恢复
         try { var old = JSON.parse(localStorage.getItem('pa_annotations') || '{}'); var arr = old[window.location.pathname] || []; if (arr.length) { _annotations = arr; migrateAnnotations(); } } catch(e) {}
         renderSidebar();
-      };
-      xhr.send();
+      });
     } catch(e) {
+      // 无法确定路径，直接完成初始化
       _jsonLoaded = true;
-      // 降级：尝试从 localStorage 恢复旧数据
-      try { var old = JSON.parse(localStorage.getItem('pa_annotations') || '{}'); var arr = old[window.location.pathname] || []; if (arr.length) { _annotations = arr; migrateAnnotations(); } } catch(e) {}
       renderSidebar();
     }
   }
@@ -180,6 +177,14 @@
   // ============================================================
   function getReqs() { return _annotations; }
   function saveReqs(arr) { _annotations = arr; }
+  // 备份到 localStorage（file:// 下 fetch 可能失败，localStorage 兜底）
+  function backupToLocal() {
+    try {
+      var obj = {};
+      obj[window.location.pathname] = _annotations;
+      localStorage.setItem('pa_annotations', JSON.stringify(obj));
+    } catch(e) {}
+  }
   // 迁移旧数据：为没有 view 字段的标注自动分类
   function migrateAnnotations() {
     var changed = false;
@@ -314,12 +319,14 @@
         break;
       }
     }
+    backupToLocal();
     renderSidebar();
     closeEdit();
   }
   function deleteReq() {
     if (!editingId || !confirm('删除此标注？')) return;
     _annotations = _annotations.filter(function (r) { return r.id !== editingId; });
+    backupToLocal();
     renderSidebar();
     closeEdit();
   }
@@ -444,6 +451,7 @@
       done: false
     };
     _annotations.push(r);
+    backupToLocal();
     renderSidebar();
     openEdit(r);
   });
@@ -468,6 +476,7 @@
   $('paClearBtn').onclick = function () {
     if (!confirm('确认清除所有标注？')) return;
     _annotations = [];
+    backupToLocal();
     renderSidebar();
   };
   $('paExportBtn').onclick = exportToFile;
