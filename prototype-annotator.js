@@ -34,9 +34,11 @@
   // 整体保护：file:// 协议下 localStorage 可能异常，不影响核心功能
   try {
 
-  // ===== 0. 预检测：URL 参数后门 =====
+  // ===== 0. 预检测：URL 参数后门（独立 try-catch，防止 file:// 报错导致全剧失效） =====
+  var _pa_url_annotate = false;
   if (window.location.search.indexOf('annotate') >= 0) {
-    sessionStorage.setItem('__pa_auto', '1');
+    _pa_url_annotate = true;
+    try { sessionStorage.setItem('__pa_auto', '1'); } catch(e) {}
   }
 
   // ============================================================
@@ -325,8 +327,8 @@
 
   // 3) 控制台后门：任意时候执行 __pa() 开启
   // 4) URL 参数后门：在网址后加 ?annotate 刷新自动开启
-  if (sessionStorage.getItem('__pa_auto')) {
-    sessionStorage.removeItem('__pa_auto');
+  if (_pa_url_annotate || (function(){try{return sessionStorage.getItem('__pa_auto')}catch(e){return null}})()) {
+    try { sessionStorage.removeItem('__pa_auto'); } catch(e) {}
     setTimeout(enableEdit, 500);
   }
 
