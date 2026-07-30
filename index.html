@@ -270,6 +270,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .req-sidebar .rs-item .rsi-t{font-size:12px;color:#344054;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .req-sidebar .rs-del{width:100%;text-align:center;padding:6px;border:none;background:transparent;color:#98a2b3;font-size:12px;cursor:pointer;font-family:inherit;border-radius:4px;margin-top:4px}
 .req-sidebar .rs-del:hover{color:#c5221f;background:#fce8e6}
+.req-badge-viewonly{cursor:pointer!important;}
+.anno-secret-area{display:inline-block;cursor:default;user-select:none}
+.anno-secret-area:hover{opacity:.9}
+.edit-mode-indicator{position:fixed;top:0;left:0;right:0;z-index:9999;background:#c5221f;color:#fff;text-align:center;font-size:11px;padding:3px 0;font-weight:500;display:none;letter-spacing:1px}
+.edit-mode-indicator.show{display:block}
+.ann-toggle{display:none!important}
+.edit-enabled .ann-toggle{display:flex!important;position:fixed!important;bottom:24px!important;left:24px!important;z-index:900!important}
 @media print{.ann-toggle,.req-sidebar{display:none!important}}
 </style>
 </head>
@@ -405,9 +412,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
-<!-- ===== 需求标注系统 ===== -->
-<button class="ann-toggle no-print" id="annToggle" onclick="toggleAnnMode()">📝 <span class="blink"></span> 添加需求说明</button>
+<div class="edit-mode-indicator no-print" id="editModeIndicator">✏️ 编辑模式已开启 · 点击左下角「添加需求说明」按钮开始标注</div>
 
+<!-- ===== 需求标注系统 ===== -->
+<!-- 标注按钮：默认隐藏，需要秘密操作才能开启编辑模式 -->
+<button class="ann-toggle no-print" id="annToggle" onclick="toggleAnnMode()" style="display:none">📝 <span class="blink"></span> 添加需求说明</button>
+
+<!-- 查看标注弹窗（只读模式） -->
+<div class="req-modal" id="reqViewModal">
+  <div class="req-modal-box" onclick="event.stopPropagation()">
+    <div class="req-modal-header">
+      <span class="rmh-num" id="rvmNum" style="background:#1a73e8;">!</span>
+      <span class="rmh-title">需求说明</span>
+      <button class="rmh-close" onclick="closeReqViewModal()">✕</button>
+    </div>
+    <div class="req-modal-body">
+      <div class="rmb-section" id="rvmSection">班级概览</div>
+      <div style="background:#f8f9fa;border-radius:8px;padding:14px 16px;margin:10px 0;line-height:1.7;font-size:14px;color:#344054;border-left:3px solid #1a73e8;" id="rvmContent">暂无需求说明</div>
+      <div id="rvmMeta" style="font-size:12px;color:#98a2b3;margin-top:6px;"></div>
+    </div>
+    <div class="req-modal-footer">
+      <button class="btn" onclick="closeReqViewModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑标注弹窗（编辑模式） -->
 <div class="req-modal" id="reqModal">
   <div class="req-modal-box" onclick="event.stopPropagation()">
     <div class="req-modal-header">
@@ -419,7 +449,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       <div class="rmb-section" id="rmbSection">班级概览</div>
       <div class="rmb-desc" id="rmbDesc">点击此区域可添加需求说明</div>
       <label for="reqText">需求说明 <span style="font-weight:400;color:#98a2b3;">（描述此处需要研发实现的内容）</span></label>
-      <textarea id="reqText" placeholder="请描述该模块的需求说明、交互细节、注意事项等...&#10;&#10;示例：&#10;· 班级切换后，所有统计数据需按当前班级重新计算&#10;· 分数段分布图使用柱状图，支持hover显示人数&#10;· 学生列表默认按总分从高到低排序" oninput="updateSaveHint()"></textarea>
+      <textarea id="reqText" placeholder="请描述该模块的需求说明、交互细节、注意事项等..." oninput="updateSaveHint()"></textarea>
       <div class="rmb-hint" id="saveHint">💡 输入内容会自动保存到浏览器，关闭后下次打开仍可编辑</div>
     </div>
     <div class="req-modal-footer">
@@ -1174,20 +1204,120 @@ function exportAllPdf() {
 var annMode = false;
 var editingReqId = null;
 
+// ===== 秘密后门 =====
+// 在页面标题 "✏️ 作文批改报告" 上快速点击 5 次开启编辑模式
+var _clickCount = 0;
+var _clickTimer = null;
+var _editMode = false;
+
+function checkBackdoor() {
+  _clickCount++;
+  if (_clickCount === 1) {
+    _clickTimer = setTimeout(function() { _clickCount = 0; }, 1500);
+  }
+  if (_clickCount >= 5) {
+    _clickCount = 0; clearTimeout(_clickTimer);
+    enableEditMode();
+  }
+}
+
+function enableEditMode() {
+  if (_editMode) return;
+  _editMode = true;
+  document.body.classList.add('edit-enabled');
+  document.getElementById('annToggle').style.display = 'flex';
+  document.getElementById('editModeIndicator').classList.add('show');
+  renderReqBadges();
+  renderReqSidebar();
+  // Flash the toggle button to draw attention
+  var btn = document.getElementById('annToggle');
+  btn.style.transform = 'scale(1.2)';
+  setTimeout(function(){ btn.style.transform = ''; }, 300);
+  setTimeout(function(){ btn.style.transform = 'scale(1.2)'; }, 600);
+  setTimeout(function(){ btn.style.transform = ''; }, 900);
+}
+
 function initAnnotationSystem() {
   loadReqs();
   renderReqSidebar();
+
+  // Set up backdoor listener - click on title area
+  document.querySelectorAll('.title').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      if (!_editMode) checkBackdoor();
+    });
+  });
+
+  // Badge click: view only by default, edit if in edit mode
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.req-badge')) {
+      var badge = e.target.closest('.req-badge');
+      var section = badge.closest('.report-section');
+      var name = getSectionName(section);
+      var allReqs = getReqs();
+      var found = null;
+      for (var i = 0; i < allReqs.length; i++) {
+        if (allReqs[i].sectionName === name) { found = allReqs[i]; break; }
+      }
+      if (!found) return;
+      e.stopPropagation();
+
+      if (_editMode) {
+        // Edit mode: open the edit modal
+        if (!annMode) toggleAnnMode();
+        openReqModal(found.id, section);
+      } else {
+        // View mode: open read-only modal
+        openReqViewModal(found, section);
+      }
+    }
+  });
+
   // Close modal on overlay click
   document.getElementById('reqModal').addEventListener('click', function(e) {
     if (e.target === this) closeReqModal();
   });
-  // Keyboard shortcut: Escape closes modal, Enter saves
+  document.getElementById('reqViewModal').addEventListener('click', function(e) {
+    if (e.target === this) closeReqViewModal();
+  });
+
+  // Keyboard shortcut: Escape closes modal, Ctrl+Enter saves
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeReqModal();
+    if (e.key === 'Escape') { closeReqModal(); closeReqViewModal(); }
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && document.getElementById('reqModal').classList.contains('open')) {
       e.preventDefault(); saveReq();
     }
+    // Secret keyboard shortcut: Ctrl+Shift+. (period) to toggle edit mode
+    if (e.key === '.' && e.ctrlKey && e.shiftKey) {
+      e.preventDefault();
+      if (_editMode) disableEditMode(); else enableEditMode();
+    }
   });
+}
+
+function openReqViewModal(req, section) {
+  document.getElementById('rvmSection').textContent = req.sectionName || '未知模块';
+  document.getElementById('rvmContent').innerHTML = (req.text && req.text.trim()) ?
+    req.text.replace(/\n/g, '<br>') :
+    '<span style="color:#98a2b3;">暂无需求说明内容</span>';
+  document.getElementById('rvmMeta').textContent = '创建：' + (req.createdAt || '未知') + ' · 更新：' + (req.updatedAt || '未知') + (req.done ? ' · ✅ 已完成' : '');
+  document.getElementById('reqViewModal').classList.add('open');
+}
+
+function closeReqViewModal() {
+  document.getElementById('reqViewModal').classList.remove('open');
+}
+
+function disableEditMode() {
+  _editMode = false;
+  document.body.classList.remove('edit-enabled');
+  document.getElementById('annToggle').style.display = 'none';
+  document.getElementById('editModeIndicator').classList.remove('show');
+  annMode = false;
+  document.getElementById('annToggle').classList.remove('active');
+  document.body.classList.remove('req-mode');
+  document.getElementById('reqSidebar').classList.remove('open');
+  document.getElementById('annToggle').innerHTML = '📝 <span class="blink"></span> 添加需求说明';
 }
 
 function toggleAnnMode() {
@@ -1210,11 +1340,11 @@ function toggleReqSidebar() {
 
 // Click handler for report sections
 document.addEventListener('click', function(e) {
-  if (!annMode) return;
+  if (!annMode || !_editMode) return;
   var section = e.target.closest('.report-section');
   if (!section) return;
   // Don't trigger on clicks inside the modal or sidebar or on existing badges
-  if (e.target.closest('.req-modal') || e.target.closest('.req-sidebar') || e.target.closest('.req-badge')) return;
+  if (e.target.closest('.req-modal') || e.target.closest('.req-view-modal') || e.target.closest('.req-sidebar') || e.target.closest('.req-badge')) return;
 
   var sectionEl = section;
   var sectionName = getSectionName(sectionEl);
@@ -1317,8 +1447,7 @@ function renderReqBadges() {
     badge.title = name + '（' + (allDone ? '已完成' : '待处理') + '）';
     badge.onclick = function(e) {
       e.stopPropagation();
-      if (!annMode) { toggleAnnMode(); }
-      openReqModal(firstReqId, section);
+      // Handled by global click listener now
     };
     section.appendChild(badge);
   });
