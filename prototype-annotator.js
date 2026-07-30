@@ -205,20 +205,27 @@
       localStorage.setItem('pa_annotations', JSON.stringify(obj));
     } catch(e) {}
   }
-  // 迁移旧数据：为没有 view 字段的标注自动分类
+  // 迁移旧数据
   function migrateAnnotations() {
     var changed = false;
+    var container = document.querySelector('.container, .pa-container, main, #app, .app') || document.body;
+    var cr = container.getBoundingClientRect();
     _annotations.forEach(function(r){
+      // 旧数据：sectionIdx=-1 + fixedTop/fixedLeft → 转换为容器相对坐标
+      if (r.sectionIdx === -1 && (r.fixedTop !== undefined || r.fixedLeft !== undefined)) {
+        if (!r.offsetX && !r.offsetY) {
+          r.offsetX = Math.round((r.fixedLeft || 0) - cr.left + window.pageXOffset);
+          r.offsetY = Math.round((r.fixedTop || 0) - cr.top + window.pageYOffset);
+        }
+        delete r.fixedTop;
+        delete r.fixedLeft;
+        changed = true;
+      }
       if (r.view) return;
       changed = true;
       if (r.sectionIdx >= 4) r.view = 'individual';
       else if (r.sectionIdx >= 0 && r.sectionIdx <= 3) r.view = 'class';
       else r.view = 'unknown';
-      // 对于 sectionIdx = -1 且没有 offset 只有 fixed 的旧数据，把 fixed 转成 offset
-      if (r.sectionIdx === -1 && !r.offsetX && !r.offsetY && (r.fixedTop || r.fixedLeft)) {
-        r.offsetX = r.fixedLeft || 0;
-        r.offsetY = r.fixedTop || 0;
-      }
     });
     if (changed) renderSidebar();
   }
@@ -259,22 +266,12 @@
       }
       if (!parent) parent = scrollContainer;
 
-      var top = r.offsetY || 0;
-      var left = r.offsetX || 0;
-      if (!top && !left && (r.y || r.x)) { top = r.y || 0; left = r.x || 0; }
-      if (!top && !left && (r.fixedTop || r.fixedLeft)) { top = r.fixedTop || 0; left = r.fixedLeft || 0; }
-
-      // sectionIdx=-1 且有 fixedTop/fixedLeft → 旧版视口坐标，用 position: fixed
-      if (r.sectionIdx === -1 && (r.fixedTop !== undefined || r.fixedLeft !== undefined)) {
-        p.style.position = 'fixed';
-        p.style.top = (r.fixedTop || 0) + 'px';
-        p.style.left = (r.fixedLeft || 0) + 'px';
-      } else {
+      var top = r.offsetY || r.fixedTop || r.y || 0;
+      var left = r.offsetX || r.fixedLeft || r.x || 0;
         if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
         p.style.position = 'absolute';
         p.style.top = top + 'px';
         p.style.left = left + 'px';
-      }
 
       p.onclick = function () {
         for (var i = 0; i < _annotations.length; i++) {

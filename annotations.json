@@ -3,15 +3,13 @@
     "id": "p1785396685326",
     "num": 1,
     "sectionIdx": -1,
-    "offsetX": 0,
-    "offsetY": 0,
+    "offsetX": 729,
+    "offsetY": 103,
     "text": "一个考试中多个班级、多个作文题目，支持切换查看；切换后展示对应班级+对应题目的数据",
     "createdAt": "2026/7/30 15:31:25",
     "updatedAt": "2026/7/30 15:31:55",
     "done": true,
-    "view": "class",
-    "fixedTop": 103,
-    "fixedLeft": 729
+    "view": "class"
   },
   {
     "id": "p1785396761165",
@@ -83,9 +81,7 @@
     "createdAt": "2026/7/30 16:38:22",
     "updatedAt": "2026/7/30 16:38:37",
     "done": true,
-    "view": "individual",
-    "fixedTop": 212,
-    "fixedLeft": 810
+    "view": "individual"
   },
   {
     "id": "p1785400722299",
@@ -97,9 +93,7 @@
     "createdAt": "2026/7/30 16:38:42",
     "updatedAt": "2026/7/30 16:39:12",
     "done": true,
-    "view": "individual",
-    "fixedTop": 285,
-    "fixedLeft": 415
+    "view": "individual"
   },
   {
     "id": "p1785400786035",
