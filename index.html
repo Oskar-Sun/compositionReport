@@ -665,8 +665,8 @@ function showIndividualView(studentId) {
   currentStudentId = studentId;
   document.getElementById('classView').classList.add('page-hidden');
   document.getElementById('individualView').classList.remove('page-hidden');
-  document.getElementById('classSwitcher').style.display = 'none';
-  document.getElementById('batchPdfBtnWrap').style.display = 'none';
+  var _csEl = document.getElementById('classSwitcher'); if (_csEl) _csEl.style.display = 'none';
+  var _bpEl = document.getElementById('batchPdfBtnWrap'); if (_bpEl) _bpEl.style.display = 'none';
   const s = getStudent(studentId);
   if (!s) return;
   updateBreadcrumb();
