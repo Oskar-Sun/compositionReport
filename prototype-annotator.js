@@ -201,7 +201,9 @@
 
       var top = r.offsetY || 0;
       var left = r.offsetX || 0;
+      // 兼容旧数据格式
       if (!top && !left && (r.y || r.x)) { top = r.y || 0; left = r.x || 0; }
+      if (!top && !left && (r.fixedTop || r.fixedLeft)) { top = r.fixedTop || 0; left = r.fixedLeft || 0; }
 
       if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
       p.style.position = 'absolute';
