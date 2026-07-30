@@ -9,7 +9,9 @@
     "createdAt": "2026/7/30 15:31:25",
     "updatedAt": "2026/7/30 15:31:55",
     "done": true,
-    "view": "class"
+    "view": "class",
+    "fixedTop": 103,
+    "fixedLeft": 729
   },
   {
     "id": "p1785396761165",
@@ -60,18 +62,6 @@
     "view": "class"
   },
   {
-    "id": "p1785398903205",
-    "num": 6,
-    "sectionIdx": 3,
-    "offsetX": 1327,
-    "offsetY": 505,
-    "text": "",
-    "createdAt": "2026/7/30 16:08:23",
-    "updatedAt": "",
-    "done": false,
-    "view": "class"
-  },
-  {
     "id": "p1785398910618",
     "num": 8,
     "sectionIdx": 3,
@@ -93,7 +83,9 @@
     "createdAt": "2026/7/30 16:38:22",
     "updatedAt": "2026/7/30 16:38:37",
     "done": true,
-    "view": "individual"
+    "view": "individual",
+    "fixedTop": 212,
+    "fixedLeft": 810
   },
   {
     "id": "p1785400722299",
@@ -105,19 +97,9 @@
     "createdAt": "2026/7/30 16:38:42",
     "updatedAt": "2026/7/30 16:39:12",
     "done": true,
-    "view": "individual"
-  },
-  {
-    "id": "p1785400756147",
-    "num": 11,
-    "sectionIdx": 4,
-    "offsetX": 339,
-    "offsetY": 191,
-    "text": "展示AI对当前作文的整体评价和各个评分维度的雷达图（没有评分维度则不展示）",
-    "createdAt": "2026/7/30 16:39:16",
-    "updatedAt": "2026/7/30 16:39:40",
-    "done": true,
-    "view": "individual"
+    "view": "individual",
+    "fixedTop": 285,
+    "fixedLeft": 415
   },
   {
     "id": "p1785400786035",
@@ -142,5 +124,53 @@
     "updatedAt": "2026/7/30 16:41:42",
     "done": true,
     "view": "individual"
+  },
+  {
+    "id": "p1785408781355",
+    "num": 14,
+    "view": "individual",
+    "sectionIdx": 0,
+    "offsetX": 446,
+    "offsetY": 184,
+    "text": "展示AI的点评内容和各个打分维度的雷达图（如果没有打分维度则不展示雷达图）",
+    "createdAt": "2026/7/30 18:53:01",
+    "updatedAt": "2026/7/30 18:53:24",
+    "done": true
+  },
+  {
+    "id": "p1785408810933",
+    "num": 15,
+    "view": "individual",
+    "sectionIdx": 2,
+    "offsetX": 558,
+    "offsetY": 265,
+    "text": "展示学生原文，并在原文基础上展示亮点、待改进、错误的句子和词汇，并给出改进后的写法",
+    "createdAt": "2026/7/30 18:53:30",
+    "updatedAt": "2026/7/30 18:54:03",
+    "done": true
+  },
+  {
+    "id": "p1785408863279",
+    "num": 16,
+    "view": "individual",
+    "sectionIdx": 5,
+    "offsetX": 403,
+    "offsetY": 79,
+    "text": "随机选取一篇参考范文",
+    "createdAt": "2026/7/30 18:54:23",
+    "updatedAt": "2026/7/30 18:54:34",
+    "done": true
+  },
+  {
+    "id": "p1785408879847",
+    "num": 17,
+    "view": "individual",
+    "sectionIdx": 4,
+    "offsetX": 349,
+    "offsetY": 50,
+    "text": "按条数展示所有优化建议，包含原句、问题说明、示范写法",
+    "createdAt": "2026/7/30 18:54:39",
+    "updatedAt": "2026/7/30 18:55:16",
+    "done": true
   }
 ]

@@ -189,8 +189,11 @@
       if (r.sectionIdx >= 4) r.view = 'individual';
       else if (r.sectionIdx >= 0 && r.sectionIdx <= 3) r.view = 'class';
       else r.view = 'unknown';
-      delete r.fixedTop;
-      delete r.fixedLeft;
+      // 对于 sectionIdx = -1 且没有 offset 只有 fixed 的旧数据，把 fixed 转成 offset
+      if (r.sectionIdx === -1 && !r.offsetX && !r.offsetY && (r.fixedTop || r.fixedLeft)) {
+        r.offsetX = r.fixedLeft || 0;
+        r.offsetY = r.fixedTop || 0;
+      }
     });
     if (changed) renderSidebar();
   }
@@ -231,16 +234,17 @@
       }
       if (!parent) parent = scrollContainer;
 
-      var top = r.offsetY || 0;
-      var left = r.offsetX || 0;
-      // 兼容旧数据格式
-      if (!top && !left && (r.y || r.x)) { top = r.y || 0; left = r.x || 0; }
-      if (!top && !left && (r.fixedTop || r.fixedLeft)) { top = r.fixedTop || 0; left = r.fixedLeft || 0; }
-
-      if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
-      p.style.position = 'absolute';
-      p.style.top = top + 'px';
-      p.style.left = left + 'px';
+      // sectionIdx=-1 且有 fixedTop/fixedLeft → 旧版视口坐标，用 position: fixed
+      if (r.sectionIdx === -1 && (r.fixedTop !== undefined || r.fixedLeft !== undefined)) {
+        p.style.position = 'fixed';
+        p.style.top = (r.fixedTop || 0) + 'px';
+        p.style.left = (r.fixedLeft || 0) + 'px';
+      } else {
+        if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+        p.style.position = 'absolute';
+        p.style.top = top + 'px';
+        p.style.left = left + 'px';
+      }
 
       p.onclick = function () {
         for (var i = 0; i < _annotations.length; i++) {
