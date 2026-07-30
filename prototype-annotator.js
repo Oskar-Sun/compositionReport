@@ -117,7 +117,7 @@
       return;
     }
 
-    // 尝试从 annotations.json 加载
+    // 查找 prototype-annotator.js 的路径
     try {
       var basePath = '';
       var scripts = document.getElementsByTagName('script');
@@ -128,27 +128,47 @@
           break;
         }
       }
+      // 如果找不到路径，用当前页面路径
+      if (!basePath) {
+        var loc = window.location.href;
+        basePath = loc.substring(0, loc.lastIndexOf('/') + 1);
+      }
       var jsonPath = basePath + 'annotations.json';
 
-      // file:// 协议用 fetch（XHR 在 file:// 下因 CORS 不可用）
-      fetch(jsonPath).then(function(resp){
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        return resp.text();
-      }).then(function(text){
+      // 尝试用 fetch 加载（http/https 下可用）
+      if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+        fetch(jsonPath).then(function(resp){
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          return resp.text();
+        }).then(function(text){
+          try { _annotations = JSON.parse(text); } catch(e) {}
+          _jsonLoaded = true;
+          migrateAnnotations();
+          renderSidebar();
+        }).catch(function(){
+          _jsonLoaded = true;
+          try { var old = JSON.parse(localStorage.getItem('pa_annotations') || '{}'); var arr = old[window.location.pathname] || []; if (arr.length) { _annotations = arr; migrateAnnotations(); } } catch(e) {}
+          renderSidebar();
+        });
+      } else {
+        // file:// 协议：用 <script> 标签加载 JSON 文件（转换为 JS 变量）
+        // 先检查 localStorage 有没有数据
         try {
-          _annotations = JSON.parse(text);
+          var old = JSON.parse(localStorage.getItem('pa_annotations') || '{}');
+          var arr = old[window.location.pathname] || [];
+          if (arr.length) {
+            _annotations = arr;
+            _jsonLoaded = true;
+            migrateAnnotations();
+            renderSidebar();
+            return;
+          }
         } catch(e) {}
+        // localStorage 也没有，完成初始化（标注需要先添加后保存到文件才有）
         _jsonLoaded = true;
-        migrateAnnotations();
         renderSidebar();
-      }).catch(function(){
-        _jsonLoaded = true;
-        // 降级：从 localStorage 恢复
-        try { var old = JSON.parse(localStorage.getItem('pa_annotations') || '{}'); var arr = old[window.location.pathname] || []; if (arr.length) { _annotations = arr; migrateAnnotations(); } } catch(e) {}
-        renderSidebar();
-      });
+      }
     } catch(e) {
-      // 无法确定路径，直接完成初始化
       _jsonLoaded = true;
       renderSidebar();
     }
@@ -238,6 +258,11 @@
         parent = _allSections[r.sectionIdx];
       }
       if (!parent) parent = scrollContainer;
+
+      var top = r.offsetY || 0;
+      var left = r.offsetX || 0;
+      if (!top && !left && (r.y || r.x)) { top = r.y || 0; left = r.x || 0; }
+      if (!top && !left && (r.fixedTop || r.fixedLeft)) { top = r.fixedTop || 0; left = r.fixedLeft || 0; }
 
       // sectionIdx=-1 且有 fixedTop/fixedLeft → 旧版视口坐标，用 position: fixed
       if (r.sectionIdx === -1 && (r.fixedTop !== undefined || r.fixedLeft !== undefined)) {
@@ -503,8 +528,6 @@
   console.log('   快捷键 Ctrl+Shift+. → 编辑模式');
   console.log('   添加标注后点击侧栏「保存到文件」→ 下载 annotations.json');
   console.log('   将下载的 JSON 放到 HTML 同目录，提交 Git');
-
-  _pa_ready = true;
 
   } catch(e) { console.warn('📌 PA init error:', e.message); }
 
