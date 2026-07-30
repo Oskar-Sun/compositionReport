@@ -1163,10 +1163,9 @@ function renderReqPins(){
       var sections=document.querySelectorAll('.report-section');
       parent=sections[r.sectionIdx];
     }
-    if(!parent) parent=document.querySelector('.container');
-    if(!parent) parent=document.body;
+    if(!parent){parent=document.querySelector('.container')||document.body;}
     // 确保父元素是相对定位
-    if(getComputedStyle(parent).position==='static') parent.style.position='relative';
+    if(parent!==document.body && getComputedStyle(parent).position==='static') parent.style.position='relative';
     p.style.top=(r.offsetY||0)+'px';
     p.style.left=(r.offsetX||0)+'px';
     parent.appendChild(p);
@@ -1227,8 +1226,8 @@ function initAnnotationSystem(){
       offsetX=Math.round(e.clientX-rect.left);
       offsetY=Math.round(e.clientY-rect.top);
     }else{
-      offsetX=Math.round(e.clientX);
-      offsetY=Math.round(e.clientY);
+      offsetX=Math.round(e.clientX-cr.left);
+      offsetY=Math.round(e.clientY-cr.top);
     }
     var reqs=getReqs();
     var mn=0;reqs.forEach(function(r){if((r.num||0)>mn)mn=r.num});
