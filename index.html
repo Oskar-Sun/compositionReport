@@ -1219,6 +1219,8 @@ function initAnnotationSystem(){
     var sec=e.target.closest('.report-section');
     var sectionIdx=-1;
     var offsetX=0,offsetY=0;
+    var container=document.querySelector('.container')||document.body;
+    var cr=container.getBoundingClientRect();
     if(sec){
       var sections=document.querySelectorAll('.report-section');
       for(var i=0;i<sections.length;i++){if(sections[i]===sec){sectionIdx=i;break;}}
