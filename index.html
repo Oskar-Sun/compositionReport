@@ -238,8 +238,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       <div class="class-switcher no-print" id="classSwitcher"></div>
     </div>
     <div class="right no-print">
-      <button class="btn" onclick="exportAllPdf()">📄 导出全部PDF</button>
-      <button class="btn primary" id="reviewToggleBtn" onclick="toggleReview()">👩‍🏫 教师复核</button>
     </div>
   </div>
 
@@ -293,7 +291,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </select>
     </div>
     <div class="report-section">
-      <div class="section-title"><span class="icon">👥</span> 学生列表 <span class="badge-count" id="studentCount"></span></div>
+      <div class="section-title"><span class="icon">👥</span> 学生列表 <span class="badge-count" id="studentCount"></span><span style="margin-left:auto;"><button class="btn sm" onclick="exportAllPdf()">📄 导出全部（当前题目）</button></span></div>
       <div id="studentTableWrap" style="overflow-x:auto"></div>
     </div>
     <div class="function-tip no-print">💡 点击班级切换 · 点击题号Tab切换作文 · 点击学生姓名进入个人报告 · 勾选后批量导出PDF</div>
@@ -329,11 +327,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
       <div class="report-section fade-in"><div class="section-title"><span class="icon">⭐</span> 亮点句点评<span class="badge-count" id="highlightCount"></span></div><div class="card-list" id="highlightList"></div></div>
       <div class="report-section fade-in">
-        <div class="section-title"><span class="icon">🔧</span> 问题修改建议<span class="badge-count" id="issueCount"></span></div>
+        <div class="section-title"><span class="icon">🔧</span> 优化建议<span class="badge-count" id="issueCount"></span></div>
         <div class="card-list" id="issueList"></div>
-        <div class="mt-16"><div class="section-title" style="font-size:14px;margin-bottom:8px">📊 错误分布</div><div class="error-chart" id="errorChart"></div></div>
+        
       </div>
-      <div class="report-section fade-in"><div class="section-title"><span class="icon">📈</span> 改进建议</div><div class="improve-list" id="improveList"></div></div>
+      
       <div class="report-section fade-in"><div class="section-title"><span class="icon">📖</span> 参考范文</div><div class="model-essay" id="modelEssay"></div></div>
     </div>
     <div class="function-tip no-print">💡 点击标注展开批注 · 上一个/下一个切换学生 · 教师复核模式可编辑内容</div>
@@ -626,9 +624,10 @@ function switchClass(index) {
   renderClassSwitcher();
   document.getElementById('classView').classList.remove('page-hidden');
   document.getElementById('individualView').classList.add('page-hidden');
+  document.getElementById('classSwitcher').style.display = 'flex';
   document.getElementById('reviewBanner').style.display = 'none';
   isReviewMode = false;
-  document.getElementById('reviewToggleBtn').textContent = '👩‍🏫 教师复核';
+  
   updateBreadcrumb();
   renderClassView();
 }
@@ -653,10 +652,9 @@ function showClassView() {
   currentPage = 'class';
   document.getElementById('classView').classList.remove('page-hidden');
   document.getElementById('individualView').classList.add('page-hidden');
-  document.getElementById('reviewToggleBtn').style.display = 'inline-flex';
   document.getElementById('reviewBanner').style.display = 'none';
   isReviewMode = false;
-  document.getElementById('reviewToggleBtn').textContent = '👩‍🏫 教师复核';
+  // placeholder = '👩‍🏫 教师复核';
   updateBreadcrumb();
   renderClassView();
 }
@@ -666,6 +664,7 @@ function showIndividualView(studentId) {
   currentStudentId = studentId;
   document.getElementById('classView').classList.add('page-hidden');
   document.getElementById('individualView').classList.remove('page-hidden');
+  document.getElementById('classSwitcher').style.display = 'none';
   document.getElementById('batchPdfBtnWrap').style.display = 'none';
   const s = getStudent(studentId);
   if (!s) return;
@@ -822,14 +821,14 @@ function renderStudentTable() {
   if (!filtered.length) { document.getElementById('studentTableWrap').innerHTML='<div style="text-align:center;padding:40px;color:#98a2b3;font-size:14px;">没有找到匹配的学生</div>'; return; }
 
   let html = `<table class="student-table"><thead><tr><th>姓名</th><th>学号</th>`;
-  filtered[0].essays.forEach((e,i) => { html += `<th style="text-align:center;${i===currentEssayTab?'color:#1a73e8;':''}">题${i+1}<br>${e.type.slice(0,6)}</th>`; });
+  const ei = currentEssayTab;
+  html += `<th style="text-align:center;color:#1a73e8;">题${ei+1}<br>${filtered[0].essays[ei].type.slice(0,6)}</th>`;
   html += `<th style="text-align:center">操作</th></tr></thead><tbody>`;
   filtered.forEach(s => {
+    const e = s.essays[ei];
+    const lc = e.level==='excellent'?'level-excellent':e.level==='good'?'level-good':e.level==='pass'?'level-pass':'level-needs';
     html += `<tr><td><span class="st-name" onclick="showIndividualView('${s.id}')">${s.name}</span></td><td style="color:#98a2b3;font-size:12px;">${s.studentNo}</td>`;
-    s.essays.forEach((e,i) => {
-      const lc = e.level==='excellent'?'level-excellent':e.level==='good'?'level-good':e.level==='pass'?'level-pass':'level-needs';
-      html += `<td style="text-align:center;${i===currentEssayTab?'background:#f0f5ff;':''}"><strong>${e.totalScore}</strong>/${e.fullScore}<br><span class="level-tag ${lc}" style="font-size:10px;">${e.levelLabel}</span></td>`;
-    });
+    html += `<td style="text-align:center;background:#f0f5ff;"><strong>${e.totalScore}</strong>/${e.fullScore}<br><span class="level-tag ${lc}" style="font-size:10px;">${e.levelLabel}</span></td>`;
     html += `<td style="text-align:center"><button class="btn sm" onclick="showIndividualView('${s.id}')">查看报告</button></td></tr>`;
   });
   html += '</tbody></table>';
@@ -874,7 +873,14 @@ function renderIndividualView(student) {
     </div>
     <button class="btn ghost no-print" onclick="showClassView()" style="margin-left:auto;">← 返回班级</button>
     <button class="btn no-print" onclick="openImageModal('${student.id}',${currentStudentTab})">📸 原卷</button>
-    <button class="btn no-print" onclick="previewPdf('${student.id}')">📄 PDF</button>
+    <div class="btn no-print" style="position:relative;padding:0;border:none;display:inline-flex">
+    <button class="btn no-print" onclick="previewPdf('${student.id}','all')" style="border-radius:6px 0 0 6px">📄 PDF</button>
+    <button class="btn no-print" onclick="this.nextElementSibling.classList.toggle('open')" style="border-left:none;border-radius:0 6px 6px 0;padding:6px 8px;">▾</button>
+    <div style="display:none;position:absolute;top:100%;right:0;z-index:999;background:#fff;border:1px solid #d0d5dd;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);min-width:160px;padding:4px;" class="no-print" onclick="this.classList.remove('open')">
+      <div style="padding:6px 12px;cursor:pointer;font-size:13px;border-radius:4px;" onmouseover="this.style.background='#f2f4f7'" onmouseout="this.style.background=''" onclick="previewPdf('${student.id}','current')">📄 当前题目</div>
+      <div style="padding:6px 12px;cursor:pointer;font-size:13px;border-radius:4px;" onmouseover="this.style.background='#f2f4f7'" onmouseout="this.style.background=''" onclick="previewPdf('${student.id}','all')">📄 全部合并打印</div>
+    </div>
+  </div>
     <button class="btn no-print ${isModel?'success':'ghost'}" onclick="toggleModelEssay('${student.id}',${currentStudentTab})">${isModel?'🏆 范文':'⭐ 标记范文'}</button>
   `;
   updateStudentNav(student.id);
@@ -896,7 +902,7 @@ function switchStudentEssay(index) {
 
 function renderEssayRender(student, essayIndex) {
   const e = student.essays[essayIndex]; if (!e) return;
-  renderOverview(e); renderDimensions(e); renderText(e); renderHighlights(e); renderIssues(e); renderErrorStats(e); renderImprovements(e); renderModelEssay(e);
+  renderOverview(e); renderDimensions(e); renderText(e); renderHighlights(e); renderIssues(e);  renderModelEssay(e);
 }
 
 function renderOverview(e) {
@@ -1031,10 +1037,20 @@ function renderHighlights(e) {
   document.getElementById('highlightCount').textContent = (e.highlights||[]).length+'处';
 }
 function renderIssues(e) {
-  document.getElementById('issueList').innerHTML = (e.issues||[]).map((is,i)=>`
-    <div class="card-item issue-card ${i<1?'open':''}"><div class="card-header" onclick="this.closest('.card-item')?.classList.toggle('open')"><span class="card-icon">🔧</span><span class="card-text">${esc(is.text)}</span><span class="card-arrow">▾</span></div>
-    <div class="card-body"><div class="cb-row"><span class="cb-label">问题</span><span class="cb-value"><span class="tag" style="background:#eef2ff;color:#6366f1;">${is.type} · ${is.severity}优先级</span></span></div><div class="cb-row"><span class="cb-label">说明</span><span class="cb-value" style="color:#667085;">${is.comment}</span></div><div class="cb-row"><span class="cb-label">示范</span><span class="cb-value" style="background:#e6f4ea;padding:6px 8px;border-radius:4px;">${esc(is.corrected)}</span></div></div></div>`).join('');
-  document.getElementById('issueCount').textContent = (e.issues||[]).length+'处';
+  var html = '';
+  (e.issues||[]).forEach(function(is,i){
+    html += '<div class="card-item issue-card'+(i<1?' open':'')+'"><div class="card-header" onclick="this.closest(\'.card-item\')?.classList.toggle(\'open\')"><span class="card-icon">🔧</span><span class="card-text">'+esc(is.text)+'</span><span class="card-arrow">▾</span></div>';
+    html += '<div class="card-body"><div class="cb-row"><span class="cb-label">问题</span><span class="cb-value"><span class="tag" style="background:#eef2ff;color:#6366f1;">'+is.type+' · '+is.severity+'优先级</span></span></div><div class="cb-row"><span class="cb-label">说明</span><span class="cb-value" style="color:#667085;">'+is.comment+'</span></div><div class="cb-row"><span class="cb-label">示范</span><span class="cb-value" style="background:#e6f4ea;padding:6px 8px;border-radius:4px;">'+esc(is.corrected)+'</span></div></div></div>';
+  });
+  // Append improvements as general advice cards
+  (e.improvements||[]).forEach(function(imp,i){
+    html += '<div class="card-item issue-card'+(i===0&&!(e.issues||[]).length?' open':'')+'"><div class="card-header" onclick="this.closest(\'.card-item\')?.classList.toggle(\'open\')"><span class="card-icon">📌</span><span class="card-text"><strong>'+imp.dimension+'</strong>：'+imp.problem+'</span><span class="card-arrow">▾</span></div>';
+    html += '<div class="card-body"><div class="cb-row"><span class="cb-label">方法</span><span class="cb-value">'+imp.method+'</span></div>';
+    if(imp.example) html += '<div class="cb-row"><span class="cb-label">示例</span><span class="cb-value" style="background:#e8f0fe;padding:6px 8px;border-radius:4px;">📝 '+imp.example+'</span></div>';
+    html += '</div></div>';
+  });
+  document.getElementById('issueList').innerHTML = html || '<div style="padding:16px;text-align:center;color:#98a2b3;font-size:13px;">暂无优化建议</div>';
+  document.getElementById('issueCount').textContent = ((e.issues||[]).length + (e.improvements||[]).length)+'条';
 }
 function renderErrorStats(e) {
   const el=document.getElementById('errorChart');
@@ -1042,10 +1058,7 @@ function renderErrorStats(e) {
   const t=e.errorStats.reduce((s,er)=>s+er.count,0);
   el.innerHTML=e.errorStats.map(er=>`<div class="ec-item"><span class="ec-label">${er.label}</span><div class="ec-bar-wrap"><div class="ec-bar" style="width:${(er.count/t)*100}%;background:${er.color};"></div></div><span class="ec-count">${er.count}</span></div>`).join('');
 }
-function renderImprovements(e) {
-  document.getElementById('improveList').innerHTML = (e.improvements||[]).map((imp,i)=>`
-    <div class="improve-item" style="border-left-color:${i===0?'#c5221f':i===1?'#f59e0b':'#1a73e8'};"><div class="imp-header"><span>${['🥇','🥈','🥉'][i]||'📌'}</span><span class="imp-dim">${imp.dimension}</span></div><div style="font-size:13px;color:#667085;margin-bottom:4px;">❓ ${imp.problem}</div><div style="font-size:13px;color:#344054;margin-bottom:4px;">💡 ${imp.method}</div><div style="font-size:13px;color:#1a73e8;background:#e8f0fe;padding:6px 10px;border-radius:4px;margin-top:4px;">📝 ${imp.example}</div></div>`).join('');
-}
+function renderImprovements(e){}
 function renderModelEssay(e) {
   document.getElementById('modelEssay').innerHTML=`<div style="font-weight:600;font-size:14px;color:#344054;margin-bottom:8px;">📖 ${e.modelEssay.title}</div><div style="font-size:14px;color:#667085;line-height:1.8;padding:8px 12px;background:#fff;border-radius:6px;margin-bottom:8px;border-left:3px solid #1a73e8;">${e.modelEssay.excerpt}</div><div style="font-size:13px;color:#1a73e8;">💡 ${e.modelEssay.comment}</div>`;
 }
@@ -1058,9 +1071,9 @@ function toggleReview() {
   if(isReviewMode){exitReview(true);return}
   enterReview();
 }
-function enterReview(){isReviewMode=true;document.getElementById('reviewBanner').style.display='flex';document.getElementById('reviewToggleBtn').textContent='👩‍🏫 退出复核';const s=getStudent(currentStudentId);if(s)renderEssayRender(s,currentStudentTab)}
+function enterReview(){isReviewMode=true;document.getElementById('reviewBanner').style.display='flex';const s=getStudent(currentStudentId);if(s)renderEssayRender(s,currentStudentTab)}
 function exitReview(save){
-  isReviewMode=false;document.getElementById('reviewBanner').style.display='none';document.getElementById('reviewToggleBtn').textContent='👩‍🏫 教师复核';
+  isReviewMode=false;document.getElementById('reviewBanner').style.display='none';
   if(!save){const s=getStudent(currentStudentId);if(s)renderEssayRender(s,currentStudentTab)}
 }
 function publishReview(){exitReview(true);alert('✅ 报告已发布！\n\n学生：'+getStudent(currentStudentId).name+'\n报告已标记为"已复核"，学生端可见。')}
@@ -1079,9 +1092,99 @@ function closeImageModal() { document.getElementById('imageModal').classList.rem
 // ============================================================
 // PDF / EXPORT
 // ============================================================
-function previewPdf(id) {
+function previewPdf(id, mode) {
   const s = getStudent(id); if(!s) return;
-  alert('📄 导出PDF：'+s.name+'（'+s.studentNo+'）\n\n班级：'+getCurrentClass().className+' · '+getCurrentClass().examName+'\n\n包含：所有题目的完整报告\n· 学生信息（姓名、学号、班级）\n· 作文画像、多维评分、原文批注\n· 亮点点评、问题修改建议、改进建议\n· 排版适合A4纸打印');
+  const clz = getCurrentClass();
+  // Build printable HTML content
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' +
+    'body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;padding:40px;color:#1a1a2e;font-size:13px;line-height:1.7}' +
+    '.header{border-bottom:2px solid #1a73e8;padding-bottom:12px;margin-bottom:20px}' +
+    '.header h1{font-size:20px;margin:0}' +
+    '.header .info{font-size:13px;color:#667085;margin-top:4px}' +
+    '.divider{border-top:2px dashed #d0d5dd;margin:30px 0;text-align:center;font-size:12px;color:#98a2b3;padding-top:8px}' +
+    '.section-title{font-size:16px;font-weight:700;margin:20px 0 12px;padding-bottom:6px;border-bottom:1px solid #eef0f4}' +
+    '.score-row{font-size:24px;font-weight:800;color:#1a73e8;margin:8px 0}' +
+    '.comment-box{background:#f8f9fa;padding:12px;border-left:4px solid #1a73e8;border-radius:0 6px 6px 0;margin:8px 0}' +
+    '.dim-item{margin:6px 0;padding:6px 12px;background:#f8f9fa;border-radius:4px}' +
+    '.dim-item .dim-name{font-weight:600}' +
+    '.tag{display:inline-block;padding:1px 8px;border-radius:4px;font-size:12px;margin-right:4px}' +
+    '.tag.highlight{background:#fef7e0;color:#b8860b}' +
+    '.tag.issue{background:#eef2ff;color:#6366f1}' +
+    '.hl-block{margin:8px 0;padding:10px;background:#fef7e0;border-radius:6px;border-left:3px solid #f59e0b}' +
+    '.iss-block{margin:8px 0;padding:10px;background:#eef2ff;border-radius:6px;border-left:3px solid #6366f1}' +
+    '.iss-block .corrected{color:#1e7e34;font-weight:500}' +
+    '.text-block{background:#fafbfc;padding:16px;border-radius:6px;white-space:pre-wrap;font-size:13px;line-height:2;margin:8px 0}</style></head><body>';
+
+  var addSection = function(title, content){
+    html += '<div class="section-title">'+title+'</div>'+content;
+  };
+
+  var addEssay = function(student, es, essayIdx) {
+    var lc = es.level==='excellent'?'优秀':es.level==='good'?'良好':es.level==='pass'?'及格':'待提升';
+    html += '<div style="page-break-after:'+(essayIdx===0&&student.essays.length>1?'always':'')+';"></div>';
+    html += '<div class="header"><h1>✏️ 作文批改报告</h1><div class="info">'+student.name+'（'+student.studentNo+'） · '+clz.className+' · '+clz.examName+'</div></div>';
+
+    // Overview
+    html += '<div style="font-size:13px;color:#667085;margin-bottom:4px">题目：'+es.title+' · 文体：'+es.type+' · 字数：'+es.wordCount+'词</div>';
+    html += '<div class="score-row">'+es.totalScore+'/'+es.fullScore+' <span style="font-size:13px;font-weight:500;color:#667085;margin-left:8px;">'+lc+'</span></div>';
+    html += '<div class="comment-box">'+es.comment+'</div>';
+
+    // Dimensions
+    var dimHtml = '';
+    es.dimensions.forEach(function(d){
+      dimHtml += '<div class="dim-item"><span class="dim-name">'+d.name+'</span> '+d.score+'/'+d.full+'</div>';
+    });
+    addSection('多维评分', dimHtml);
+
+    // Original text
+    addSection('原文批注', '<div class="text-block">'+es.text.replace(/\n/g,'<br>')+'</div>');
+
+    // Highlights
+    if(es.highlights && es.highlights.length){
+      var hlHtml = '';
+      es.highlights.forEach(function(h){
+        hlHtml += '<div class="hl-block">⭐ '+h.text+'<br><span style="font-size:12px;color:#b8860b;">'+h.comment+'</span></div>';
+      });
+      addSection('亮点句点评', hlHtml);
+    }
+
+    // Issues + improvements
+    var issHtml = '';
+    if(es.issues && es.issues.length){
+      es.issues.forEach(function(is){
+        issHtml += '<div class="iss-block">🔧 '+is.text+'<br><span style="font-size:12px;color:#667085;">'+is.comment+'</span><br><span class="corrected">✅ '+is.corrected+'</span></div>';
+      });
+    }
+    if(es.improvements && es.improvements.length){
+      es.improvements.forEach(function(imp){
+        issHtml += '<div class="iss-block" style="border-left-color:#1a73e8;">📌 <strong>'+imp.dimension+'</strong>：'+imp.problem+'<br><span style="font-size:12px;color:#344054;">💡 '+imp.method+'</span>'+(imp.example?'<br><span style="font-size:12px;color:#1a73e8;">📝 '+imp.example+'</span>':'')+'</div>';
+      });
+    }
+    if(issHtml) addSection('优化建议', issHtml);
+
+    // Model essay
+    if(es.modelEssay){
+      addSection('参考范文', '<div style="background:#f8f9fa;padding:12px;border-radius:6px;border-left:3px solid #1a73e8;"><strong>'+es.modelEssay.title+'</strong><br><span style="color:#667085;font-size:12px;">'+es.modelEssay.excerpt+'</span></div>');
+    }
+  };
+
+  if (mode === 'all' && s.essays.length > 1) {
+    // Both essays in one file
+    s.essays.forEach(function(es, idx){ addEssay(s, es, idx); });
+  } else {
+    // Single essay
+    var idx = (mode === 'current') ? (currentStudentTab || 0) : 0;
+    addEssay(s, s.essays[idx], 0);
+  }
+
+  html += '</body></html>';
+
+  // Open in new window for printing/saving as PDF
+  var win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(function(){ win.print(); }, 300);
 }
 function startBatchDownload() {
   if(!selectedStudents.size){alert('请先选择学生');return}
@@ -1089,7 +1192,8 @@ function startBatchDownload() {
   alert('📄 批量导出：'+selectedStudents.size+'人\n\n'+names+'\n\n将逐个生成PDF并打包下载');
 }
 function exportAllPdf() {
-  alert('📄 导出全部：'+getCurrentStudents().length+'人\n\n（原型演示效果）\n📊 导出进度：▓▓▓▓▓▓▓▓░░░░\n预计剩余时间：30秒\n生成完毕后自动打包下载');
+  const type = getCurrentEssayData()[0]?.type || '当前题目';
+  alert('📄 导出全部（'+type+'）：'+getCurrentStudents().length+'人\n\n（原型演示效果）\n📊 导出进度：▓▓▓▓▓▓▓▓░░░░\n预计剩余时间：30秒\n生成完毕后自动打包下载');
 }
 
 
