@@ -1183,7 +1183,7 @@ function renderReqSidebar(){
     var preview=(r.text||'(空)').substring(0,40);
     var dn=r.done?' done':'';
     var clickHandler=_editMode?'openEditModal':'openViewModal';
-    h+='<div class="rs-item" onclick="'+clickHandler+'(findReqById(\''+r.id+'\'))"><div class="rsi-hdr"><span class="rsi-n '+dn+'>'+(r.num||(i+1))+'</span><span class="rsi-l">'+(r.pos||'')+'</span></div><div class="rsi-t">'+preview+'</div></div>';
+    h+='<div class="rs-item" onclick="'+clickHandler+'(findReqById(\''+r.id+'\'))"><div class="rsi-hdr"><span class="rsi-n '+dn+'">'+(r.num||(i+1))+'</span><span class="rsi-l">#'+(r.num||(i+1))+'</span></div><div class="rsi-t">'+preview+'</div></div>';
   }
   document.getElementById('rsList').innerHTML=h;
   renderReqPins();
@@ -1191,7 +1191,7 @@ function renderReqSidebar(){
 function findReqById(id){var a=getReqs();for(var i=0;i<a.length;i++){if(a[i].id===id)return a[i]}return null}
 function openEditModal(req){if(!req)return;_editingId=req.id;document.getElementById('rmhLabel').textContent='#'+(req.num||'?');document.getElementById('reqText').value=req.text||'';document.getElementById('saveHint').textContent='';document.getElementById('reqModal').classList.add('open');document.getElementById('reqText').focus()}
 function closeReqModal(){document.getElementById('reqModal').classList.remove('open');_editingId=null}
-function saveReq(){if(!_editingId)return;var a=getReqs();for(var i=0;i<a.length;i++){if(a[i].id===_editingId){a[i].text=document.getElementById('reqText').value;a[i].updatedAt=new Date().toLocaleString('zh-CN');a[i].done=!!(a[i].text&&a[i].text.trim());break}}saveReqs(a);renderReqSidebar();document.getElementById('saveHint').textContent='&#10004; 已保存'}
+function saveReq(){if(!_editingId)return;var a=getReqs();for(var i=0;i<a.length;i++){if(a[i].id===_editingId){a[i].text=document.getElementById('reqText').value;a[i].updatedAt=new Date().toLocaleString('zh-CN');a[i].done=!!(a[i].text&&a[i].text.trim());break}}saveReqs(a);renderReqSidebar();closeReqModal()}
 function deleteReq(){if(!_editingId||!confirm('删除此标注？'))return;saveReqs(getReqs().filter(function(r){return r.id!==_editingId}));renderReqSidebar();closeReqModal()}
 function clearAllReqs(){if(!confirm('确认清除所有标注？'))return;localStorage.removeItem('proto_pins');renderReqSidebar()}
 function openViewModal(req){if(!req)return;document.getElementById('rvmLabel').textContent='#'+(req.num||'?');document.getElementById('rvmContent').textContent=(req.text&&req.text.trim())?req.text:'(暂无内容)';document.getElementById('rvmMeta').textContent=(req.createdAt||'')+(req.updatedAt?' · '+req.updatedAt:'');document.getElementById('reqViewModal').classList.add('open')}
