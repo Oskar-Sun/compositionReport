@@ -25,6 +25,8 @@
  * ============================================================
  */
 (function () {
+  window.__pa_enable = function(){ console.warn("PA: not yet initialized"); };
+  window.__pa_disable = function(){ console.warn("PA: not yet initialized"); };
   'use strict';
 
   // ===== 0. 预检测：URL 参数后门 =====
@@ -76,14 +78,15 @@
     '</div>'
   ].join('');
 
+  // ============================================================
+  // 3. DOM注入
+  // ============================================================
   var div = document.createElement('div');
   div.innerHTML = html;
-  div.style.display = 'none'; // start hidden, will show after injection
   document.body.appendChild(div);
-  div.style.display = '';
 
   // ============================================================
-  // 3. JS 逻辑
+  // 4. JS 逻辑（在 DOM 注入之前预先定义核心函数）
   // ============================================================
   var editMode = false;
   var editingId = null;
@@ -91,7 +94,7 @@
   var pageUrl = window.location.pathname;
 
   // DOM refs
-  var $ = function (id) { return document.getElementById(id); };
+  var $ = function(id) { return document.getElementById(id); };
   var toggle = $('paToggle');
   var indicator = $('paIndicator');
   var sidebar = $('paSidebar');
@@ -105,6 +108,7 @@
   var viewLabel = $('paViewLabel');
   var viewContent = $('paViewContent');
   var viewMeta = $('paViewMeta');
+  var _initialized = false;
 
   // ============================================================
   // Data (per-page, so different pages don't conflict)
@@ -198,6 +202,7 @@
   }
 
   // Expose for sidebar onclick
+  if(typeof window.__pa==="undefined") window.__pa={};
   window.__pa = {
     openEdit: function (idx) { var a = getReqs(); if (a[idx]) openEdit(a[idx]); },
     openView: function (idx) { var a = getReqs(); if (a[idx]) openView(a[idx]); }
