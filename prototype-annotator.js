@@ -29,7 +29,7 @@
   // ============================================================
   // CSS
   // ============================================================
-  var css = '.pa-toggle{position:fixed;bottom:24px;left:24px;z-index:9999;padding:10px 20px;border-radius:40px;background:#1a73e8;color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(26,115,232,.4);display:none;align-items:center;gap:6px;transition:transform .15s}.pa-toggle:hover{transform:translateY(-2px)}.pa-toggle .blink{width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block;animation:pa-blink 1.2s infinite}@keyframes pa-blink{0%,100%{opacity:1}50%{opacity:.3}}body.pa-edit *{cursor:crosshair!important}.pa-pin{position:absolute;z-index:999;width:26px;height:26px;border-radius:50%;background:#c5221f;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(197,34,31,.6);border:2px solid #fff;user-select:none;pointer-events:auto;transition:transform .1s}.pa-pin:hover{transform:scale(1.2);z-index:1000}.pa-pin.done{background:#1e7e34;box-shadow:0 2px 8px rgba(30,126,52,.5)}.pa-indicator{position:fixed;top:0;left:0;right:0;z-index:99999;background:#c5221f;color:#fff;text-align:center;font-size:12px;padding:4px 0;font-weight:500;display:none;letter-spacing:.5px;font-family:sans-serif}.pa-indicator.show{display:block}.pa-indicator a{color:#fff;text-decoration:underline;cursor:pointer;margin-left:8px}.pa-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:20000;align-items:center;justify-content:center}.pa-modal.open{display:flex}.pa-modal-box{background:#fff;border-radius:10px;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,.25);animation:pa-slideUp .15s ease}.pa-modal-box textarea{width:100%;box-sizing:border-box}@keyframes pa-slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.pa-sidebar{position:fixed;right:16px;top:80px;z-index:9998;width:260px;max-height:calc(100vh - 120px);overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.12);padding:14px;display:none;font-size:13px;font-family:sans-serif}.pa-sidebar.open{display:block}.pa-sidebar .pa-s-title{font-weight:600;font-size:13px;color:#1a1a2e;margin-bottom:10px;display:flex;align-items:center;gap:6px}.pa-sidebar .pa-s-item{padding:8px 10px;border-radius:6px;margin-bottom:4px;cursor:pointer;transition:background .15s;border:1px solid #eef0f4;font-family:sans-serif}.pa-sidebar .pa-s-item:hover{background:#fafbfc}.pa-sidebar .pa-s-item .pa-si-hdr{display:flex;align-items:center;gap:6px;margin-bottom:2px}.pa-sidebar .pa-s-item .pa-si-n{width:18px;height:18px;border-radius:50%;background:#c5221f;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}.pa-sidebar .pa-s-item .pa-si-n.done{background:#1e7e34}.pa-sidebar .pa-s-item .pa-si-l{font-size:11px;color:#98a2b3;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pa-sidebar .pa-s-item .pa-si-t{font-size:12px;color:#344054;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}.pa-sidebar .pa-s-del{width:100%;text-align:center;padding:6px;border:none;background:transparent;color:#98a2b3;font-size:11px;cursor:pointer;font-family:inherit;border-radius:4px;margin-top:4px}.pa-sidebar .pa-s-del:hover{color:#c5221f;background:#fce8e6}@media print{.pa-toggle,.pa-sidebar,.pa-indicator{display:none!important}}';
+  var css = '.pa-toggle{position:fixed;bottom:24px;left:24px;z-index:9999;padding:10px 20px;border-radius:40px;background:#1a73e8;color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(26,115,232,.4);display:none;align-items:center;gap:6px;transition:transform .15s}.pa-toggle:hover{transform:translateY(-2px)}body.pa-edit *{cursor:crosshair!important}.pa-pin{position:absolute;z-index:999;width:26px;height:26px;border-radius:50%;background:#c5221f;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(197,34,31,.6);border:2px solid #fff;user-select:none;pointer-events:auto;transition:transform .1s}.pa-pin:hover{transform:scale(1.2);z-index:1000}.pa-pin.done{background:#1e7e34;box-shadow:0 2px 8px rgba(30,126,52,.5)}.pa-indicator{position:fixed;top:0;left:0;right:0;z-index:99999;background:#c5221f;color:#fff;text-align:center;font-size:12px;padding:4px 0;font-weight:500;display:none;letter-spacing:.5px;font-family:sans-serif}.pa-indicator.show{display:block}.pa-indicator a{color:#fff;text-decoration:underline;cursor:pointer;margin-left:8px}.pa-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:20000;align-items:center;justify-content:center}.pa-modal.open{display:flex}.pa-modal-box{background:#fff;border-radius:10px;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,.25);animation:pa-slideUp .15s ease}.pa-modal-box textarea{width:100%;box-sizing:border-box}@keyframes pa-slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.pa-sidebar{position:fixed;right:16px;top:80px;z-index:9998;width:260px;max-height:calc(100vh - 120px);overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.12);padding:14px;display:none;font-size:13px;font-family:sans-serif}.pa-sidebar.open{display:block}.pa-sidebar .pa-s-title{font-weight:600;font-size:13px;color:#1a1a2e;margin-bottom:10px;display:flex;align-items:center;gap:6px}.pa-sidebar .pa-s-item{padding:8px 10px;border-radius:6px;margin-bottom:4px;cursor:pointer;transition:background .15s;border:1px solid #eef0f4;font-family:sans-serif}.pa-sidebar .pa-s-item:hover{background:#fafbfc}.pa-sidebar .pa-s-item .pa-si-hdr{display:flex;align-items:center;gap:6px;margin-bottom:2px}.pa-sidebar .pa-s-item .pa-si-n{width:18px;height:18px;border-radius:50%;background:#c5221f;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}.pa-sidebar .pa-s-item .pa-si-n.done{background:#1e7e34}.pa-sidebar .pa-s-item .pa-si-l{font-size:11px;color:#98a2b3;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pa-sidebar .pa-s-item .pa-si-t{font-size:12px;color:#344054;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}.pa-sidebar .pa-s-del{width:100%;text-align:center;padding:6px;border:none;background:transparent;color:#98a2b3;font-size:11px;cursor:pointer;font-family:inherit;border-radius:4px;margin-top:4px}.pa-sidebar .pa-s-del:hover{color:#c5221f;background:#fce8e6}@media print{.pa-toggle,.pa-sidebar,.pa-indicator{display:none!important}}';
 
   var style = document.createElement('style');
   style.textContent = css;
@@ -39,7 +39,7 @@
   // HTML
   // ============================================================
   var html = [
-    '<button class="pa-toggle" id="paToggle">📝 <span class="blink"></span> 添加标注</button>',
+    '<button class="pa-toggle" id="paToggle" style="display:none">📝 添加</button>',
     '<div class="pa-indicator" id="paIndicator">✏️ 编辑模式 — 点击任意位置添加标注 <a id="paExitBtn">退出</a></div>',
     '<div class="pa-modal" id="paEditModal"><div class="pa-modal-box" style="width:400px;padding:16px;gap:8px;">',
       '<div style="display:flex;align-items:center;gap:8px;">',
@@ -336,6 +336,7 @@
     editMode = true;
     document.body.classList.add('pa-edit');
     toggle.style.display = 'flex';
+    toggle.textContent = '✕ 关闭添加';
     indicator.classList.add('show');
     sidebar.classList.add('open');
     renderSidebar();
@@ -344,6 +345,7 @@
     editMode = false;
     document.body.classList.remove('pa-edit');
     toggle.style.display = 'none';
+    toggle.textContent = '📝 添加';
     indicator.classList.remove('show');
     sidebar.classList.remove('open');
   }
@@ -383,7 +385,7 @@
   // Click to add pin
   // ============================================================
   document.addEventListener('click', function (e) {
-    if (!editMode) return;
+    if (!editMode || !document.body.classList.contains('pa-edit')) return;
     if (e.target.closest('.pa-pin') || e.target.closest('.pa-modal') ||
         e.target.closest('.pa-sidebar') || e.target.closest('.pa-toggle') ||
         e.target.closest('.pa-indicator') || e.target.closest('#paExportBtn') ||
@@ -445,7 +447,12 @@
   // ============================================================
   // Button bindings
   // ============================================================
-  toggle.onclick = function () { document.body.classList.toggle('pa-edit'); };
+  toggle.onclick = function () {
+    // 只切换添加模式（十字光标），不退出编辑模式
+    // 这样可以在编辑模式下自由操作侧栏按钮
+    var on = document.body.classList.toggle('pa-edit');
+    toggle.textContent = on ? '✕ 关闭添加' : '📝 添加';
+  };
   $('paExitBtn').onclick = disableEdit;
   $('paEditClose').onclick = closeEdit;
   $('paCancelBtn').onclick = closeEdit;
