@@ -372,7 +372,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   <div class="req-modal-box" onclick="event.stopPropagation()">
     <div class="req-modal-header">
       <span class="rmh-num" id="rvmNum" style="background:#1a73e8;">!</span>
-      <span class="rmh-title">需求说明</span>
+      <span class="rmh-title">需求说明 <span id="rvmLabel" style="font-weight:400;font-size:13px;color:#667085;"></span></span>
       <button class="rmh-close" onclick="closeReqViewModal()">✕</button>
     </div>
     <div class="req-modal-body">
@@ -1214,7 +1214,6 @@ function initAnnotationSystem(){
   // Escape
   document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeReqModal();closeReqViewModal()}});
   // Toggle button
-  document.getElementById('annToggle').onclick=toggleAnnMode;
   // Section click (only in edit+req mode)
   document.addEventListener('click',function(e){
     if(!document.body.classList.contains('req-mode')||!_editMode)return;
