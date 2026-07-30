@@ -227,7 +227,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   .annot-tooltip{display:block!important;box-shadow:none;border:1px solid #ddd}
 }
 /* ===== 需求标注系统 ===== */
-.ann-toggle{position:fixed;bottom:24px;left:24px;z-index:999;padding:10px 20px;border-radius:40px;background:#1a73e8;color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(26,115,232,.4)}.ann-toggle:hover{transform:translateY(-2px)}.ann-toggle .blink{width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block;animation:blink2 1.2s infinite}@keyframes blink2{0%,100%{opacity:1}50%{opacity:.3}}body.req-mode *{cursor:crosshair!important}.req-pin{position:fixed;z-index:500;width:26px;height:26px;border-radius:50%;background:#c5221f;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(197,34,31,.6);border:2px solid #fff;user-select:none;pointer-events:auto}.req-pin:hover{transform:scale(1.25);z-index:999}.req-pin.done{background:#1e7e34;box-shadow:0 2px 8px rgba(30,126,52,.5)}.edit-mode-indicator{position:fixed;top:0;left:0;right:0;z-index:9999;background:#c5221f;color:#fff;text-align:center;font-size:12px;padding:4px 0;font-weight:500;display:none;letter-spacing:.5px}.edit-mode-indicator.show{display:block}.req-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center}.req-modal.open{display:flex}.req-modal-box{background:#fff;border-radius:12px;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,.25);animation:slideUp .2s ease}@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.req-modal-header{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid #eef0f4}.req-modal-header .rmh-num{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}.req-modal-header .rmh-title{font-size:14px;font-weight:600;color:#1a1a2e;flex:1}.req-modal-header .rmh-close{border:none;background:transparent;font-size:20px;cursor:pointer;color:#98a2b3;padding:0 4px;line-height:1}.req-modal-header .rmh-close:hover{color:#344054}.req-sidebar{position:fixed;right:16px;top:80px;z-index:800;width:260px;max-height:calc(100vh - 120px);overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.12);padding:14px;display:none;font-size:13px}.req-sidebar.open{display:block}.req-sidebar .rs-title{font-weight:600;font-size:13px;color:#1a1a2e;margin-bottom:10px;display:flex;align-items:center;gap:6px}.req-sidebar .rs-item{padding:8px 10px;border-radius:6px;margin-bottom:4px;cursor:pointer;transition:background .15s;border:1px solid #eef0f4}.req-sidebar .rs-item:hover{background:#fafbfc}.req-sidebar .rs-item .rsi-hdr{display:flex;align-items:center;gap:6px;margin-bottom:2px}.req-sidebar .rs-item .rsi-n{width:18px;height:18px;border-radius:50%;background:#c5221f;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}.req-sidebar .rs-item .rsi-n.done{background:#1e7e34}.req-sidebar .rs-item .rsi-l{font-size:11px;color:#98a2b3;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.req-sidebar .rs-item .rsi-t{font-size:12px;color:#344054;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}.req-sidebar .rs-del{width:100%;text-align:center;padding:6px;border:none;background:transparent;color:#98a2b3;font-size:11px;cursor:pointer;font-family:inherit;border-radius:4px;margin-top:4px}.req-sidebar .rs-del:hover{color:#c5221f;background:#fce8e6}.container{position:relative}@media print{.ann-toggle,.req-sidebar,.edit-mode-indicator{display:none!important}}</style>
+.ann-toggle{position:fixed;bottom:24px;left:24px;z-index:999;padding:10px 20px;border-radius:40px;background:#1a73e8;color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(26,115,232,.4)}.ann-toggle:hover{transform:translateY(-2px)}.ann-toggle .blink{width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block;animation:blink2 1.2s infinite}@keyframes blink2{0%,100%{opacity:1}50%{opacity:.3}}body.req-mode *{cursor:crosshair!important}.req-pin{position:fixed;z-index:500;width:26px;height:26px;border-radius:50%;background:#c5221f;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(197,34,31,.6);border:2px solid #fff;user-select:none;pointer-events:auto}.req-pin:hover{transform:scale(1.25);z-index:999}.req-pin.done{background:#1e7e34;box-shadow:0 2px 8px rgba(30,126,52,.5)}.edit-mode-indicator{position:fixed;top:0;left:0;right:0;z-index:9999;background:#c5221f;color:#fff;text-align:center;font-size:12px;padding:4px 0;font-weight:500;display:none;letter-spacing:.5px}.edit-mode-indicator.show{display:block}.req-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center}.req-modal.open{display:flex}.req-modal-box{background:#fff;border-radius:12px;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,.25);animation:slideUp .2s ease;max-width:480px;width:90vw}@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.req-modal-header{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid #eef0f4}.req-modal-header .rmh-num{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}.req-modal-header .rmh-title{font-size:14px;font-weight:600;color:#1a1a2e;flex:1}.req-modal-header .rmh-close{border:none;background:transparent;font-size:20px;cursor:pointer;color:#98a2b3;padding:0 4px;line-height:1}.req-modal-header .rmh-close:hover{color:#344054}.req-sidebar{position:fixed;right:16px;top:80px;z-index:800;width:260px;max-height:calc(100vh - 120px);overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.12);padding:14px;display:none;font-size:13px}.req-sidebar.open{display:block}.req-sidebar .rs-title{font-weight:600;font-size:13px;color:#1a1a2e;margin-bottom:10px;display:flex;align-items:center;gap:6px}.req-sidebar .rs-item{padding:8px 10px;border-radius:6px;margin-bottom:4px;cursor:pointer;transition:background .15s;border:1px solid #eef0f4}.req-sidebar .rs-item:hover{background:#fafbfc}.req-sidebar .rs-item .rsi-hdr{display:flex;align-items:center;gap:6px;margin-bottom:2px}.req-sidebar .rs-item .rsi-n{width:18px;height:18px;border-radius:50%;background:#c5221f;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}.req-sidebar .rs-item .rsi-n.done{background:#1e7e34}.req-sidebar .rs-item .rsi-l{font-size:11px;color:#98a2b3;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.req-sidebar .rs-item .rsi-t{font-size:12px;color:#344054;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}.req-sidebar .rs-del{width:100%;text-align:center;padding:6px;border:none;background:transparent;color:#98a2b3;font-size:11px;cursor:pointer;font-family:inherit;border-radius:4px;margin-top:4px}.req-sidebar .rs-del:hover{color:#c5221f;background:#fce8e6}.container{position:relative}@media print{.ann-toggle,.req-sidebar,.edit-mode-indicator{display:none!important}}</style>
 </head>
 <body>
 <div class="container">
@@ -398,7 +398,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       <div class="rmb-section" id="rmbSection">班级概览</div>
       <div class="rmb-desc" id="rmbDesc">点击此区域可添加需求说明</div>
       <label for="reqText">需求说明 <span style="font-weight:400;color:#98a2b3;">（描述此处需要研发实现的内容）</span></label>
-      <textarea id="reqText" placeholder="请描述该模块的需求说明、交互细节、注意事项等..." oninput="updateSaveHint()"></textarea>
+      <textarea id="reqText" style="width:100%;box-sizing:border-box" placeholder="请描述该模块的需求说明、交互细节、注意事项等..." oninput="updateSaveHint()"></textarea>
       <div class="rmb-hint" id="saveHint">💡 输入内容会自动保存到浏览器，关闭后下次打开仍可编辑</div>
     </div>
     <div class="req-modal-footer">
@@ -1162,12 +1162,31 @@ function saveReqs(a){localStorage.setItem('proto_pins',JSON.stringify(a))}
 function renderReqPins(){
   document.querySelectorAll('.req-pin').forEach(function(e){e.remove()});
   var reqs=getReqs();
+  var container=document.querySelector('.container');
+  if(!container) return;
+  var scrollTop=window.pageYOffset||document.documentElement.scrollTop||0;
+  var scrollLeft=window.pageXOffset||document.documentElement.scrollLeft||0;
+  var containerRect=container.getBoundingClientRect();
   reqs.forEach(function(r){
     var p=document.createElement('div');
     p.className='req-pin'+(r.done?' done':'');
     p.textContent=r.num||'?';
-    p.style.left=r.x+'px';
-    p.style.top=r.y+'px';
+    // Calculate position: section position + offset
+    var top=r.fixedTop||0;
+    var left=r.fixedLeft||0;
+    // 兼容旧数据格式（x/y字段）
+    if(!top && !left && (r.x||r.y)){ top=r.y||0; left=r.x||0; }
+    if(r.sectionIdx>=0){
+      var sections=document.querySelectorAll('.report-section');
+      var sec=sections[r.sectionIdx];
+      if(sec){
+        var rect=sec.getBoundingClientRect();
+        top=rect.top+(r.offsetY||0);
+        left=rect.left+(r.offsetX||0);
+      }
+    }
+    p.style.top=Math.round(top)+'px';
+    p.style.left=Math.round(left)+'px';
     p.title=r.text?r.text.substring(0,40):'无内容';
     p.onclick=function(){var a=getReqs();for(var i=0;i<a.length;i++){if(a[i].id===r.id){if(_editMode)openEditModal(a[i]);else openViewModal(a[i]);return}}};
     document.body.appendChild(p);
@@ -1218,13 +1237,22 @@ function initAnnotationSystem(){
   document.addEventListener('click',function(e){
     if(!document.body.classList.contains('req-mode')||!_editMode)return;
     if(e.target.closest('.req-pin')||e.target.closest('.req-modal')||e.target.closest('.req-sidebar')||e.target.closest('.ann-toggle')||e.target.closest('.edit-mode-indicator'))return;
-    var w=Math.max(document.documentElement.clientWidth||0,window.innerWidth||0);
-    var h=Math.max(document.documentElement.clientHeight||0,window.innerHeight||0);
-    var x=Math.round(e.clientX),y=Math.round(e.clientY);
-    var ph=(x<w*0.33?'左':x<w*0.66?'中':'右')+(y<h*0.33?'上':y<h*0.66?'中':'下');
+    var sec=e.target.closest('.report-section');
+    var sectionIdx=-1;
+    var offsetX=0,offsetY=0;
+    if(sec){
+      var sections=document.querySelectorAll('.report-section');
+      for(var i=0;i<sections.length;i++){if(sections[i]===sec){sectionIdx=i;break;}}
+      var rect=sec.getBoundingClientRect();
+      offsetX=Math.round(e.clientX-rect.left);
+      offsetY=Math.round(e.clientY-rect.top);
+    }else{
+      offsetX=Math.round(e.clientX);
+      offsetY=Math.round(e.clientY);
+    }
     var reqs=getReqs();
     var mn=0;reqs.forEach(function(r){if((r.num||0)>mn)mn=r.num});
-    var r={id:'p'+Date.now(),num:mn+1,x:x,y:y,pos:ph,text:'',createdAt:new Date().toLocaleString('zh-CN'),updatedAt:'',done:false};
+    var r={id:'p'+Date.now(),num:mn+1,sectionIdx:sectionIdx,offsetX:offsetX,offsetY:offsetY,fixedTop:offsetY,fixedLeft:offsetX,text:'',createdAt:new Date().toLocaleString('zh-CN'),updatedAt:'',done:false};
     reqs.push(r);saveReqs(reqs);renderReqSidebar();openEditModal(r);
   });
   // Scroll: refresh pin positions
