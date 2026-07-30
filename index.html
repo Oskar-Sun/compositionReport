@@ -1155,7 +1155,7 @@ var _clickCount = 0;
 var _clickTimer = null;
 var _editingId = null;
 function checkDoor(){_clickCount++;if(_clickCount===1)_clickTimer=setTimeout(function(){_clickCount=0},1500);if(_clickCount>=5){_clickCount=0;clearTimeout(_clickTimer);enableEditMode()}}
-function enableEditMode(){if(_editMode)return;_editMode=true;document.body.classList.add('edit-enabled');document.getElementById('annToggle').style.display='flex';document.getElementById('editModeIndicator').classList.add('show');document.getElementById('reqSidebar').classList.add('open');renderReqSidebar()}
+function enableEditMode(){if(_editMode)return;_editMode=true;document.body.classList.add('edit-enabled');document.body.classList.add('req-mode');document.getElementById('annToggle').style.display='flex';document.getElementById('editModeIndicator').classList.add('show');document.getElementById('reqSidebar').classList.add('open');renderReqSidebar()}
 function disableEditMode(){_editMode=false;document.body.classList.remove('edit-enabled');document.getElementById('annToggle').style.display='none';document.getElementById('editModeIndicator').classList.remove('show');document.body.classList.remove('req-mode');document.getElementById('reqSidebar').classList.remove('open')}
 function getReqs(){try{return JSON.parse(localStorage.getItem('proto_pins')||'[]')}catch(e){return[]}}
 function saveReqs(a){localStorage.setItem('proto_pins',JSON.stringify(a))}
@@ -1197,15 +1197,18 @@ function deleteReq(){if(!_editingId||!confirm('删除此标注？'))return;saveR
 function clearAllReqs(){if(!confirm('确认清除所有标注？'))return;localStorage.removeItem('proto_pins');renderReqSidebar()}
 function openViewModal(req){if(!req)return;document.getElementById('rvmNum').textContent=req.num||'?';document.getElementById('rvmLabel').textContent='#'+(req.num||'?');document.getElementById('rvmContent').textContent=(req.text&&req.text.trim())?req.text:'(暂无内容)';document.getElementById('rvmMeta').textContent=(req.createdAt||'')+' '+(req.updatedAt?'· '+req.updatedAt:'');document.getElementById('reqViewModal').classList.add('open')}
 function closeReqViewModal(){document.getElementById('reqViewModal').classList.remove('open')}
+function toggleAnnMode(){document.body.classList.toggle('req-mode')}
 function toggleReqSidebar(){var e=document.getElementById('reqSidebar');if(e.classList.contains('open'))e.classList.remove('open');else{e.classList.add('open');renderReqSidebar()}}
 function initAnnotationSystem(){
   renderReqSidebar();
-  // Edit-mode indicator bar click = enable/disable
-  document.getElementById('editModeIndicator').addEventListener('click',function(e){if(e.target.tagName==='SPAN'){disableEditMode();return}toggleAnnMode()});
   // Backdoor: click title 5 times
   document.querySelectorAll('.title').forEach(function(el){el.addEventListener('click',function(){if(!_editMode)checkDoor()})});
   // Backdoor: Ctrl+Shift+.
   document.addEventListener('keydown',function(e){if(e.key==='.'&&e.ctrlKey&&e.shiftKey){e.preventDefault();if(_editMode)disableEditMode();else enableEditMode()}});
+  // Backdoor: double click footer
+  document.querySelectorAll('.footer-note').forEach(function(el){el.addEventListener('dblclick',function(){if(!_editMode)enableEditMode()})});
+  // Edit-mode indicator bar click
+  document.getElementById('editModeIndicator').addEventListener('click',function(e){if(e.target.tagName==='SPAN'){disableEditMode();return}toggleAnnMode()});
   // Modal buttons
   document.getElementById('reqModalClose').onclick=closeReqModal;
   document.getElementById('reqModalCancel').onclick=closeReqModal;
