@@ -369,42 +369,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 
 <!-- 查看标注弹窗（只读模式） -->
 <div class="req-modal" id="reqViewModal">
-  <div class="req-modal-box" onclick="event.stopPropagation()">
-    <div class="req-modal-header">
-      <span class="rmh-num" id="rvmNum" style="background:#1a73e8;">!</span>
-      <span class="rmh-title">需求说明 <span id="rvmLabel" style="font-weight:400;font-size:13px;color:#667085;"></span></span>
-      <button class="rmh-close" onclick="closeReqViewModal()">✕</button>
+  <div class="req-modal-box" onclick="event.stopPropagation()" style="width:400px;padding:16px;background:#fff;border-radius:10px;display:flex;flex-direction:column;gap:8px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:13px;font-weight:600;color:#1a1a2e;">标注 <span id="rvmLabel"></span></span>
+      <span id="rvmMeta" style="font-size:11px;color:#98a2b3;flex:1;"></span>
+      <button onclick="closeReqViewModal()" style="border:none;background:transparent;font-size:16px;cursor:pointer;color:#98a2b3;padding:0;line-height:1;">✕</button>
     </div>
-    <div class="req-modal-body">
-      <div class="rmb-section" id="rvmSection">班级概览</div>
-      <div style="background:#f8f9fa;border-radius:8px;padding:14px 16px;margin:10px 0;line-height:1.7;font-size:14px;color:#344054;border-left:3px solid #1a73e8;" id="rvmContent">暂无需求说明</div>
-      <div id="rvmMeta" style="font-size:12px;color:#98a2b3;margin-top:6px;"></div>
-    </div>
-    <div class="req-modal-footer">
-      <button class="btn" onclick="closeReqViewModal()">关闭</button>
-    </div>
+    <div style="min-height:60px;background:#f8f9fa;border-radius:6px;padding:12px;line-height:1.6;font-size:14px;color:#344054;white-space:pre-wrap;border-left:3px solid #1a73e8;" id="rvmContent">暂无内容</div>
+    <div style="display:flex;justify-content:flex-end;"><button onclick="closeReqViewModal()" style="padding:4px 14px;border-radius:6px;border:1px solid #d0d5dd;background:#fff;font-size:12px;cursor:pointer;font-family:inherit;">关闭</button></div>
   </div>
 </div>
 
-<!-- 编辑标注弹窗（编辑模式） -->
+<!-- 编辑标注弹窗 -->
 <div class="req-modal" id="reqModal">
-  <div class="req-modal-box" onclick="event.stopPropagation()">
-    <div class="req-modal-header">
-      <span class="rmh-num" id="rmhNum">1</span>
-      <span class="rmh-title">标注 <span id="rmhLabel"></span></span>
-      <button class="rmh-close" onclick="closeReqModal()">✕</button>
+  <div class="req-modal-box" onclick="event.stopPropagation()" style="width:400px;padding:16px;background:#fff;border-radius:10px;display:flex;flex-direction:column;gap:8px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:13px;font-weight:600;color:#1a1a2e;">标注 <span id="rmhLabel"></span></span>
+      <span id="saveHint" style="font-size:11px;color:#98a2b3;flex:1;"></span>
+      <button onclick="closeReqModal()" style="border:none;background:transparent;font-size:16px;cursor:pointer;color:#98a2b3;padding:0;line-height:1;">✕</button>
     </div>
-    <div class="req-modal-body">
-      <div class="rmb-section" id="rmbSection">班级概览</div>
-      <div class="rmb-desc" id="rmbDesc">点击此区域可添加需求说明</div>
-      <label for="reqText">需求说明 <span style="font-weight:400;color:#98a2b3;">（描述此处需要研发实现的内容）</span></label>
-      <textarea id="reqText" style="width:100%;box-sizing:border-box" placeholder="请描述该模块的需求说明、交互细节、注意事项等..." oninput="updateSaveHint()"></textarea>
-      <div class="rmb-hint" id="saveHint">💡 输入内容会自动保存到浏览器，关闭后下次打开仍可编辑</div>
-    </div>
-    <div class="req-modal-footer">
-      <button class="btn" onclick="deleteReq()" id="reqDelBtn" style="color:#c5221f;border-color:#c5221f;">🗑 删除此标注</button>
-      <button class="btn" onclick="closeReqModal()">关闭</button>
-      <button class="btn primary" onclick="saveReq()">💾 保存</button>
+    <textarea id="reqText" placeholder="输入需求说明..." style="width:100%;min-height:100px;border:1px solid #d0d5dd;border-radius:6px;padding:10px;font-size:13px;font-family:inherit;color:#344054;resize:vertical;line-height:1.6;box-sizing:border-box;"></textarea>
+    <div style="display:flex;gap:6px;justify-content:flex-end;">
+      <button onclick="deleteReq()" id="reqDelBtn" style="color:#c5221f;border-color:#c5221f;padding:4px 12px;border-radius:6px;border:1px solid;background:#fff;font-size:12px;cursor:pointer;font-family:inherit;">🗑 删除</button>
+      <button onclick="closeReqModal()" style="padding:4px 12px;border-radius:6px;border:1px solid #d0d5dd;background:#fff;font-size:12px;cursor:pointer;font-family:inherit;">取消</button>
+      <button onclick="saveReq()" style="padding:4px 14px;border-radius:6px;border:none;background:#1a73e8;color:#fff;font-size:12px;cursor:pointer;font-family:inherit;">💾 保存</button>
     </div>
   </div>
 </div>
@@ -1162,34 +1150,26 @@ function saveReqs(a){localStorage.setItem('proto_pins',JSON.stringify(a))}
 function renderReqPins(){
   document.querySelectorAll('.req-pin').forEach(function(e){e.remove()});
   var reqs=getReqs();
-  var container=document.querySelector('.container');
-  if(!container) return;
-  var scrollTop=window.pageYOffset||document.documentElement.scrollTop||0;
-  var scrollLeft=window.pageXOffset||document.documentElement.scrollLeft||0;
-  var containerRect=container.getBoundingClientRect();
   reqs.forEach(function(r){
     var p=document.createElement('div');
     p.className='req-pin'+(r.done?' done':'');
     p.textContent=r.num||'?';
-    // Calculate position: section position + offset
-    var top=r.fixedTop||0;
-    var left=r.fixedLeft||0;
-    // 兼容旧数据格式（x/y字段）
-    if(!top && !left && (r.x||r.y)){ top=r.y||0; left=r.x||0; }
+    p.title=r.text?r.text.substring(0,40):'无内容';
+    p.style.position='absolute';
+    p.onclick=function(){var a=getReqs();for(var i=0;i<a.length;i++){if(a[i].id===r.id){if(_editMode)openEditModal(a[i]);else openViewModal(a[i]);return}}};
+    // 找父元素
+    var parent=null;
     if(r.sectionIdx>=0){
       var sections=document.querySelectorAll('.report-section');
-      var sec=sections[r.sectionIdx];
-      if(sec){
-        var rect=sec.getBoundingClientRect();
-        top=rect.top+(r.offsetY||0);
-        left=rect.left+(r.offsetX||0);
-      }
+      parent=sections[r.sectionIdx];
     }
-    p.style.top=Math.round(top)+'px';
-    p.style.left=Math.round(left)+'px';
-    p.title=r.text?r.text.substring(0,40):'无内容';
-    p.onclick=function(){var a=getReqs();for(var i=0;i<a.length;i++){if(a[i].id===r.id){if(_editMode)openEditModal(a[i]);else openViewModal(a[i]);return}}};
-    document.body.appendChild(p);
+    if(!parent) parent=document.querySelector('.container');
+    if(!parent) parent=document.body;
+    // 确保父元素是相对定位
+    if(getComputedStyle(parent).position==='static') parent.style.position='relative';
+    p.style.top=(r.offsetY||0)+'px';
+    p.style.left=(r.offsetX||0)+'px';
+    parent.appendChild(p);
   });
 }
 function renderReqSidebar(){
@@ -1209,12 +1189,12 @@ function renderReqSidebar(){
   renderReqPins();
 }
 function findReqById(id){var a=getReqs();for(var i=0;i<a.length;i++){if(a[i].id===id)return a[i]}return null}
-function openEditModal(req){if(!req)return;_editingId=req.id;document.getElementById('rmhNum').textContent=req.num;document.getElementById('rmhNum').style.background=req.done?'#1e7e34':'#c5221f';document.getElementById('rmhLabel').textContent='#'+(req.num||'?');document.getElementById('reqText').value=req.text||'';document.getElementById('saveHint').textContent='';document.getElementById('reqModal').classList.add('open');document.getElementById('reqText').focus()}
+function openEditModal(req){if(!req)return;_editingId=req.id;document.getElementById('rmhLabel').textContent='#'+(req.num||'?');document.getElementById('reqText').value=req.text||'';document.getElementById('saveHint').textContent='';document.getElementById('reqModal').classList.add('open');document.getElementById('reqText').focus()}
 function closeReqModal(){document.getElementById('reqModal').classList.remove('open');_editingId=null}
 function saveReq(){if(!_editingId)return;var a=getReqs();for(var i=0;i<a.length;i++){if(a[i].id===_editingId){a[i].text=document.getElementById('reqText').value;a[i].updatedAt=new Date().toLocaleString('zh-CN');a[i].done=!!(a[i].text&&a[i].text.trim());break}}saveReqs(a);renderReqSidebar();document.getElementById('saveHint').textContent='&#10004; 已保存'}
 function deleteReq(){if(!_editingId||!confirm('删除此标注？'))return;saveReqs(getReqs().filter(function(r){return r.id!==_editingId}));renderReqSidebar();closeReqModal()}
 function clearAllReqs(){if(!confirm('确认清除所有标注？'))return;localStorage.removeItem('proto_pins');renderReqSidebar()}
-function openViewModal(req){if(!req)return;document.getElementById('rvmNum').textContent=req.num||'?';document.getElementById('rvmLabel').textContent='#'+(req.num||'?');document.getElementById('rvmContent').textContent=(req.text&&req.text.trim())?req.text:'(暂无内容)';document.getElementById('rvmMeta').textContent=(req.createdAt||'')+' '+(req.updatedAt?'· '+req.updatedAt:'');document.getElementById('reqViewModal').classList.add('open')}
+function openViewModal(req){if(!req)return;document.getElementById('rvmLabel').textContent='#'+(req.num||'?');document.getElementById('rvmContent').textContent=(req.text&&req.text.trim())?req.text:'(暂无内容)';document.getElementById('rvmMeta').textContent=(req.createdAt||'')+(req.updatedAt?' · '+req.updatedAt:'');document.getElementById('reqViewModal').classList.add('open')}
 function closeReqViewModal(){document.getElementById('reqViewModal').classList.remove('open')}
 function updateSaveHint(){}
 function toggleAnnMode(){var on=document.body.classList.toggle('req-mode');document.getElementById('annToggle').textContent=on?'✕ 关闭标注':'📝 添加需求说明';if(!on)document.getElementById('annToggle').innerHTML='📝 <span class="blink"></span> 添加需求说明'}
@@ -1255,8 +1235,7 @@ function initAnnotationSystem(){
     var r={id:'p'+Date.now(),num:mn+1,sectionIdx:sectionIdx,offsetX:offsetX,offsetY:offsetY,fixedTop:offsetY,fixedLeft:offsetX,text:'',createdAt:new Date().toLocaleString('zh-CN'),updatedAt:'',done:false};
     reqs.push(r);saveReqs(reqs);renderReqSidebar();openEditModal(r);
   });
-  // Scroll: refresh pin positions
-  var st=null;document.addEventListener('scroll',function(){if(st)clearTimeout(st);st=setTimeout(function(){renderReqPins()},100)});
+
 }
 
 // ============================================================
