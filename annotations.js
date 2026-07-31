@@ -1,4 +1,4 @@
-[
+var __pa_data = [
   {
     "id": "p1785396685326",
     "num": 1,
@@ -132,18 +132,6 @@
     "done": true
   },
   {
-    "id": "p1785408810933",
-    "num": 15,
-    "view": "individual",
-    "sectionIdx": 2,
-    "offsetX": 558,
-    "offsetY": 265,
-    "text": "展示学生原文，并在原文基础上展示亮点、待改进、错误的句子和词汇，并给出改进后的写法",
-    "createdAt": "2026/7/30 18:53:30",
-    "updatedAt": "2026/7/30 18:54:03",
-    "done": true
-  },
-  {
     "id": "p1785408863279",
     "num": 16,
     "view": "individual",
@@ -154,17 +142,5 @@
     "createdAt": "2026/7/30 18:54:23",
     "updatedAt": "2026/7/30 18:54:34",
     "done": true
-  },
-  {
-    "id": "p1785408879847",
-    "num": 17,
-    "view": "individual",
-    "sectionIdx": 4,
-    "offsetX": 349,
-    "offsetY": 50,
-    "text": "按条数展示所有优化建议，包含原句、问题说明、示范写法",
-    "createdAt": "2026/7/30 18:54:39",
-    "updatedAt": "2026/7/30 18:55:16",
-    "done": true
   }
-]
+];
