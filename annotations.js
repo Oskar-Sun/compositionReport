@@ -142,5 +142,17 @@ var __pa_data = [
     "createdAt": "2026/7/30 18:54:23",
     "updatedAt": "2026/7/30 18:54:34",
     "done": true
+  },
+  {
+    "id": "p1787212023726",
+    "num": 17,
+    "view": "individual",
+    "sectionIdx": -1,
+    "offsetX": 865,
+    "offsetY": 112,
+    "text": "点击可以下载学生pdf，pdf中不展示范文",
+    "createdAt": "2026/8/20 15:47:03",
+    "updatedAt": "2026/8/20 15:47:20",
+    "done": true
   }
 ];

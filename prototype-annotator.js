@@ -1,21 +1,44 @@
 /**
  * ============================================================
- * Prototype Annotator — 原型需求标注工具 v3.0
+ * Prototype Annotator — 原型需求标注工具 v4.0（通用版）
  * ============================================================
  *
- * 基于文件的工作流：
- *   1. 页面加载时自动读取同目录下的 annotations.json
- *   2. 标注保存在内存中，编辑后点击"保存到文件"下载 JSON
- *   3. 下载的 JSON 覆盖仓库中的 annotations.json 一起提交 Git
- *   4. 其他人拉取代码后打开页面自动看到所有标注
- *
  * 用法：
+ *   <!-- 1. 在引入脚本前配置（可选，不配置则使用默认值） -->
+ *   <script>
+ *   window.__pa_config = {
+ *     // 视图配置：key=视图名, value=CSS选择器（定位该视图的容器元素）
+ *     // 标注会根据所在视图自动隔离，切换视图时只显示对应视图的标注
+ *     views: {
+ *       class: '#classView',
+ *       individual: '#individualView'
+ *     },
+ *
+ *     // 滚动容器选择器（pin 定位的参考父元素）
+ *     scrollContainer: '.container, main, #app',
+ *
+ *     // Section 选择器（标注可以吸附到这些区域）
+ *     sectionSelector: '.pa-section, section, .report-section, .card, .block',
+ *
+ *     // 视图检测方式：
+ *     //   'hidden-class' — 检查元素是否有 page-hidden class（默认）
+ *     //   'display'      — 检查 display !== none
+ *     viewDetection: 'hidden-class'
+ *   };
+ *   </script>
+ *   <!-- 2. 引入 annotator -->
  *   <script src="prototype-annotator.js"></script>
- *   （可选在同目录放 annotations.json 文件）
+ *   <!-- 3.（可选）在同目录放 annotations.js 作为种子数据 -->
+ *   <script src="annotations.js"></script>
  *
  * 进入编辑模式：
  *   快捷键 Ctrl+Shift+.  或  网址加 ?annotate
  *   控制台 __pa_enable()
+ *
+ * 数据持久化：
+ *   编辑后点侧栏「保存 annotations.js」→ 下载文件 → 覆盖项目目录中同名文件
+ *   localStorage 自动保存，刷新不丢失
+ *   首次打开从 annotations.js 读取种子数据
  *
  * ============================================================
  */
@@ -25,6 +48,17 @@
   window.__pa_disable = window.__pa_disable || function(){ console.warn('PA: 脚本加载中'); };
 
   try {
+
+  // ============================================================
+  // 配置解析
+  // ============================================================
+  var CFG = window.__pa_config || {};
+  var VIEWS = CFG.views || { class: '#classView', individual: '#individualView' };
+  var VIEW_ENTRIES = [];
+  for (var _vk in VIEWS) { if (Object.prototype.hasOwnProperty.call(VIEWS, _vk)) VIEW_ENTRIES.push({ name: _vk, selector: VIEWS[_vk] }); }
+  var SCROLL_SEL = CFG.scrollContainer || '.container, .pa-container, main, #app, .app';
+  var SECTION_SEL = CFG.sectionSelector || '.pa-section, section, .report-section, .card, .block, .module';
+  var VIEW_DETECT = CFG.viewDetection || 'hidden-class';
 
   // ============================================================
   // CSS
@@ -107,9 +141,37 @@
   var viewMeta = $('paViewMeta');
 
   // ============================================================
+  // 视图检测（基于配置）
+  // ============================================================
+  function getCurrentView() {
+    for (var i = 0; i < VIEW_ENTRIES.length; i++) {
+      var el = document.querySelector(VIEW_ENTRIES[i].selector);
+      if (!el) continue;
+      if (VIEW_DETECT === 'display') {
+        if (el.offsetParent !== null || window.getComputedStyle(el).display !== 'none') return VIEW_ENTRIES[i].name;
+      } else {
+        // 默认 'hidden-class': page-hidden 类名
+        if (!el.classList.contains('page-hidden')) return VIEW_ENTRIES[i].name;
+      }
+    }
+    // 如果没有任何配置的视图可见，返回第一个已配置视图名（有 DOM 元素就认它）
+    for (var j = 0; j < VIEW_ENTRIES.length; j++) {
+      if (document.querySelector(VIEW_ENTRIES[j].selector)) return VIEW_ENTRIES[j].name;
+    }
+    return 'default';
+  }
+
+  function getCurrentViewContainer() {
+    var v = getCurrentView();
+    var sel = VIEWS[v];
+    if (sel) return document.querySelector(sel);
+    return document.body;
+  }
+
+  // ============================================================
   // 加载 annotations.js（通过 <script> 标签引入，file:// 和 https:// 都可用）
   // ============================================================
-    function loadAnnotations() {
+  function loadAnnotations() {
     // 1. 尝试从 localStorage 恢复（实时持久化）
     var saved = false;
     try {
@@ -139,10 +201,10 @@
   // 导入 / 保存到文件
   // ============================================================
   function importFromFile() {
-    var input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.js,.json';
-    input.onchange = function(e) {
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.js,.json';
+    fileInput.onchange = function(e) {
       var file = e.target.files[0];
       if (!file) return;
       var reader = new FileReader();
@@ -151,7 +213,7 @@
           var text = ev.target.result;
           var arr;
           // 尝试直接解析为 JSON
-          try { arr = JSON.parse(text); } catch(e) {
+          try { arr = JSON.parse(text); } catch(err) {
             // 尝试从 JS 文件中提取 __pa_data
             var match = text.match(/var\s+__pa_data\s*=\s*(\[[\s\S]*?\])\s*;/);
             if (match) arr = JSON.parse(match[1]);
@@ -162,12 +224,13 @@
           syncPaData();
           migrateAnnotations();
           renderSidebar();
-        } catch(e) { alert('文件格式错误，请确认是有效的标注数据'); }
+        } catch(err) { alert('文件格式错误，请确认是有效的标注数据'); }
       };
       reader.readAsText(file);
     };
-    input.click();
+    fileInput.click();
   }
+
   function exportToFile() {
     var json = JSON.stringify(_annotations, null, 2);
     var jsContent = 'var __pa_data = ' + json + ';\n';
@@ -183,11 +246,10 @@
   }
 
   // ============================================================
-  // Data 操作（全部基于内存 _annotations）
+  // Data 操作
   // ============================================================
   function getReqs() { return _annotations; }
   function saveReqs(arr) { _annotations = arr; }
-  // 每次标注变更时同步到 __pa_data，确保 file:// 刷新后数据不丢失
   function syncPaData() {
     try {
       var data = JSON.parse(JSON.stringify(_annotations));
@@ -195,13 +257,13 @@
       localStorage.setItem('pa_data', JSON.stringify(data));
     } catch(e) {}
   }
-  // 迁移旧数据
+  // 迁移旧数据格式（只处理坐标格式，不修改 view 归属）
   function migrateAnnotations() {
     var changed = false;
-    var container = document.querySelector('.container, .pa-container, main, #app, .app') || document.body;
+    var container = document.querySelector(SCROLL_SEL) || document.body;
     var cr = container.getBoundingClientRect();
     _annotations.forEach(function(r){
-      // 旧数据：sectionIdx=-1 + fixedTop/fixedLeft → 转换为容器相对坐标
+      // 旧格式：fixedTop/fixedLeft 绝对坐标 → offsetX/offsetY 相对坐标
       if (r.sectionIdx === -1 && (r.fixedTop !== undefined || r.fixedLeft !== undefined)) {
         if (!r.offsetX && !r.offsetY) {
           r.offsetX = Math.round((r.fixedLeft || 0) - cr.left + window.pageXOffset);
@@ -211,11 +273,6 @@
         delete r.fixedLeft;
         changed = true;
       }
-      if (r.view) return;
-      changed = true;
-      if (r.sectionIdx >= 4) r.view = 'individual';
-      else if (r.sectionIdx >= 0 && r.sectionIdx <= 3) r.view = 'class';
-      else r.view = 'unknown';
     });
     if (changed) renderSidebar();
   }
@@ -223,24 +280,13 @@
   // ============================================================
   // Pins
   // ============================================================
-  function getCurrentView() {
-    var _cv = document.getElementById('classView');
-    var _iv = document.getElementById('individualView');
-    if (_cv && !_cv.classList.contains('page-hidden')) return 'class';
-    if (_iv && !_iv.classList.contains('page-hidden')) return 'individual';
-    return 'unknown';
-  }
-  function getCurrentViewContainer() {
-    var v = getCurrentView();
-    return document.getElementById(v === 'individual' ? 'individualView' : 'classView');
-  }
   function renderPins() {
     document.querySelectorAll('.pa-pin').forEach(function (el) { el.remove(); });
     var curView = getCurrentView();
     // 只显示当前视图的标注
-    var filtered = _annotations.filter(function(r){ return !r.view || r.view === curView || r.view === 'unknown'; });
-    var scrollContainer = document.querySelector('.container, .pa-container, main, #app, .app') || document.body;
-    if (scrollContainer && getComputedStyle(scrollContainer).position === 'static') scrollContainer.style.position = 'relative';
+    var filtered = _annotations.filter(function(r){ return !r.view || r.view === curView || r.view === 'unknown' || r.view === 'default'; });
+    var scrollContainer = document.querySelector(SCROLL_SEL) || document.body;
+    if (scrollContainer && window.getComputedStyle(scrollContainer).position === 'static') scrollContainer.style.position = 'relative';
     filtered.forEach(function (r) {
       var p = document.createElement('div');
       p.className = 'pa-pin' + (r.done ? ' done' : '');
@@ -250,18 +296,19 @@
       var parent = null;
       if (r.sectionIdx >= 0) {
         // 根据 view 字段选择正确的容器查找 section
-        var _viewContainer = (r.view === 'individual') ? document.getElementById('individualView') : document.getElementById('classView');
-        var _allSections = (_viewContainer ? _viewContainer : document).querySelectorAll('.pa-section, section, .report-section, .card, .block, .module');
+        var _vSel = VIEWS[r.view];
+        var _viewContainer = _vSel ? document.querySelector(_vSel) : null;
+        var _allSections = (_viewContainer ? _viewContainer : document).querySelectorAll(SECTION_SEL);
         parent = _allSections[r.sectionIdx];
       }
       if (!parent) parent = scrollContainer;
 
       var top = r.offsetY || r.fixedTop || r.y || 0;
       var left = r.offsetX || r.fixedLeft || r.x || 0;
-        if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
-        p.style.position = 'absolute';
-        p.style.top = top + 'px';
-        p.style.left = left + 'px';
+      if (window.getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+      p.style.position = 'absolute';
+      p.style.top = top + 'px';
+      p.style.left = left + 'px';
 
       p.onclick = function () {
         for (var i = 0; i < _annotations.length; i++) {
@@ -281,7 +328,7 @@
   function renderSidebar() {
     if (!list) return;
     var curView = getCurrentView();
-    var visible = _annotations.filter(function(r){ return !r.view || r.view === curView || r.view === 'unknown'; });
+    var visible = _annotations.filter(function(r){ return !r.view || r.view === curView || r.view === 'unknown' || r.view === 'default'; });
     count.textContent = visible.length;
     if (!visible.length) {
       list.innerHTML = '<div style="padding:20px;text-align:center;color:#98a2b3;font-size:12px;">点击页面任意位置<br>添加标注</div>';
@@ -414,40 +461,37 @@
         e.target.closest('.pa-indicator') || e.target.closest('#paExportBtn') ||
         e.target.closest('#paClearBtn') || e.target.closest('#paImportBtn')) return;
 
-    var sec = e.target.closest('.pa-section, section, .report-section, .card, .block, .module');
+    var sec = e.target.closest(SECTION_SEL);
     var sectionIdx = -1;
     var offsetX = 0, offsetY = 0;
 
+    // 判断当前是哪个视图
+    var _view = getCurrentView();
+
     if (sec) {
-      var sections = document.querySelectorAll('.pa-section, section, .report-section, .card, .block, .module');
+      var sections = document.querySelectorAll(SECTION_SEL);
       for (var i = 0; i < sections.length; i++) { if (sections[i] === sec) { sectionIdx = i; break; } }
       var rect = sec.getBoundingClientRect();
       offsetX = Math.round(e.clientX - rect.left);
       offsetY = Math.round(e.clientY - rect.top);
     } else {
-      var ct = document.querySelector('.container, .pa-container, main, #app, .app') || document.body;
+      var ct = document.querySelector(SCROLL_SEL) || document.body;
       var cr = ct.getBoundingClientRect();
       offsetX = Math.round(e.clientX - cr.left);
       offsetY = Math.round(e.clientY - cr.top);
     }
-    // 判断当前是哪个视图
-    var _cv = document.getElementById('classView');
-    var _iv = document.getElementById('individualView');
-    var _view = 'unknown';
-    if (_cv && _iv) {
-      if (!_cv.classList.contains('page-hidden')) _view = 'class';
-      else if (!_iv.classList.contains('page-hidden')) _view = 'individual';
-    }
-    // 如果是 individual 视图，sectionIdx 只算 individualView 内的 .report-section
-    if (_view === 'individual' && sec) {
-      var _container = document.getElementById('individualView');
+
+    // 如果当前在某个配置的视图中，sectionIdx 只算该视图容器内的 section
+    if (_view !== 'default' && sec) {
+      var _container = getCurrentViewContainer();
       if (_container) {
-        var _secs = _container.querySelectorAll('.report-section');
+        var _secs = _container.querySelectorAll(SECTION_SEL);
         var _newIdx = -1;
         for (var _si = 0; _si < _secs.length; _si++) { if (_secs[_si] === sec) { _newIdx = _si; break; } }
         if (_newIdx >= 0) sectionIdx = _newIdx;
       }
     }
+
     var mn = 0;
     _annotations.forEach(function (r) { if ((r.num || 0) > mn) mn = r.num; });
     var r = {
@@ -472,8 +516,6 @@
   // Button bindings
   // ============================================================
   toggle.onclick = function () {
-    // 只切换添加模式（十字光标），不退出编辑模式
-    // 这样可以在编辑模式下自由操作侧栏按钮
     var on = document.body.classList.toggle('pa-edit');
     toggle.textContent = on ? '✕ 关闭添加' : '📝 添加';
   };
@@ -493,7 +535,8 @@
   };
   var _importBtn = $('paImportBtn');
   if (_importBtn) _importBtn.onclick = importFromFile;
-  $('paExportBtn').onclick = exportToFile;
+  var _exportBtn = $('paExportBtn');
+  if (_exportBtn) _exportBtn.onclick = exportToFile;
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') { closeEdit(); closeView(); }
@@ -508,24 +551,26 @@
     rt = setTimeout(function () { renderPins(); }, 200);
   });
 
-  // 监听视图切换（classView / individualView 的 page-hidden 变化）
+  // 监听所有已配置视图的可见性变化
   var _viewObserver = new MutationObserver(function(){
     renderSidebar();
   });
-  var _cvEl = document.getElementById('classView');
-  var _ivEl = document.getElementById('individualView');
-  if (_cvEl) _viewObserver.observe(_cvEl, { attributes: true, attributeFilter: ['class'] });
-  if (_ivEl) _viewObserver.observe(_ivEl, { attributes: true, attributeFilter: ['class'] });
+  VIEW_ENTRIES.forEach(function(ve) {
+    var _el = document.querySelector(ve.selector);
+    if (_el) _viewObserver.observe(_el, { attributes: true, attributeFilter: ['class'] });
+  });
 
   // ============================================================
   // Init
   // ============================================================
   loadAnnotations();
 
-  console.log('%c📌 Prototype Annotator v3.0 loaded', 'font-weight:bold;color:#1a73e8');
+  // 打印配置信息
+  var _viewNames = VIEW_ENTRIES.map(function(ve){ return ve.name; }).join(', ');
+  console.log('%c📌 Prototype Annotator v4.0 loaded', 'font-weight:bold;color:#1a73e8');
+  console.log('   视图: ' + _viewNames + ' | 检测: ' + VIEW_DETECT);
   console.log('   快捷键 Ctrl+Shift+. → 编辑模式');
-  console.log('   添加标注后点击侧栏「保存 annotations.js」→ 下载 annotations.js');
-  console.log('   将下载的 JS 文件覆盖项目目录中的，刷新即生效');
+  console.log('   添加标注后点击侧栏「保存 annotations.js」→ 下载文件覆盖到项目目录');
 
   } catch(e) { console.warn('📌 PA init error:', e.message); }
 

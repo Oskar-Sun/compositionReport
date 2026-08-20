@@ -3,1103 +3,168 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 作文批改报告 - 交互原型</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<title>作业报告 · Web端</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;background:#f0f2f5;color:#1a1a2e;line-height:1.6;padding:20px}
-.container{max-width:1060px;margin:0 auto}
-.btn{padding:6px 16px;border:1px solid #d0d5dd;border-radius:6px;background:#fff;font-size:13px;cursor:pointer;color:#344054;transition:all .15s;display:inline-flex;align-items:center;gap:4px;font-family:inherit}
-.btn:hover{background:#f2f4f7}
-.btn.primary{background:#1a73e8;color:#fff;border-color:#1a73e8}
-.btn.primary:hover{background:#1557b0}
-.btn.success{background:#1e7e34;color:#fff;border-color:#1e7e34}
-.btn.success:hover{background:#16662a}
-.btn.danger{background:#c5221f;color:#fff;border-color:#c5221f}
-.btn.danger:hover{background:#a11a18}
-.btn.ghost{border-color:transparent;background:transparent}
-.btn.ghost:hover{background:#f2f4f7}
-.btn.sm{padding:4px 10px;font-size:12px}
-.top-bar{background:#fff;border-radius:12px;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:16px}
-.top-bar .left{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.top-bar .title{font-size:18px;font-weight:700;color:#1a1a2e}
-.top-bar .title .badge{font-size:12px;background:#e8f0fe;color:#1a73e8;padding:2px 10px;border-radius:10px;font-weight:500;margin-left:8px}
-.top-bar .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.top-bar .class-info{font-size:13px;color:#667085}
-.top-bar .class-info strong{color:#344054}
-/* Class Switcher */
-.class-switcher{display:flex;gap:4px;background:#f2f4f7;border-radius:8px;padding:3px}
-.class-switcher button{padding:5px 14px;border:none;border-radius:6px;font-size:13px;cursor:pointer;background:transparent;color:#667085;transition:all .15s;font-weight:500;font-family:inherit;white-space:nowrap}
-.class-switcher button:hover{background:rgba(255,255,255,.6);color:#344054}
-.class-switcher button.active{background:#fff;color:#1a1a2e;box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:#667085;margin-bottom:16px;flex-wrap:wrap}
-.breadcrumb a{cursor:pointer;color:#1a73e8;text-decoration:none}
-.breadcrumb a:hover{text-decoration:underline}
-.breadcrumb .sep{color:#d0d5dd}
-.report-section{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);padding:24px;margin-bottom:16px}
-.section-title{font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.section-title .badge-count{font-size:12px;background:#f2f4f7;color:#667085;padding:1px 8px;border-radius:8px;margin-left:auto;font-weight:400}
-.class-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
-.class-stat{background:#f8f9fa;border-radius:8px;padding:14px 12px;text-align:center}
-.class-stat .cs-value{font-size:26px;font-weight:800;color:#1a1a2e;line-height:1.2}
-.class-stat .cs-label{font-size:12px;color:#667085;margin-top:4px}
-.class-stat.highlight-stat{background:#e8f0fe}
-.class-stat.highlight-stat .cs-value{color:#1a73e8}
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:768px){.chart-grid{grid-template-columns:1fr}}
-.chart-box{background:#fafbfc;border-radius:8px;padding:16px}
-.chart-box .cb-title{font-size:13px;font-weight:600;color:#344054;margin-bottom:8px;text-align:center}
-.chart-box canvas{max-height:200px}
-.student-table{width:100%;border-collapse:collapse;font-size:13px}
-.student-table th{padding:10px 12px;text-align:left;font-weight:600;color:#667085;border-bottom:2px solid #eef0f4;font-size:12px}
-.student-table td{padding:10px 12px;border-bottom:1px solid #eef0f4;color:#344054;vertical-align:middle}
-.student-table tr:hover td{background:#fafbfc}
-.student-table .st-name{font-weight:600;cursor:pointer;color:#1a73e8}
-.student-table .st-name:hover{text-decoration:underline}
-.student-table .level-tag{padding:2px 10px;border-radius:10px;font-size:12px;font-weight:500;white-space:nowrap}
-.level-excellent{background:#fef7e0;color:#b8860b}
-.level-good{background:#e6f4ea;color:#1e7e34}
-.level-pass{background:#e8f0fe;color:#1a73e8}
-.level-needs{background:#fce8e6;color:#c5221f}
-.student-table input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:#1a73e8}
-.dimension-list{display:flex;flex-direction:column;gap:10px}
-.dimension-item{border:1px solid #eef0f4;border-radius:8px;padding:12px 16px;cursor:pointer;transition:all .15s}
-.dimension-item:hover{border-color:#d0d5dd}
-.dimension-item .dim-header{display:flex;align-items:center;gap:12px}
-.dimension-item .dim-name{font-weight:600;font-size:14px;color:#344054;min-width:100px}
-.dimension-item .dim-bar-wrap{flex:1;height:8px;background:#f0f2f5;border-radius:4px;overflow:hidden}
-.dimension-item .dim-bar{height:100%;border-radius:4px;transition:width .6s ease}
-.dimension-item .dim-score{font-size:14px;font-weight:600;color:#1a1a2e;min-width:36px;text-align:right}
-.dimension-item .dim-arrow{color:#98a2b3;font-size:12px;transition:transform .2s}
-.dimension-item.open .dim-arrow{transform:rotate(180deg)}
-.dimension-item .dim-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid #eef0f4;font-size:13px;color:#667085}
-.dimension-item .dim-detail.open{display:block}
-.dimension-item .dim-detail .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;margin:2px 4px}
-.view-switch{display:flex;gap:4px;margin-bottom:12px;background:#f2f4f7;border-radius:8px;padding:3px;width:fit-content}
-.view-switch button{padding:6px 16px;border:none;border-radius:6px;font-size:13px;cursor:pointer;background:transparent;color:#667085;transition:all .15s;font-weight:500;font-family:inherit}
-.view-switch button.active{background:#fff;color:#1a1a2e;box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.text-content{font-size:15px;line-height:2;color:#344054;white-space:pre-wrap}
-.text-content .hl{background:#fef7e0;border-radius:3px;padding:1px 2px;cursor:pointer;border-bottom:2px solid #f59e0b}
-.text-content .iss{background:#eef2ff;border-radius:3px;padding:1px 2px;cursor:pointer;border-bottom:2px dashed #6366f1}
-.text-content .err{background:#fce8e6;border-radius:3px;padding:1px 2px;cursor:pointer;border-bottom:2px wavy #c5221f}
-.annot-tooltip{display:none;background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:12px;box-shadow:0 4px 12px rgba(0,0,0,.12);font-size:13px;margin:4px 0;position:relative}
-.annot-tooltip.open{display:block}
-.annot-tooltip .at-label{font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px}
-.annot-tooltip .at-label.highlight-label{color:#f59e0b}
-.annot-tooltip .at-label.issue-label{color:#6366f1}
-.annot-tooltip .at-label.error-label{color:#c5221f}
-.annot-tooltip .at-comment{color:#344054;margin-bottom:4px}
-.annot-tooltip .at-comment[contenteditable]{background:#fff;border:1px dashed #d0d5dd;border-radius:4px;padding:4px 6px;min-height:1.4em}
-.annot-tooltip .at-comment[contenteditable]:focus{outline:2px solid #1a73e8;border-color:transparent}
-.annot-tooltip .at-suggestion{color:#1e7e34;font-weight:500}
-.annot-tooltip .at-original{color:#c5221f;text-decoration:line-through}
-.text-legend{display:flex;gap:16px;margin-top:8px;padding:8px 0;border-top:1px solid #eef0f4;font-size:12px;color:#667085}
-.text-legend span{display:flex;align-items:center;gap:4px}
-.text-legend .dot{display:inline-block;width:12px;height:12px;border-radius:3px}
-.dot.highlight-dot{background:#fef7e0;border-bottom:2px solid #f59e0b}
-.dot.issue-dot{background:#eef2ff;border-bottom:2px dashed #6366f1}
-.dot.error-dot{background:#fce8e6;border-bottom:2px wavy #c5221f}
-.card-list{display:flex;flex-direction:column;gap:8px}
-.card-item{border:1px solid #eef0f4;border-radius:8px;overflow:hidden}
-.card-item .card-header{padding:12px 16px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;transition:background .15s}
-.card-item .card-header:hover{background:#fafbfc}
-.card-item .card-icon{font-size:16px}
-.card-item .card-text{flex:1;font-size:14px;line-height:1.6;color:#344054}
-.card-item .card-arrow{color:#98a2b3;font-size:12px;transition:transform .2s}
-.card-item.open .card-arrow{transform:rotate(180deg)}
-.card-item .card-body{display:none;padding:0 16px 16px;border-top:1px solid #eef0f4}
-.card-item.open .card-body{display:block}
-.card-item .card-body .cb-row{display:flex;gap:8px;margin-top:10px;font-size:13px}
-.card-item .card-body .cb-label{font-weight:600;color:#667085;min-width:56px;flex-shrink:0}
-.card-item .card-body .cb-value{color:#344054;flex:1}
-.card-item .card-body .cb-value .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px}
-.card-item .card-body .cb-value .suggestion-text{color:#1e7e34;font-weight:500}
-.card-item .card-body .cb-value[contenteditable]{background:#fff;border:1px dashed #d0d5dd;border-radius:4px;padding:4px 6px;min-height:1.4em;cursor:text}
-.card-item .card-body .cb-value[contenteditable]:focus{outline:2px solid #1a73e8;border-color:transparent}
-.highlight-card .card-icon{color:#f59e0b}
-.issue-card .card-icon{color:#6366f1}
-.error-class-chart{margin-top:12px}
-.error-class-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #f5f5f5}
-.error-class-item:last-child{border-bottom:none}
-.error-class-item .eci-label{min-width:100px;color:#667085;font-weight:500}
-.error-class-item .eci-bar-wrap{flex:1;height:22px;background:#f2f4f7;border-radius:4px;overflow:hidden}
-.error-class-item .eci-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;color:#fff;font-weight:500;transition:width .6s ease;min-width:fit-content}
-.error-class-item .eci-count{min-width:30px;color:#667085;font-weight:500;text-align:right}
-.overview-grid{display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start}
-@media(max-width:768px){.overview-grid{grid-template-columns:1fr}}
-.overview-left .meta{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px}
-.overview-left .meta-item{font-size:13px;color:#667085}
-.overview-left .meta-item strong{color:#344054}
-.overview-left .score-row{display:flex;align-items:baseline;gap:16px;margin-bottom:12px;flex-wrap:wrap}
-.overview-left .score-main{font-size:42px;font-weight:800;color:#1a73e8;line-height:1}
-.overview-left .score-full{font-size:18px;color:#667085;font-weight:400}
-.overview-left .avg-compare{font-size:13px;color:#667085;margin-bottom:12px}
-.overview-left .avg-compare span{color:#1e7e34;font-weight:600}
-.comment-box{background:#f8f9fa;border-left:4px solid #1a73e8;padding:12px 16px;border-radius:0 8px 8px 0}
-.comment-box .label{font-size:12px;color:#667085;margin-bottom:4px;font-weight:500}
-.comment-box .text{font-size:14px;color:#344054;line-height:1.7}
-.comment-box .text[contenteditable]{background:#fff;border:1px dashed #d0d5dd;border-radius:4px;padding:6px 8px;min-height:3em;cursor:text}
-.comment-box .text[contenteditable]:focus{outline:2px solid #1a73e8;border-color:transparent}
-.overview-right{display:flex;align-items:center;justify-content:center}
-.chart-container{width:240px;height:240px;position:relative}
-.chart-container canvas{width:100%!important;height:100%!important}
-.review-banner{background:#fff3cd;border:1px solid #ffecb5;border-radius:8px;padding:12px 16px;display:none;align-items:center;gap:12px;margin-bottom:16px;font-size:13px;color:#856404;flex-wrap:wrap}
-.review-banner .rb-text{flex:1;min-width:200px}
-.review-banner .rb-actions{display:flex;gap:6px}
-.student-bar{display:flex;align-items:center;gap:16px;padding:12px 20px;background:linear-gradient(135deg,#e8f0fe,#f0f5ff);border-radius:8px;margin-bottom:16px;flex-wrap:wrap}
-.student-bar .sb-avatar{width:40px;height:40px;border-radius:50%;background:#1a73e8;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
-.student-bar .sb-info{flex:1;min-width:180px}
-.student-bar .sb-info .sb-name{font-size:15px;font-weight:600;color:#1a1a2e}
-.student-bar .sb-info .sb-detail{font-size:12px;color:#667085}
-/* Student Nav */
-.student-nav{display:flex;align-items:center;gap:12px;padding:8px 20px;background:#f8f9fa;border-radius:8px;margin-bottom:16px;font-size:13px}
-.student-nav .sn-btn{padding:6px 14px;border:1px solid #d0d5dd;border-radius:6px;background:#fff;cursor:pointer;color:#344054;font-size:13px;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
-.student-nav .sn-btn:hover{background:#f2f4f7}
-.student-nav .sn-btn:disabled{opacity:.4;cursor:not-allowed}
-.student-nav .sn-progress{flex:1;text-align:center;color:#667085}
-.student-nav .sn-progress strong{color:#344054}
-/* Toolbar */
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
-.toolbar .search-box{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #d0d5dd;border-radius:8px;padding:6px 12px;flex:1;min-width:160px}
-.toolbar .search-box input{border:none;outline:none;font-size:13px;flex:1;font-family:inherit;background:transparent;color:#344054}
-.toolbar .search-box input::placeholder{color:#98a2b3}
-.toolbar .filter-select{padding:6px 12px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;background:#fff;cursor:pointer;font-family:inherit;color:#344054}
-/* Essay Tabs */
-.class-essay-tabs{display:flex;gap:4px;margin-bottom:16px;background:#f2f4f7;border-radius:8px;padding:3px;width:fit-content}
-.class-essay-tabs button{padding:6px 18px;border:none;border-radius:6px;font-size:13px;cursor:pointer;background:transparent;color:#667085;transition:all .15s;font-weight:500;font-family:inherit}
-.class-essay-tabs button.active{background:#fff;color:#1a1a2e;box-shadow:0 1px 2px rgba(0,0,0,.08)}
-/* Showcase */
-.showcase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.showcase-card{border:1px solid #eef0f4;border-radius:10px;overflow:hidden;transition:box-shadow .2s}
-.showcase-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.showcase-card .sc-header{background:linear-gradient(135deg,#fef7e0,#fff8e1);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
-.showcase-card .sc-header .sc-name{font-weight:600;font-size:14px;color:#b8860b}
-.showcase-card .sc-header .sc-score{font-size:13px;color:#b8860b;font-weight:500}
-.showcase-card .sc-body{padding:12px 16px}
-.showcase-card .sc-body .sc-excerpt{font-size:13px;color:#667085;line-height:1.7;font-style:italic;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.showcase-card .sc-body .sc-comment{font-size:12px;color:#1a73e8;margin-top:8px;padding-top:8px;border-top:1px solid #eef0f4}
-.showcase-card .sc-actions{padding:8px 16px 12px;display:flex;gap:6px;flex-wrap:wrap}
-.showcase-card .sc-badge{font-size:11px;background:#e6f4ea;color:#1e7e34;padding:2px 8px;border-radius:8px;display:inline-flex;align-items:center;gap:3px}
-/* Modal */
-.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal-box{background:#fff;border-radius:12px;max-width:90vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
-.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #eef0f4}
-.modal-header .modal-title{font-size:16px;font-weight:700;color:#1a1a2e}
-.modal-header .modal-close{border:none;background:transparent;font-size:20px;cursor:pointer;color:#98a2b3;padding:4px;line-height:1}
-.modal-header .modal-close:hover{color:#344054}
-.modal-body{padding:24px;overflow:auto;flex:1;text-align:center}
-.modal-body .mock-image{background:#f8f9fa;border:2px dashed #d0d5dd;border-radius:8px;padding:40px;min-width:500px;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#98a2b3;font-size:14px;position:relative}
-.modal-body .mock-image .mi-badge{position:absolute;top:12px;right:12px;background:#1a73e8;color:#fff;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:500}
-.modal-body .mock-image .mi-hint{font-size:12px;color:#98a2b3;margin-top:8px}
-.modal-body .mock-image svg{width:100px;height:100px;margin-bottom:12px;opacity:.5}
-.model-badge{font-size:11px;background:#fef7e0;color:#b8860b;padding:2px 8px;border-radius:8px;font-weight:500}
-.error-expand{width:100%;text-align:center;padding:8px;margin-top:4px;border:none;background:transparent;color:#1a73e8;font-size:13px;cursor:pointer;font-family:inherit;border-radius:4px;transition:background .15s}
-.error-expand:hover{background:#f2f4f7}
-.error-hidden{display:none!important}
-.improve-list{display:flex;flex-direction:column;gap:12px}
-.improve-item{padding:12px 16px;background:#fafbfc;border-radius:8px;border-left:4px solid}
-.improve-item .imp-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.improve-item .imp-priority{font-size:14px}
-.improve-item .imp-dim{font-size:14px;font-weight:600;color:#344054}
-.improve-item .imp-problem{font-size:13px;color:#667085;margin-bottom:4px}
-.improve-item .imp-method{font-size:13px;color:#344054;margin-bottom:4px}
-.improve-item .imp-example{font-size:13px;color:#1a73e8;background:#e8f0fe;padding:6px 10px;border-radius:4px;margin-top:4px}
-.model-essay{background:#fafbfc;border-radius:8px;padding:16px;border:1px solid #eef0f4}
-.model-essay .me-title{font-weight:600;font-size:14px;color:#344054;margin-bottom:8px}
-.model-essay .me-excerpt{font-size:14px;color:#667085;line-height:1.8;padding:8px 12px;background:#fff;border-radius:6px;margin-bottom:8px;border-left:3px solid #1a73e8}
-.model-essay .me-comment{font-size:13px;color:#1a73e8}
-.error-chart{display:flex;flex-direction:column;gap:6px}
-.ec-item{display:flex;align-items:center;gap:8px;font-size:13px}
-.ec-item .ec-label{min-width:80px;color:#667085}
-.ec-item .ec-bar-wrap{flex:1;height:18px;background:#f2f4f7;border-radius:4px;overflow:hidden}
-.ec-item .ec-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:11px;color:#fff;font-weight:500;transition:width .6s ease;background:#1a73e8}
-.ec-item .ec-count{min-width:24px;color:#667085;font-weight:500}
-.page-hidden{display:none}.fade-in{animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.text-center{text-align:center}.mt-8{margin-top:8px}.mt-16{margin-top:16px}
-.function-tip{background:#f0f5ff;border:1px dashed #1a73e8;border-radius:8px;padding:12px 16px;text-align:center;font-size:13px;color:#1a73e8;margin-top:12px}
-.function-tip span{font-weight:600}
-.footer-note{text-align:center;padding:20px;font-size:12px;color:#98a2b3}
-@media print{
-  body{background:#fff;padding:0}
-  .no-print,.btn,.function-tip,.review-banner,.class-essay-tabs,.view-switch,.class-switcher{display:none!important}
-  .report-section{box-shadow:none;border:1px solid #ddd;page-break-inside:avoid}
-  .annot-tooltip{display:block!important;box-shadow:none;border:1px solid #ddd}
-}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+    background:#f0f2f5;color:#1a1a2e;line-height:1.6;
+  }
+
+  .layout{display:flex;height:100vh;overflow:hidden}
+
+  /* ===== 左侧菜单 ===== */
+  .sidebar{
+    width:232px;flex-shrink:0;background:#fff;
+    border-right:1px solid #eef0f4;display:flex;flex-direction:column;
+  }
+  .sidebar-brand{padding:22px 20px 16px;border-bottom:1px solid #f0f2f5}
+  .sidebar-brand .brand-title{font-size:17px;font-weight:700;color:#1a1a2e;display:flex;align-items:center;gap:8px}
+  .sidebar-brand .brand-title .logo{
+    width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#1a73e8,#0d47a1);
+    color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;
+  }
+  .sidebar-brand .brand-sub{font-size:12px;color:#98a2b3;margin-top:5px;padding-left:38px}
+
+  .sidebar-nav{flex:1;overflow-y:auto;padding:12px 12px}
+  .sidebar-nav .nav-group-label{font-size:11px;color:#98a2b3;font-weight:600;padding:8px 12px 6px;letter-spacing:.5px}
+  .menu-item{
+    display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:8px;
+    font-size:14px;color:#344054;cursor:pointer;transition:all .15s;position:relative;
+    margin-bottom:2px;user-select:none;
+  }
+  .menu-item:hover{background:#f2f4f7}
+  .menu-item .mi-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+  .menu-item.active{background:#e8f0fe;color:#1a73e8;font-weight:600}
+  .menu-item.active::before{
+    content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;
+    background:#1a73e8;border-radius:0 3px 3px 0;
+  }
+
+  .sidebar-footer{padding:14px 20px;border-top:1px solid #f0f2f5;font-size:12px;color:#98a2b3}
+
+  /* ===== 主内容区 ===== */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .main-header{
+    height:56px;flex-shrink:0;background:#fff;border-bottom:1px solid #eef0f4;
+    display:flex;align-items:center;gap:12px;padding:0 24px;
+  }
+  .main-header .main-title{font-size:16px;font-weight:700;color:#1a1a2e}
+  .main-header .main-meta{font-size:12px;color:#98a2b3;margin-left:auto}
+
+  .main-content{flex:1;overflow:hidden;position:relative}
+  .main-content .page{height:100%;overflow:auto}
+
+  /* 作文报告 iframe */
+  .essay-frame{width:100%;height:100%;border:none;display:block;background:#f0f2f5}
+
+  /* 占位页面 */
+  .placeholder{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px}
+  .placeholder .ph-card{
+    background:#fff;border:1px solid #eef0f4;border-radius:12px;padding:48px 56px;
+    text-align:center;max-width:420px;box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .placeholder .ph-icon{font-size:46px;line-height:1;margin-bottom:16px}
+  .placeholder .ph-title{font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:8px}
+  .placeholder .ph-desc{font-size:13px;color:#667085;margin-bottom:20px}
+  .placeholder .ph-hint{
+    display:inline-block;font-size:12px;color:#1a73e8;background:#e8f0fe;
+    padding:5px 14px;border-radius:999px;font-weight:500;
+  }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="layout">
+  <!-- 左侧菜单 -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-title"><span class="logo">✏️</span>作业报告</div>
+      <div class="brand-sub">高三 · 语文 · 2026年7月月考</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">报告中心</div>
+      <div class="menu-item" data-page="overview"><span class="mi-icon">📊</span>作业总览</div>
+      <div class="menu-item" data-page="analysis"><span class="mi-icon">📈</span>成绩分析</div>
+      <div class="menu-item" data-page="review"><span class="mi-icon">🎯</span>试题讲评</div>
+      <div class="menu-item active" data-page="essay"><span class="mi-icon">✏️</span>作文报告</div>
+      <div class="menu-item" data-page="knowledge"><span class="mi-icon">📚</span>知识点分析</div>
+    </nav>
+    <div class="sidebar-footer">Web端报告原型</div>
+  </aside>
 
-  <!-- ===== TOP BAR ===== -->
-  <div class="top-bar">
-    <div class="left">
-      <span class="title">✏️ 作文批改报告</span>
-      <div class="class-switcher no-print" id="classSwitcher"></div>
-    </div>
-    <div class="right no-print">
-    </div>
-  </div>
-
-  <!-- ===== BREADCRUMB ===== -->
-  <div class="breadcrumb no-print" id="breadcrumb">
-    <a onclick="showClassView()">🏠 班级总览</a>
-    <span class="sep">›</span>
-    <span id="breadcrumbCurrent"></span>
-  </div>
-
-  <!-- ===== REVIEW BANNER ===== -->
-  <div class="review-banner no-print" id="reviewBanner">
-    <span>✏️</span>
-    <span class="rb-text">复核模式 — AI 报告内容可直接编辑，修改处以<span style="background:#fff8e1;padding:1px 4px;border:1px dashed #f59e0b;">黄色</span>标记</span>
-    <div class="rb-actions">
-      <button class="btn" onclick="exitReview(false)">取消修改</button>
-      <button class="btn success" onclick="publishReview()">✅ 确认发布</button>
-    </div>
-  </div>
-
-  <!-- ========================================================== -->
-  <!-- CLASS VIEW                                                  -->
-  <!-- ========================================================== -->
-  <div id="classView">
-    <div class="class-essay-tabs no-print" id="classEssayTabs"></div>
-    <div class="report-section fade-in">
-      <div class="section-title"><span class="icon">📊</span> 班级概览 <span class="badge-count" id="classEssayLabel"></span></div>
-      <div class="class-stats" id="classStats"></div>
-      <div class="chart-grid">
-        <div class="chart-box"><div class="cb-title">📊 分数段分布</div><canvas id="scoreDistChart"></canvas></div>
-        <div class="chart-box"><div class="cb-title">📈 各维度平均得分率</div><canvas id="dimAvgChart"></canvas></div>
-      </div>
-    </div>
-    <div class="report-section fade-in">
-      <div class="section-title"><span class="icon">⚠️</span> 全班共性错误 <span class="badge-count" id="classErrorCount"></span></div>
-      <div class="error-class-chart" id="classErrorChart"></div>
-    </div>
-    <div class="report-section fade-in">
-      <div class="section-title"><span class="icon">🏆</span> 优秀范文展示 <span class="badge-count" id="showcaseCount"></span></div>
-      <div class="showcase-grid" id="showcaseGrid"></div>
-      <div id="showcaseEmpty" style="display:none;text-align:center;padding:24px;color:#98a2b3;font-size:14px;">还没有标记范文，在学生报告中点击"标记为范文"即可展示在此</div>
-    </div>
-    <div class="toolbar no-print">
-      <div class="search-box"><span>🔍</span><input type="text" id="studentSearch" placeholder="搜索姓名或学号..." oninput="renderStudentTable()"></div>
-      <select class="filter-select" id="levelFilter" onchange="renderStudentTable()">
-        <option value="all">全部等级</option>
-        <option value="excellent">优秀</option>
-        <option value="good">良好</option>
-        <option value="pass">及格</option>
-        <option value="needs">待提升</option>
-      </select>
-    </div>
-    <div class="report-section">
-      <div class="section-title"><span class="icon">👥</span> 学生列表 <span class="badge-count" id="studentCount"></span></div>
-      <div id="studentTableWrap" style="overflow-x:auto"></div>
-    </div>
-    <div class="function-tip no-print">💡 点击班级切换 · 点击题号Tab切换作文 · 点击学生姓名进入个人报告 · 勾选后批量导出PDF</div>
-  </div>
-
-  <!-- ========================================================== -->
-  <!-- INDIVIDUAL REPORT                                           -->
-  <!-- ========================================================== -->
-  <div id="individualView" class="page-hidden">
-    <div class="student-bar no-print" id="studentBar"></div>
-    <div class="student-nav no-print" id="studentNav">
-      <button class="sn-btn" id="prevStudentBtn" onclick="prevStudent()">◀ 上一个</button>
-      <span class="sn-progress">学生 <strong id="studentNavIndex">1</strong> / <span id="studentNavTotal">5</span></span>
-      <button class="sn-btn" id="nextStudentBtn" onclick="nextStudent()">下一个 ▶</button>
-    </div>
-    <div class="tab-bar no-print" id="tabBar" style="background:#fff;border-radius:12px;padding:12px 24px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:16px;display:flex;align-items:center;gap:4px"></div>
-
-    <div id="reportContent">
-      <div class="report-section fade-in"><div class="section-title"><span class="icon">📊</span> 作文画像</div><div class="overview-grid" id="overviewGrid"></div></div>
-      <div class="report-section fade-in"><div class="section-title"><span class="icon">🎯</span> 多维评分</div><div id="dimensionList"></div></div>
-      <div class="report-section fade-in">
-        <div class="section-title"><span class="icon">📄</span> 原文批注</div>
-        <div class="view-switch no-print">
-          <button class="active" data-view="annotated" onclick="switchView(this,'annotated')">📝 批注模式</button>
-          <button data-view="pure" onclick="switchView(this,'pure')">📄 纯净原文</button>
-        </div>
-        <div id="originalText" class="text-content"></div>
-        <div class="text-legend" id="textLegend">
-          <span><span class="dot highlight-dot"></span> 亮点句</span>
-          <span><span class="dot issue-dot"></span> 待改进</span>
-          <span><span class="dot error-dot"></span> 语法/用词错误</span>
-        </div>
-      </div>
-      <div class="report-section fade-in"><div class="section-title"><span class="icon">⭐</span> 亮点句点评<span class="badge-count" id="highlightCount"></span></div><div class="card-list" id="highlightList"></div></div>
-      <div class="report-section fade-in">
-        <div class="section-title"><span class="icon">🔧</span> 优化建议<span class="badge-count" id="issueCount"></span></div>
-        <div class="card-list" id="issueList"></div>
-        <div class="mt-16"><div class="section-title" style="font-size:14px;margin-bottom:8px">📊 错误分布</div><div class="error-chart" id="errorChart"></div></div>
-      </div>
-            <div class="report-section fade-in"><div class="section-title"><span class="icon">📖</span> 参考范文</div><div class="model-essay" id="modelEssay"></div></div>
-    </div>
-    <div class="function-tip no-print">💡 点击标注展开批注 · 上一个/下一个切换学生 · 教师复核模式可编辑内容</div>
-  </div>
-
-  <div class="footer-note">AI 作文批改报告 · 交互原型 v1.4</div>
-</div>
-
-<!-- ===== IMAGE VIEWER MODAL ===== -->
-<div class="modal-overlay" id="imageModal" onclick="if(event.target===this)closeImageModal()">
-  <div class="modal-box">
-    <div class="modal-header">
-      <span class="modal-title">📄 原始答卷图片</span>
-      <button class="modal-close" onclick="closeImageModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="mock-image">
-        <span class="mi-badge" id="imageModalBadge">张小明 · 读后续写</span>
-        <svg viewBox="0 0 200 170" fill="none"><rect x="20" y="10" width="160" height="12" rx="2" fill="#d0d5dd"/><rect x="20" y="28" width="100" height="8" rx="2" fill="#e0e0e0"/><rect x="20" y="44" width="140" height="8" rx="2" fill="#e0e0e0"/><rect x="20" y="60" width="80" height="8" rx="2" fill="#e0e0e0"/><rect x="20" y="76" width="160" height="8" rx="2" fill="#e0e0e0"/><rect x="20" y="92" width="120" height="8" rx="2" fill="#e0e0e0"/><rect x="20" y="108" width="50" height="8" rx="2" fill="#e0e0e0"/><rect x="20" y="124" width="160" height="8" rx="2" fill="#e0e0e0"/><rect x="20" y="140" width="100" height="8" rx="2" fill="#e0e0e0"/><rect x="20" y="156" width="140" height="8" rx="2" fill="#e0e0e0"/></svg>
-        <div>📸 模拟手写答题卡扫描件</div>
-        <div class="mi-hint">实际产品中此处展示学生原始笔迹的答题卡图片</div>
-      </div>
-    </div>
+  <!-- 主内容区 -->
+  <div class="main">
+    <header class="main-header">
+      <span class="main-title" id="pageTitle">✏️ 作文报告</span>
+      <span class="main-meta" id="pageMeta">AI 作文批改报告</span>
+    </header>
+    <div class="main-content" id="mainContent"></div>
   </div>
 </div>
-
-
 
 <script>
-// ============================================================
-// DATA — Multiple Classes
-// ============================================================
-const classDataList = [
-  {
-    className: '高三(3)班', subject: '英语', examName: '2026年7月月考',
-    students: [
-      { id:'S001',name:'张小明',studentNo:'2024001',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:198,totalScore:22,fullScore:25,level:'excellent',levelLabel:'优秀',
-          comment:'文章情节设计合理，情感真挚，结尾升华主题恰到好处。',
-          dimensions:[{ name:'内容 Content',score:9,full:10,weight:.35,strengths:['情节设计合理','情感真挚'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:6,full:7,weight:.25,strengths:['段落清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:5,full:6,weight:.30,strengths:['词汇丰富','句式多样'],weaknesses:['个别搭配可优化'],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['书写工整'],weaknesses:[],color:'#6366f1' }],
-          text:'The old man stood at the bus stop, shivering in the cold wind. He looked at his watch and sighed deeply. I was about to hurry past when my mother\'s words echoed in my mind: "A small act of kindness can make a big difference."\n\nWithout hesitation, I walked over and asked, "Sir, do you need help?" He told me he had missed his bus and had no money for another. I pressed my last five yuan into his palm.\n\nTears welled up in his eyes. "Thank you, young man. You have a heart of gold."\n\nAs I ran to school, I realized that kindness is like a boomerang — it always comes back. Helping him made my heart warmer than any exam score ever could.',
-          highlights:[{ text:'"A small act of kindness can make a big difference."',technique:'引语运用',comment:'引用母亲的话自然引出主题。',effect:'承上启下' },{ text:'Tears welled up in his eyes. "Thank you, young man. You have a heart of gold."',technique:'细节描写',comment:'"tears welled up"细腻刻画老人的感动。',effect:'情感渲染到位' },{ text:'kindness is like a boomerang — it always comes back',technique:'比喻修辞',comment:'将善意比作回旋镖，形象生动。',effect:'形象升华主题' }],
-          issues:[{ text:'I was about to hurry past when my mother\'s words echoed in my mind',type:'衔接',severity:'低',comment:'转折略快。',suggestion:'增加"但是"延迟',corrected:'I was about to hurry past — the exam was only 20 minutes away — when my mother\'s words suddenly echoed in my mind.' }],
-          grammarErrors:[{ original:'he had missed his bus',type:'时态',correction:'✓ 正确',explanation:'过去完成时使用正确' }],
-          improvements:[{ priority:1,dimension:'语言表达',problem:'部分表达可更地道',method:'积累高级表达',example:'"I walked over" → "I made my way over"' },{ priority:2,dimension:'内容细节',problem:'内心挣扎可更充分',method:'增加感官描写',example:'增加"biting wind"等环境描写' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat as I noticed the elderly man... I was torn — the clock was ticking toward my exam..."',comment:'开篇环境描写+内心独白引人入胜。' },
-          errorStats:[{ label:'表达可更地道',count:2,color:'#f59e0b' }]
-        },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:152,totalScore:23,fullScore:25,level:'excellent',levelLabel:'优秀',
-          comment:'要点齐全，结构清晰，语言得体。语气亲切而不失正式。',
-          dimensions:[{ name:'内容 Content',score:9,full:10,weight:.35,strengths:['要点齐全','建议具体'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:7,full:7,weight:.25,strengths:['逻辑清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:5,full:6,weight:.30,strengths:['词汇丰富','语气得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['格式规范'],weaknesses:[],color:'#6366f1' }],
-          text:'Dear Mike,\n\nI\'m sorry to hear that you\'re having trouble adapting to the new school. It\'s completely normal to feel this way, but I have some suggestions that might help.\n\nFirst and foremost, try to join some clubs. This is an excellent way to make new friends. Besides, don\'t be afraid to start conversations — a simple "hello" can open the door to a wonderful friendship.\n\nSecondly, if you\'re struggling with your studies, ask your teachers for assistance.\n\nLast but not least, be patient with yourself. I\'m confident that you will soon feel at home here.\n\nYours sincerely,\nLi Hua',
-          highlights:[{ text:'a simple "hello" can open the door to a wonderful friendship',technique:'比喻',comment:'用"open the door"形象表达。',effect:'亲切自然' }],
-          issues:[],grammarErrors:[],
-          improvements:[{ priority:1,dimension:'语言表达',problem:'可增加更高阶衔接词',method:'使用更具层次感的过渡词',example:'"Besides" → "What\'s more / Furthermore"' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I fully understand how challenging it can be to settle into a new environment — the unfamiliar faces..."',comment:'开头排比句式共情到位。' },
-          errorStats:[]
-        }]
-      },
-      { id:'S002',name:'李小红',studentNo:'2024002',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:175,totalScore:20,fullScore:25,level:'good',levelLabel:'良好',
-          comment:'故事完整，情感真实。语言基本规范，在用词丰富度上还有提升空间。',
-          dimensions:[{ name:'内容 Content',score:8,full:10,weight:.35,strengths:['情节完整','情感真实'],weaknesses:['深度略不足'],color:'#1a73e8' },{ name:'结构 Organization',score:5,full:7,weight:.25,strengths:['段落分明'],weaknesses:['过渡略生硬'],color:'#f59e0b' },{ name:'语言 Language',score:5,full:6,weight:.30,strengths:['语法准确'],weaknesses:['词汇偏简单'],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['书写工整'],weaknesses:[],color:'#6366f1' }],
-          text:'The old man stood at the bus stop. He looked cold. I wanted to help him but I was in a hurry. Then I remembered what my mother said: "Be kind to others." So I went to him and gave him some money.\n\nThe old man was very happy. He said thank you to me. I felt very good. Then I ran to school.\n\nI think helping others is very important. We should always be kind to people around us.',
-          highlights:[{ text:'"Be kind to others."',technique:'引用',comment:'引用母亲教诲，简单有效。',effect:'行为动机合理' }],
-          issues:[{ text:'The old man was very happy. He said thank you to me.',type:'表达',severity:'中',comment:'句式连续单调。',suggestion:'合并句子',corrected:'The old man\'s face lit up with a grateful smile as he thanked me.' },{ text:'I felt very good.',type:'词汇',severity:'中',comment:'过于口语化。',suggestion:'更丰富表达',corrected:'A warm sense of fulfillment flooded over me.' }],
-          grammarErrors:[{ original:'what my mother said',type:'措辞',correction:'what my mother had always said',explanation:'过去完成时更准确' }],
-          improvements:[{ priority:1,dimension:'语言表达',problem:'词汇偏简单',method:'学习同义替换',example:'"He was happy" → "His face lit up with joy"' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat..."',comment:'细节描写丰富，值得学习。' },
-          errorStats:[{ label:'词汇偏简单',count:3,color:'#f59e0b' },{ label:'句式单一',count:2,color:'#6366f1' }]
-        },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:138,totalScore:19,fullScore:25,level:'good',levelLabel:'良好',
-          comment:'结构完整，要点基本齐全。部分表达偏口语化。',
-          dimensions:[{ name:'内容 Content',score:7,full:10,weight:.35,strengths:['要点基本齐全'],weaknesses:['建议不够具体'],color:'#1a73e8' },{ name:'结构 Organization',score:6,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:4,full:6,weight:.30,strengths:['语法基本正确'],weaknesses:['口语化偏重'],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['格式正确'],weaknesses:[],color:'#6366f1' }],
-          text:'Dear Mike,\n\nI know you are having a hard time. Don\'t worry too much. Here are my ideas.\n\nFirst, you can join some clubs. It\'s a good way to make new friends. Second, ask your teacher for help.\n\nLast, just be yourself. I hope you will be happy soon.\n\nYours,\nLi Hua',
-          highlights:[],issues:[{ text:'Don\'t worry too much.',type:'表达',severity:'中',comment:'偏口语化。',suggestion:'更正式表达',corrected:'There is no need to worry excessively.' }],
-          grammarErrors:[],
-          improvements:[{ priority:1,dimension:'语言表达',problem:'口语化表达较多',method:'积累正式书信句式',example:'"Don\'t worry" → "There is no need to worry"' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I fully understand how challenging it can be..."',comment:'开头共情到位。' },
-          errorStats:[{ label:'口语化表达',count:3,color:'#f59e0b' }]
-        }]
-      },
-      { id:'S003',name:'王大力',studentNo:'2024003',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:155,totalScore:14,fullScore:25,level:'pass',levelLabel:'及格',
-          comment:'基本完成续写任务，但存在较多语法错误。',
-          dimensions:[{ name:'内容 Content',score:6,full:10,weight:.35,strengths:['情节方向正确'],weaknesses:['内容单薄'],color:'#1a73e8' },{ name:'结构 Organization',score:4,full:7,weight:.25,strengths:['有分段意识'],weaknesses:['结构松散'],color:'#f59e0b' },{ name:'语言 Language',score:3,full:6,weight:.30,strengths:[],weaknesses:['语法错误较多'],color:'#1e7e34' },{ name:'书写 Mechanics',score:1,full:2,weight:.10,strengths:['可辨认'],weaknesses:['拼写较多'],color:'#6366f1' }],
-          text:'The old man standed at the bus stop. He feeled cold. I think I should help him but I also need to go to school. So I give him some money.\n\nHe say thank you to me. I say you are welcome. Then I go to school. I feeled happy.\n\nI think helping is good. We must help others when they need.',
-          highlights:[],issues:[
-            { text:'The old man standed at the bus stop.',type:'语法',severity:'高',comment:'"standed"不是正确过去式。',suggestion:'学习不规则动词',corrected:'The old man stood at the bus stop.' },
-            { text:'He feeled cold.',type:'语法',severity:'高',comment:'"feeled"应为"felt"。',suggestion:'熟记不规则动词',corrected:'He felt cold.' }
-          ],
-          grammarErrors:[{ original:'standed',type:'不规则动词',correction:'stood',explanation:'stand的过去式 stood' },{ original:'feeled',type:'不规则动词',correction:'felt',explanation:'feel的过去式 felt' }],
-          improvements:[{ priority:1,dimension:'语言基础',problem:'不规则动词过去式不牢固',method:'整理常见不规则动词表',example:'stand→stood, feel→felt, say→said' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat..."',comment:'注意作者如何用细节描写让故事生动。' },
-          errorStats:[{ label:'不规则动词错误',count:4,color:'#c5221f' },{ label:'时态不一致',count:2,color:'#f59e0b' }]
-        },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:120,totalScore:13,fullScore:25,level:'pass',levelLabel:'及格',
-          comment:'基本格式正确，但语法错误较多。',
-          dimensions:[{ name:'内容 Content',score:5,full:10,weight:.35,strengths:['有基本建议'],weaknesses:['内容简单'],color:'#1a73e8' },{ name:'结构 Organization',score:4,full:7,weight:.25,strengths:['有结构意识'],weaknesses:['衔接词不当'],color:'#f59e0b' },{ name:'语言 Language',score:3,full:6,weight:.30,strengths:[],weaknesses:['语法错误多'],color:'#1e7e34' },{ name:'书写 Mechanics',score:1,full:2,weight:.10,strengths:[],weaknesses:['标点不规范'],color:'#6366f1' }],
-          text:'Dear Mike,\n\nI know you feel bad in new school. Don\'t worry. I have some advise for you.\n\nFirst, make some friend. It will make you happy. Second, ask teacher for help.\n\nLast, don\'t give up.\n\nYours,\nLi Hua',
-          highlights:[],issues:[{ text:'I have some advise for you.',type:'语法',severity:'高',comment:'"advise"是动词，名词是"advice"。',suggestion:'区分advise/advice',corrected:'I have some advice for you.' }],
-          grammarErrors:[{ original:'advise',type:'词性混淆',correction:'advice',explanation:'advise是动词，advice是名词' }],
-          improvements:[{ priority:1,dimension:'语言基础',problem:'基础语法知识需巩固',method:'复习名词单复数、advise/advice区别',example:'区分advise/advice的用法' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I was sorry to learn..."',comment:'注意如何用委婉得体的语气提建议。' },
-          errorStats:[{ label:'基础语法错误',count:3,color:'#c5221f' }]
-        }]
-      },
-      { id:'S004',name:'赵欣然',studentNo:'2024004',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:190,totalScore:24,fullScore:25,level:'excellent',levelLabel:'优秀',
-          comment:'情节设计巧妙，情感层次丰富，语言表达精准老练。',
-          dimensions:[{ name:'内容 Content',score:10,full:10,weight:.35,strengths:['情节设计巧妙','立意深刻'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:7,full:7,weight:.25,strengths:['行文流畅','首尾呼应'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:5,full:6,weight:.30,strengths:['用词精准','句式丰富'],weaknesses:[],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['书写美观'],weaknesses:[],color:'#6366f1' }],
-          text:'The biting wind cut through my coat as I noticed the elderly man at the bus stop, his shoulders hunched against the cold. I was torn — the final exam was only 20 minutes away, yet something held me back.\n\n"What would I want someone to do if it were my grandfather?" The answer came before the question finished forming.\n\nI approached him. His weary eyes met mine. I bought him a ticket and waited with him.\n\n"Thank you," he whispered, his voice trembling. "You reminded me that there is still kindness in this world."\n\nAs I ran to school, late but light-hearted, I realized that kindness is not just an action — it\'s a choice that defines who we are.',
-          highlights:[{ text:'The biting wind cut through my coat as I noticed the elderly man at the bus stop, his shoulders hunched against the cold.',technique:'环境+细节描写',comment:'开篇画面感极强。',effect:'营造氛围' },{ text:'"What would I want someone to do if it were my grandfather?"',technique:'设问修辞',comment:'换位思考引出决定。',effect:'思想深度凸显' },{ text:'kindness is not just an action — it\'s a choice that defines who we are',technique:'对偶+升华',comment:'结尾掷地有声。',effect:'深刻有力' }],
-          issues:[],grammarErrors:[],
-          improvements:[{ priority:1,dimension:'语言表达',problem:'已是优秀水平，可挑战更高级表达',method:'尝试更多修辞',example:'虚拟语气："Had I walked past him, I would have regretted it forever."' }],
-          modelEssay:{ title:'A Kind Deed (满分范文)',excerpt:'"The biting wind cut through my coat..." (全文)',comment:'本文就是范文级别，开头设问和结尾升华值得全班学习。' },
-          errorStats:[]
-        },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:158,totalScore:24,fullScore:25,level:'excellent',levelLabel:'优秀',
-          comment:'语言地道、语气得体、结构严谨。',
-          dimensions:[{ name:'内容 Content',score:9,full:10,weight:.35,strengths:['建议全面具体'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:7,full:7,weight:.25,strengths:['逻辑严密'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:6,full:6,weight:.30,strengths:['地道流畅','语气得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['完美'],weaknesses:[],color:'#6366f1' }],
-          text:'Dear Mike,\n\nI was sorry to learn that you\'re having difficulty adjusting. Please don\'t be discouraged — it\'s perfectly natural.\n\nTo begin with, I\'d recommend getting involved in activities. Not only will this help you meet like-minded friends, but it will also give you a sense of belonging.\n\nAdditionally, if you find the coursework challenging, don\'t hesitate to seek help.\n\nAbove all, give yourself time to adapt. Rome wasn\'t built in a day, and neither is a sense of belonging.\n\nWishing you all the best.\n\nYours sincerely,\nLi Hua',
-          highlights:[{ text:'Not only will this help you meet like-minded friends, but it will also give you a sense of belonging.',technique:'倒装句',comment:'Not only倒装结构熟练。',effect:'强调好处' },{ text:'Rome wasn\'t built in a day, and neither is a sense of belonging.',technique:'谚语活用',comment:'巧妙改编谚语。',effect:'说服力强' }],
-          issues:[],grammarErrors:[],
-          improvements:[{ priority:1,dimension:'内容细节',problem:'可进一步个性化建议',method:'根据具体困难给出针对性建议',example:'猜测具体困难："If you\'re worried about the language barrier..."' }],
-          modelEssay:{ title:'建议信 (满分范文)',excerpt:'"I was sorry to learn that you\'re having difficulty adjusting..."',comment:'倒装句+谚语活用，建议信典范。' },
-          errorStats:[]
-        }]
-      },
-      { id:'S005',name:'陈思远',studentNo:'2024005',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:165,totalScore:16,fullScore:25,level:'good',levelLabel:'良好',
-          comment:'故事完整。部分中式英语影响阅读流畅度。',
-          dimensions:[{ name:'内容 Content',score:7,full:10,weight:.35,strengths:['情节合理'],weaknesses:['部分中式思维'],color:'#1a73e8' },{ name:'结构 Organization',score:5,full:7,weight:.25,strengths:['结构完整'],weaknesses:['衔接可改进'],color:'#f59e0b' },{ name:'语言 Language',score:3,full:6,weight:.30,strengths:[],weaknesses:['中式英语较多'],color:'#1e7e34' },{ name:'书写 Mechanics',score:1,full:2,weight:.10,strengths:['可辨认'],weaknesses:['拼写有误'],color:'#6366f1' }],
-          text:'I saw an old man at the bus stop. He looked very cold. I think in my heart I should help him. So I give him my money.\n\nHe very happy and say thank you many times.\n\nFrom this thing I learn that help others is help ourselves.',
-          highlights:[],issues:[{ text:'I think in my heart I should help him.',type:'表达',severity:'中',comment:'"in my heart"是中式表达。',suggestion:'改为地道表达',corrected:'I felt that I should help him.' },{ text:'He very happy and say thank you many times.',type:'语法',severity:'高',comment:'缺少be动词，时态不一致。',suggestion:'补充动词',corrected:'He was very happy and thanked me repeatedly.' }],
-          grammarErrors:[{ original:'He very happy',type:'系动词缺失',correction:'He was very happy',explanation:'形容词作表语需加be动词' }],
-          improvements:[{ priority:1,dimension:'语言基础',problem:'中式英语较多',method:'每次写完检查每个句子',example:'"He very happy" → "He was very happy"' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat..."',comment:'学习如何用细节描写让故事生动。' },
-          errorStats:[{ label:'中式英语',count:4,color:'#c5221f' },{ label:'时态不一致',count:2,color:'#f59e0b' }]
-        },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:130,totalScore:16,fullScore:25,level:'good',levelLabel:'良好',
-          comment:'格式正确，建议合理。但中式英语较多。',
-          dimensions:[{ name:'内容 Content',score:7,full:10,weight:.35,strengths:['建议合理'],weaknesses:['不够具体'],color:'#1a73e8' },{ name:'结构 Organization',score:5,full:7,weight:.25,strengths:['结构完整'],weaknesses:['衔接生硬'],color:'#f59e0b' },{ name:'语言 Language',score:3,full:6,weight:.30,strengths:[],weaknesses:['中式英语'],color:'#1e7e34' },{ name:'书写 Mechanics',score:1,full:2,weight:.10,strengths:[],weaknesses:['格式小错误'],color:'#6366f1' }],
-          text:'Dear Mike,\n\nWelcome to our school! I know you are not happy now. I will give you some advice.\n\nFirst, you should make more friends. Second, ask teacher if you have question. Teacher are friendly.\n\nYours,\nLi Hua',
-          highlights:[],issues:[{ text:'Teacher are very friendly.',type:'语法',severity:'高',comment:'名词复数+主谓一致。',suggestion:'注意名词复数和主谓一致',corrected:'The teachers are very friendly.' }],
-          grammarErrors:[{ original:'Teacher are',type:'主谓一致',correction:'Teachers are',explanation:'可数名词应用复数' }],
-          improvements:[{ priority:1,dimension:'语言基础',problem:'主谓一致需巩固',method:'逐句检查主谓搭配',example:'"Teacher is" → "Teachers are"' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I was sorry to learn..."',comment:'注意如何用委婉得体的语气提建议。' },
-          errorStats:[{ label:'基础语法错误',count:3,color:'#c5221f' }]
-        }]
-      }]
-  },
-  {
-    className: '高三(5)班', subject: '英语', examName: '2026年7月月考',
-    students: [
-      { id:'S101',name:'刘佳怡',studentNo:'2024101',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:185,totalScore:21,fullScore:25,level:'excellent',levelLabel:'优秀',
-          comment:'情感丰富，语言流畅，对原文理解准确。结尾主题升华自然。',
-          dimensions:[{ name:'内容 Content',score:8,full:10,weight:.35,strengths:['情感丰富','理解准确'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:6,full:7,weight:.25,strengths:['结构完整'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:5,full:6,weight:.30,strengths:['语言流畅'],weaknesses:[],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['规范'],weaknesses:[],color:'#6366f1' }],
-          text:'I noticed an elderly man standing alone at the bus stop. He looked tired and cold. I knew I had to help him. I offered him my umbrella and some warm tea I had just bought.\n\nHe smiled at me and said, "Thank you, dear. You are very kind."\n\nI smiled back and felt a warmth spreading through my heart. Sometimes the smallest gestures can make the biggest difference.\n\nFrom this experience, I learned that kindness is a language that everyone understands. It costs nothing but means everything.',
-          highlights:[{ text:'Sometimes the smallest gestures can make the biggest difference.',technique:'对比手法',comment:'"smallest"与"biggest"的对比简洁有力。',effect:'突出主题' },{ text:'kindness is a language that everyone understands',technique:'比喻',comment:'将善意比作通用语言，贴切动人。',effect:'引发共鸣' }],
-          issues:[],grammarErrors:[],
-          improvements:[{ priority:1,dimension:'语言表达',problem:'个别表达可更地道',method:'积累更地道的短语搭配',example:'"felt a warmth spreading" 不错，可进一步挑战更复杂句式' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"Sometimes the smallest gestures can make the biggest difference..."',comment:'对比手法的运用值得学习。' },
-          errorStats:[]
-        },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:148,totalScore:22,fullScore:25,level:'excellent',levelLabel:'优秀',
-          comment:'要点齐全，表达得体，语言流畅。',
-          dimensions:[{ name:'内容 Content',score:8,full:10,weight:.35,strengths:['要点齐全'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:6,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:6,full:6,weight:.30,strengths:['表达得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['规范'],weaknesses:[],color:'#6366f1' }],
-          text:'Dear Mike,\n\nI\'m sorry to hear about your difficulties adjusting to the new school. It\'s normal to feel this way, and I\'d like to share some thoughts.\n\nFirst, why not join some clubs? It\'s a great way to meet people with similar interests. Second, don\'t hesitate to reach out to your classmates — most people are friendly and willing to help.\n\nI hope you settle in soon.\n\nYours,\nLi Hua',
-          highlights:[{ text:'why not join some clubs?',technique:'建议句式',comment:'用"why not"提出建议，语气委婉亲切。',effect:'亲切自然' }],
-          issues:[],grammarErrors:[],
-          improvements:[{ priority:1,dimension:'内容细节',problem:'建议可更具体',method:'' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I\'m sorry to hear about your difficulties..."',comment:'语气亲切自然，值得借鉴。' },
-          errorStats:[]
-        }]
-      },
-      { id:'S102',name:'周浩然',studentNo:'2024102',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:160,totalScore:17,fullScore:25,level:'good',levelLabel:'良好',
-          comment:'情节合理，语言通顺。词汇偏简单，句式变化可加强。',
-          dimensions:[{ name:'内容 Content',score:7,full:10,weight:.35,strengths:['情节合理'],weaknesses:['细节不够'],color:'#1a73e8' },{ name:'结构 Organization',score:5,full:7,weight:.25,strengths:['结构清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:3,full:6,weight:.30,strengths:[],weaknesses:['词汇偏简单'],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['认真'],weaknesses:[],color:'#6366f1' }],
-          text:'I saw an old man at the bus stop. He was cold. I wanted to help. So I gave him my scarf. He said thank you. I felt happy.',
-          highlights:[],issues:[{ text:'I saw an old man at the bus stop. He was cold. I wanted to help. So I gave him my scarf.',type:'表达',severity:'中',comment:'连续简单句，读起来节奏单一。',suggestion:'合并句子',corrected:'Seeing the old man shivering at the bus stop, I took off my scarf and wrapped it around him.' }],
-          grammarErrors:[],
-          improvements:[{ priority:1,dimension:'语言表达',problem:'句式单一，多为简单句',method:'学习用分词结构和定语从句连接句子',example:'"I saw... He was cold" → "Seeing the old man shivering at the bus stop, I..."' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"Sometimes the smallest gestures can make the biggest difference..."',comment:'注意句式变化带来的阅读体验差异。' },
-          errorStats:[{ label:'句式单一',count:3,color:'#f59e0b' }]
-        },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:125,totalScore:18,fullScore:25,level:'good',levelLabel:'良好',
-          comment:'结构完整，但语言较简单，缺少正式感。',
-          dimensions:[{ name:'内容 Content',score:7,full:10,weight:.35,strengths:['结构完整'],weaknesses:['语言简单'],color:'#1a73e8' },{ name:'结构 Organization',score:5,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:4,full:6,weight:.30,strengths:[],weaknesses:['缺少正式感'],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['正确'],weaknesses:[],color:'#6366f1' }],
-          text:'Dear Mike,\n\nI know you feel bad. But don\'t worry. I want to help you.\n\nFirst, make friends. It is good. Second, ask teachers. They are nice.\n\nYours,\nLi Hua',
-          highlights:[],issues:[{ text:'I know you feel bad. But don\'t worry.',type:'表达',severity:'中',comment:'过于口语化，缺乏正式感。',suggestion:'用更正式表达',corrected:'I understand you might be feeling down, but there is no need to worry.' }],
-          grammarErrors:[],
-          improvements:[{ priority:1,dimension:'语言表达',problem:'口语化严重',method:'积累正式书信常用表达',example:'"I know you feel bad" → "I understand you might be feeling a bit down"' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I\'m sorry to hear about your difficulties..."',comment:'注意语气上的差别。' },
-          errorStats:[{ label:'口语化表达',count:3,color:'#f59e0b' }]
-        }]
-      }]
-  },
-  {
-    className: '高二(1)班', subject: '语文', examName: '2026年7月期末考',
-    students: [
-      { id:'S201',name:'孙文博',studentNo:'2024201',essays:[
-        { title:'命题作文 — 谈坚持',type:'议论文',wordCount:780,totalScore:34,fullScore:40,level:'good',levelLabel:'良好',
-          comment:'论点明确，论据较为充实。结构完整，但在论证深度和语言文采上还有提升空间。',
-          dimensions:[{ name:'内容立意',score:7,full:10,weight:.25,strengths:['论点明确'],weaknesses:['论证深度不够'],color:'#1a73e8' },{ name:'结构逻辑',score:8,full:10,weight:.25,strengths:['结构完整','层次清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言表达',score:6,full:10,weight:.25,strengths:['通顺流畅'],weaknesses:['文采不足','修辞较少'],color:'#1e7e34' },{ name:'书写规范',score:8,full:10,weight:.25,strengths:['字迹工整'],weaknesses:[],color:'#6366f1' }],
-          text:'坚持，是通往成功的必经之路。古今中外，无数事例证明了这一点。\n\n王羲之练字，日复一日，将一池清水染成了墨色，最终成为一代书圣。爱迪生发明电灯，失败了上千次仍然不放弃，最终为人类带来了光明。这些故事告诉我们，只有坚持不懈，才能达到成功的彼岸。\n\n然而，坚持并不是盲目的固执。在坚持的同时，我们也要学会思考和调整方向。如果方向错了，再多的坚持也只是徒劳。\n\n作为一名高中生，我们在学习中也需要坚持。数学题不会做，多思考几遍；英语单词记不住，多背几遍。只要我们不放弃，终会有所收获。',
-          highlights:[{ text:'王羲之练字，日复一日，将一池清水染成了墨色，最终成为一代书圣。',technique:'用典',comment:'用王羲之练字的典故论证坚持，典型有力。',effect:'增强说服力' }],
-          issues:[{ text:'坚持，是通往成功的必经之路。',type:'表达',severity:'低',comment:'开头略显套路化，可以更个性化。',suggestion:'用更有个人色彩的开头',corrected:'如果让我用一个词概括成功的秘诀，我会毫不犹豫地选择"坚持"。' }],
-          grammarErrors:[{ original:'失败的次数上千次',type:'语序',correction:'失败了上千次',explanation:'调整语序更通顺' }],
-          improvements:[{ priority:1,dimension:'语言表达',problem:'文采不足，修辞手法少',method:'多积累排比、比喻、引用等修辞',example:'"坚持如同一把火炬，在黑暗中照亮前行的道路。"' }],
-          modelEssay:{ title:'谈坚持 (优秀范文)',excerpt:'"坚持，不是盲目地固守，而是在认清方向后的执着前行..."',comment:'对"坚持"的定义有新意，避免了套路化表达。' },
-          errorStats:[{ label:'开头套路化',count:1,color:'#f59e0b' },{ label:'文采不足',count:3,color:'#1a73e8' }]
-        },
-        { title:'微写作 — 推荐一本书',type:'应用文',wordCount:220,totalScore:32,fullScore:40,level:'good',levelLabel:'良好',
-          comment:'推荐理由充分，语言流畅。但结构可以更紧凑。',
-          dimensions:[{ name:'内容立意',score:8,full:10,weight:.25,strengths:['推荐理由充分'],weaknesses:[],color:'#1a73e8' },{ name:'结构逻辑',score:7,full:10,weight:.25,strengths:['条理清晰'],weaknesses:['结构略松散'],color:'#f59e0b' },{ name:'语言表达',score:7,full:10,weight:.25,strengths:['语言流畅'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范',score:10,full:10,weight:.25,strengths:['优秀'],weaknesses:[],color:'#6366f1' }],
-          text:'我推荐大家阅读《百年孤独》。这本小说是马尔克斯的代表作，讲述了布恩迪亚家族七代人的传奇故事。\n\n读完这本书，我深深感受到孤独是人类共同的情感。但与此同时，书中也展现了爱与希望的力量。\n\n推荐理由：第一，语言优美，充满想象力。第二，故事引人入胜。第三，能引发深刻思考。',
-          highlights:[{ text:'孤独是人类共同的情感。但与此同时，书中也展现了爱与希望的力量。',technique:'对比',comment:'将"孤独"与"爱与希望"并置，立意深刻。',effect:'升华主题' }],
-          issues:[],grammarErrors:[],
-          improvements:[{ priority:1,dimension:'结构逻辑',problem:'结构可更紧凑',method:'用"首先、其次、最后"或递进结构',example:'可以按照"内容简介→读后感悟→推荐理由"的逻辑层层递进' }],
-          modelEssay:{ title:'推荐一本书 (优秀范文)',excerpt:'"如果要选一本陪伴我一生的书，我会选择《百年孤独》..."',comment:'推荐语有个性，不套模板。' },
-          errorStats:[{ label:'结构可优化',count:1,color:'#f59e0b' }]
-        }]
-      },
-      { id:'S202',name:'林雨桐',studentNo:'2024202',essays:[
-        { title:'命题作文 — 谈坚持',type:'议论文',wordCount:820,totalScore:36,fullScore:40,level:'excellent',levelLabel:'优秀',
-          comment:'论点深刻，论据新颖，语言富有文采。结构严谨，层层递进，展现了较高的写作水平。',
-          dimensions:[{ name:'内容立意',score:9,full:10,weight:.25,strengths:['论点深刻','论据新颖'],weaknesses:[],color:'#1a73e8' },{ name:'结构逻辑',score:9,full:10,weight:.25,strengths:['结构严谨','层层递进'],weaknesses:[],color:'#f59e0b' },{ name:'语言表达',score:9,full:10,weight:.25,strengths:['文采斐然','修辞丰富'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范',score:9,full:10,weight:.25,strengths:['卷面整洁'],weaknesses:[],color:'#6366f1' }],
-          text:'坚持，是水滴石穿的执着，是铁杵磨针的毅力，更是暗夜行路时心中不灭的那盏灯。\n\n然而，真正的坚持不是盲目的固守，而是在认清方向后的执着前行。司马迁忍辱负重著《史记》，支撑他的不仅是坚持二字，更是"究天人之际，通古今之变"的史家使命。\n\n坚持需要智慧。古人云："行百里者半九十。"最后十里往往最难，但也最接近成功。如果没有方向的坚持如同无头苍蝇，那么半途而废则是对梦想最大的辜负。\n\n在这个快节奏的时代，坚持更显珍贵。让我们学会在浮躁中沉淀，在困境中坚守，让坚持成为人生最亮丽的底色。',
-          highlights:[{ text:'坚持，是水滴石穿的执着，是铁杵磨针的毅力，更是暗夜行路时心中不灭的那盏灯。',technique:'排比+递进',comment:'三个排比句层层递进，从具象到抽象，气势恢宏。',effect:'开篇有力，引人入胜' },{ text:'司马迁忍辱负重著《史记》，支撑他的不仅是坚持二字，更是"究天人之际，通古今之变"的史家使命。',technique:'引用+递进',comment:'引用名句深挖坚持背后的使命感和价值观。',effect:'论证深度凸显' }],
-          issues:[],grammarErrors:[],
-          improvements:[{ priority:1,dimension:'语言表达',problem:'已是优秀水平',method:'可尝试更个性化的表达',example:'结尾可增加个人化的感悟，让文章更有温度' }],
-          modelEssay:{ title:'谈坚持 (满分范文)',excerpt:'"坚持，是水滴石穿的执着，是铁杵磨针的毅力..." (全文)',comment:'本文就是范文级别，排比开篇气势恢宏，引经据典论证有力。' },
-          errorStats:[]
-        },
-        { title:'微写作 — 推荐一本书',type:'应用文',wordCount:250,totalScore:38,fullScore:40,level:'excellent',levelLabel:'优秀',
-          comment:'推荐理由充分，语言优美，有感染力。',
-          dimensions:[{ name:'内容立意',score:9,full:10,weight:.25,strengths:['推荐有深度'],weaknesses:[],color:'#1a73e8' },{ name:'结构逻辑',score:9,full:10,weight:.25,strengths:['逻辑清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言表达',score:10,full:10,weight:.25,strengths:['语言优美'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范',score:10,full:10,weight:.25,strengths:['优秀'],weaknesses:[],color:'#6366f1' }],
-          text:'如果要选一本能改变人生态度的书，我会推荐余华的《活着》。\n\n这本书讲述了主人公福贵在苦难中活下去的故事。每一次读到福贵失去至亲的情节，我都忍不住落泪。但奇怪的是，读完后的感觉不是绝望，而是一种对生命深深的敬畏。\n\n余华用最朴素的文字，写出了最深沉的情感。他告诉我们：活着本身就是一种力量。',
-          highlights:[{ text:'余华用最朴素的文字，写出了最深沉的情感。',technique:'对比',comment:'"朴素"与"深沉"的对比精准概括了余华的写作风格。',effect:'一语中的，点评到位' }],
-          issues:[],grammarErrors:[],
-          improvements:[{ priority:1,dimension:'内容细节',problem:'可适当增加具体情节引用',method:'引用书中1-2个具体细节让推荐更生动',example:'如"福贵背着生病的家珍走在雪地里的那个场景让我久久难忘"' }],
-          modelEssay:{ title:'推荐一本书 (满分范文)',excerpt:'"如果要选一本能改变人生态度的书，我会推荐《活着》..."',comment:'推荐语有真情实感，不套路。' },
-          errorStats:[]
-        }]
-      }]
+  // 调试开关：index.html?noDims=1 会把参数透传给内嵌的作文报告，预览「未录入评分维度」样式
+  const noDims = new URLSearchParams(location.search).get('noDims') === '1';
+  const essaySrc = 'essay-report.html' + (noDims ? '?noDims=1' : '');
+
+  // 各菜单页配置
+  const pages = {
+    overview: {
+      title: '📊 作业总览',
+      meta: '班级作业提交率、批改进度与得分率概览',
+      html: placeholder('📊', '作业总览', '查看班级作业提交率、批改进度与各题得分率概览')
+    },
+    analysis: {
+      title: '📈 成绩分析',
+      meta: '分数段分布、各维度得分率与班级对比',
+      html: placeholder('📈', '成绩分析', '分数段分布、各维度平均得分率、班级横向对比')
+    },
+    review: {
+      title: '🎯 试题讲评',
+      meta: '逐题解析、得分率与相似题推荐',
+      html: placeholder('🎯', '试题讲评', '逐题解析、班级/年级得分率、常见错因与相似题推荐')
+    },
+    essay: {
+      title: '✏️ 作文报告',
+      meta: 'AI 作文批改报告',
+      html: '<iframe class="essay-frame" src="' + essaySrc + '" title="作文报告"></iframe>'
+    },
+    knowledge: {
+      title: '📚 知识点分析',
+      meta: '知识点掌握度与需加强项',
+      html: placeholder('📚', '知识点分析', '知识点掌握情况、班级/年级对比、需重点加强项')
     }
-];
+  };
 
-// ============================================================
-// STATE
-// ============================================================
-let currentClassIndex = 0;
-let currentPage = 'class';
-let currentStudentId = null;
-let currentEssayTab = 0;
-let currentStudentTab = 0;
-let currentView = 'annotated';
-let isReviewMode = false;
-let modelEssays = [];
-let distChartInstance = null;
-let dimAvgChartInstance = null;
-let radarChartInstance = null;
-
-function getCurrentClass() { return classDataList[currentClassIndex]; }
-function getCurrentStudents() { return getCurrentClass().students; }
-function getStudent(id) { return getCurrentStudents().find(s => s.id === id); }
-function getStudentIndex(id) { return getCurrentStudents().findIndex(s => s.id === id); }
-function getCurrentEssayData() { return getCurrentStudents().map(s => s.essays[currentEssayTab]).filter(Boolean); }
-
-// ============================================================
-// CLASS SWITCHER
-// ============================================================
-function renderClassSwitcher() {
-  const el = document.getElementById('classSwitcher');
-  el.innerHTML = classDataList.map((c,i) =>
-    `<button class="${i===currentClassIndex?'active':''}" onclick="switchClass(${i})">${c.className}</button>`
-  ).join('');
-}
-
-function switchClass(index) {
-  currentClassIndex = index;
-  currentEssayTab = 0;
-  currentStudentTab = 0;
-  // Filter model essays for this class only
-  const currIds = new Set(getCurrentStudents().map(s => s.id));
-  modelEssays = modelEssays.filter(m => currIds.has(m.studentId));
-  renderClassSwitcher();
-  document.getElementById('classView').classList.remove('page-hidden');
-  document.getElementById('individualView').classList.add('page-hidden');
-  document.getElementById('reviewBanner').style.display = 'none';
-  isReviewMode = false;
-  updateBreadcrumb();
-  renderClassView();
-}
-
-// ============================================================
-// BREADCRUMB
-// ============================================================
-function updateBreadcrumb() {
-  const c = getCurrentClass();
-  if (currentPage === 'class') {
-    document.getElementById('breadcrumbCurrent').textContent = c.className + ' · ' + c.subject;
-  } else {
-    const s = getStudent(currentStudentId);
-    document.getElementById('breadcrumbCurrent').textContent = s ? s.name + '的作文报告' : c.className;
-  }
-}
-
-// ============================================================
-// NAVIGATION
-// ============================================================
-function showClassView() {
-  currentPage = 'class';
-  document.getElementById('classView').classList.remove('page-hidden');
-  document.getElementById('individualView').classList.add('page-hidden');
-  document.getElementById('reviewBanner').style.display = 'none';
-  isReviewMode = false;
-  updateBreadcrumb();
-  renderClassView();
-}
-
-function showIndividualView(studentId) {
-  currentPage = 'individual';
-  currentStudentId = studentId;
-  document.getElementById('classView').classList.add('page-hidden');
-  document.getElementById('individualView').classList.remove('page-hidden');
-  var _tmp = document.getElementById('batchPdfBtnWrap'); if (_tmp) _tmp.style.display = 'none';
-  const s = getStudent(studentId);
-  if (!s) return;
-  updateBreadcrumb();
-  currentStudentTab = 0;
-  renderIndividualView(s);
-}
-
-// ============================================================
-// CLASS VIEW
-// ============================================================
-function renderClassView() {
-  renderClassEssayTabs();
-  renderClassStats();
-  renderClassErrorChart();
-  renderModelShowcase();
-  renderStudentTable();
-}
-
-function renderClassEssayTabs() {
-  const s = getCurrentStudents()[0];
-  if (!s) return;
-  const el = document.getElementById('classEssayTabs');
-  el.innerHTML = s.essays.map((e,i) =>
-    `<button class="${i===currentEssayTab?'active':''}" onclick="switchClassEssay(${i})">📝 题号${i+1}：${e.type}</button>`
-  ).join('');
-}
-
-function switchClassEssay(index) {
-  currentEssayTab = index;
-  document.querySelectorAll('#classEssayTabs button').forEach((b,i) => b.classList.toggle('active', i===index));
-  renderClassView();
-}
-
-function renderClassStats() {
-  const essays = getCurrentEssayData();
-  if (!essays.length) return;
-  const scores = essays.map(e => e.totalScore);
-  const full = essays[0].fullScore || 25;
-  const sum = scores.reduce((a,b)=>a+b,0);
-  const avg = (sum/scores.length).toFixed(1);
-  const max = Math.max(...scores), min = Math.min(...scores);
-  const total = scores.length;
-
-  document.getElementById('classEssayLabel').textContent = getCurrentClass().className + ' · ' + getCurrentEssayData()[0]?.type;
-  document.getElementById('classStats').innerHTML = `
-    <div class="class-stat highlight-stat"><div class="cs-value">${avg}</div><div class="cs-label">平均分</div></div>
-    <div class="class-stat"><div class="cs-value">${max}</div><div class="cs-label">最高分</div></div>
-    <div class="class-stat"><div class="cs-value">${min}</div><div class="cs-label">最低分</div></div>
-    <div class="class-stat"><div class="cs-value">${total}</div><div class="cs-label">学生人数</div></div>
-  `;
-  drawDistChart(scores, full);
-  drawDimAvgChart(essays);
-}
-
-function drawDistChart(scores, full) {
-  const c = document.getElementById('scoreDistChart'); if (!c) return;
-  if (distChartInstance) { distChartInstance.destroy(); distChartInstance = null; }
-  // 按满分百分比分段：0-20%, 20-40%, 40-60%, 60-80%, 80-100%
-  const segments = [
-    { label: `<20% (0-${Math.round(full*0.2)})`, min: 0, max: full*0.2 },
-    { label: `20%-40% (${Math.round(full*0.2)}-${Math.round(full*0.4)})`, min: full*0.2, max: full*0.4 },
-    { label: `40%-60% (${Math.round(full*0.4)}-${Math.round(full*0.6)})`, min: full*0.4, max: full*0.6 },
-    { label: `60%-80% (${Math.round(full*0.6)}-${Math.round(full*0.8)})`, min: full*0.6, max: full*0.8 },
-    { label: `80%-100% (${Math.round(full*0.8)}-${full})`, min: full*0.8, max: full }
-  ];
-  const counts = segments.map(sg => scores.filter(sc => sc >= sg.min && (sc < sg.max || (sg.max === full && sc <= full))).length);
-  const gradientColors = ['#c5221f','#f59e0b','#667085','#1a73e8','#1e7e34'];
-  distChartInstance = new Chart(c, {
-    type:'bar', data:{labels:segments.map(s=>s.label),datasets:[{data:counts,backgroundColor:gradientColors,borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw+'人'}}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:{size:11}},grid:{color:'#f0f0f0'}},x:{ticks:{font:{size:10}}}}}
-  });
-}
-
-function drawDimAvgChart(essays) {
-  const c = document.getElementById('dimAvgChart'); if (!c) return;
-  if (dimAvgChartInstance) { dimAvgChartInstance.destroy(); dimAvgChartInstance = null; }
-  const dims = essays[0]?.dimensions || [];
-  dimAvgChartInstance = new Chart(c, {
-    type:'bar', data:{labels:dims.map(d=>d.name.split(' ')[0]),datasets:[{data:dims.map((d,i)=>Math.round(essays.reduce((s,e)=>(e.dimensions[i]?.score||0)/(e.dimensions[i]?.full||1)+s,0)/essays.length*100)),backgroundColor:dims.map(d=>d.color),borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw+'%'}}},scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#f0f0f0'}},y:{ticks:{font:{size:11}}}}}
-  });
-}
-
-// ============================================================
-// CLASS ERROR CHART
-// ============================================================
-function renderClassErrorChart() {
-  const essays = getCurrentEssayData();
-  const el = document.getElementById('classErrorChart');
-  const agg = {};
-  essays.forEach(e => (e.errorStats||[]).forEach(es => { if (!agg[es.label]) agg[es.label] = {count:0,color:es.color}; agg[es.label].count += es.count; }));
-  const items = Object.entries(agg).map(([l,v])=>({label:l,...v})).sort((a,b)=>b.count-a.count);
-  document.getElementById('classErrorCount').textContent = items.length + '类';
-  if (!items.length) { el.innerHTML='<div style="padding:20px;text-align:center;color:#98a2b3;font-size:14px;">暂无共性错误数据</div>'; return; }
-  const topN = Math.min(3, items.length);
-  const hasMore = items.length > topN;
-  let html = '';
-  items.forEach((item,i)=>{
-    const pct = (item.count / (items[0]?.count||1) * 100).toFixed(0);
-    html += `<div class="error-class-item ${i<topN?'':'error-hidden'} error-item-${i}"><span class="eci-label">${item.label}</span><div class="eci-bar-wrap"><div class="eci-bar" style="width:${pct}%;background:${item.color};">${item.count}次</div></div><span class="eci-count">${item.count}</span></div>`;
-  });
-  if (hasMore) html += `<button class="error-expand" id="errorExpandBtn" onclick="toggleClassErrors()">▼ 展开全部${items.length}类错误</button>`;
-  el.innerHTML = html;
-  window.__classErrorItems = items;
-}
-function toggleClassErrors() {
-  const btn = document.getElementById('errorExpandBtn');
-  if (!btn) return;
-  const hidden = document.querySelectorAll('.error-class-item.error-hidden');
-  const any = hidden.length > 0;
-  hidden.forEach(el => el.classList.toggle('error-hidden', !any));
-  btn.textContent = any ? '▲ 收起' : `▼ 展开全部${window.__classErrorItems?.length||0}类错误`;
-}
-
-// ============================================================
-// MODEL ESSAY SHOWCASE
-// ============================================================
-function renderModelShowcase() {
-  const grid = document.getElementById('showcaseGrid');
-  const empty = document.getElementById('showcaseEmpty');
-  document.getElementById('showcaseCount').textContent = modelEssays.length + '篇';
-  if (!modelEssays.length) { grid.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display='none';
-  grid.innerHTML = modelEssays.map((m,i)=>{
-    const s = getStudent(m.studentId); if(!s) return '';
-    return `<div class="showcase-card"><div class="sc-header"><span class="sc-name">🏆 ${s.name}</span><span class="sc-score">${m.score}/${m.full}</span></div><div class="sc-body"><div style="font-size:12px;color:#98a2b3;margin-bottom:6px;">${m.essayTitle}</div><div class="sc-excerpt">"${m.excerpt||m.comment}"</div><div class="sc-comment">💡 ${m.teacherComment||'被标记为范文'}</div></div><div class="sc-actions"><span class="sc-badge">✅ 范文</span><button class="btn sm ghost" onclick="showIndividualView('${m.studentId}')">查看报告</button><button class="btn sm ghost" style="color:#c5221f;" onclick="removeModelEssay(${i})">取消标记</button></div></div>`;
-  }).join('');
-}
-
-function toggleModelEssay(studentId, essayIndex) {
-  const s = getStudent(studentId); if(!s) return;
-  const e = s.essays[essayIndex]; if(!e) return;
-  const idx = modelEssays.findIndex(m => m.studentId===studentId && m.essayIndex===essayIndex);
-  if (idx >= 0) modelEssays.splice(idx,1);
-  else modelEssays.push({studentId,essayIndex,essayTitle:e.type,essayType:e.type,score:e.totalScore,full:e.fullScore,excerpt:(e.highlights?.[0]?.text||''),comment:e.comment.substring(0,60),teacherComment:'亮点突出，值得全班学习'});
-  if (currentPage === 'class') renderModelShowcase();
-}
-
-function removeModelEssay(idx) { modelEssays.splice(idx,1); renderModelShowcase(); }
-
-// ============================================================
-// STUDENT TABLE
-// ============================================================
-function renderStudentTable() {
-  const search = document.getElementById('studentSearch').value.toLowerCase();
-  const lv = document.getElementById('levelFilter').value;
-  let filtered = getCurrentStudents().filter(s => {
-    if (!s.name.includes(search) && !s.studentNo.includes(search)) return false;
-    return lv==='all' || s.essays[currentEssayTab]?.level === lv;
-  });
-  filtered.sort((a,b) => (b.essays[currentEssayTab]?.totalScore||0) - (a.essays[currentEssayTab]?.totalScore||0));
-  document.getElementById('studentCount').textContent = filtered.length + '人';
-  if (!filtered.length) { document.getElementById('studentTableWrap').innerHTML='<div style="text-align:center;padding:40px;color:#98a2b3;font-size:14px;">没有找到匹配的学生</div>'; return; }
-
-  let html = `<table class="student-table"><thead><tr><th>姓名</th><th>学号</th>`;
-  filtered[0].essays.forEach((e,i) => { html += `<th style="text-align:center;${i===currentEssayTab?'color:#1a73e8;':''}">题${i+1}<br>${e.type.slice(0,6)}</th>`; });
-  html += `<th style="text-align:center">操作</th></tr></thead><tbody>`;
-  filtered.forEach(s => {
-    html += `<tr><td><span class="st-name" onclick="showIndividualView('${s.id}')">${s.name}</span></td><td style="color:#98a2b3;font-size:12px;">${s.studentNo}</td>`;
-    s.essays.forEach((e,i) => {
-      const lc = e.level==='excellent'?'level-excellent':e.level==='good'?'level-good':e.level==='pass'?'level-pass':'level-needs';
-      html += `<td style="text-align:center;${i===currentEssayTab?'background:#f0f5ff;':''}"><strong>${e.totalScore}</strong>/${e.fullScore}<br><span class="level-tag ${lc}" style="font-size:10px;">${e.levelLabel}</span></td>`;
-    });
-    html += `<td style="text-align:center"><button class="btn sm" onclick="showIndividualView('${s.id}')">查看报告</button></td></tr>`;
-  });
-  html += '</tbody></table>';
-  document.getElementById('studentTableWrap').innerHTML = html;
-}
-
-
-// ============================================================
-// STUDENT NAVIGATION
-// ============================================================
-function updateStudentNav(studentId) {
-  const idx = getStudentIndex(studentId);
-  if (idx < 0) return;
-  document.getElementById('studentNavIndex').textContent = idx + 1;
-  document.getElementById('studentNavTotal').textContent = getCurrentStudents().length;
-  document.getElementById('prevStudentBtn').disabled = idx === 0;
-  document.getElementById('nextStudentBtn').disabled = idx === getCurrentStudents().length - 1;
-}
-function navigateToStudent(offset) {
-  const idx = getStudentIndex(currentStudentId);
-  const newIdx = idx + offset;
-  if (newIdx < 0 || newIdx >= getCurrentStudents().length) return;
-  const student = getCurrentStudents()[newIdx];
-  currentStudentId = student.id;
-  currentStudentTab = 0;
-  renderIndividualView(student);
-}
-function prevStudent() { navigateToStudent(-1); }
-function nextStudent() { navigateToStudent(1); }
-
-// ============================================================
-// INDIVIDUAL REPORT
-// ============================================================
-function renderIndividualView(student) {
-  const bar = document.getElementById('studentBar');
-  const isModel = modelEssays.some(m => m.studentId === student.id);
-  bar.innerHTML = `
-    <div class="sb-avatar">${student.name[0]}</div>
-    <div class="sb-info">
-      <div class="sb-name">${student.name} <span style="font-weight:400;font-size:13px;color:#667085;">${student.studentNo}</span> ${isModel?'<span class="model-badge">🏆范文</span>':''}</div>
-      <div class="sb-detail">${getCurrentClass().className} · ${getCurrentClass().subject} · ${getCurrentClass().examName}</div>
-    </div>
-    <button class="btn ghost no-print" onclick="showClassView()" style="margin-left:auto;">← 返回班级</button>
-    <button class="btn no-print" onclick="openImageModal('${student.id}',${currentStudentTab})">📸 原卷</button>
-    <button class="btn no-print" onclick="previewPdf('${student.id}')">📄 PDF</button>
-    <button class="btn no-print ${isModel?'success':'ghost'}" onclick="toggleModelEssay('${student.id}',${currentStudentTab})">${isModel?'🏆 范文':'⭐ 标记范文'}</button>
-  `;
-  updateStudentNav(student.id);
-  const tab = document.getElementById('tabBar');
-  tab.innerHTML = student.essays.map((e,i) =>
-    `<button class="tab" style="padding:8px 20px;border-radius:8px;font-size:14px;cursor:pointer;border:none;background:${i===currentStudentTab?'#1a73e8':'transparent'};color:${i===currentStudentTab?'#fff':'#667085'};transition:all .15s;font-weight:500;font-family:inherit" onclick="switchStudentEssay(${i})">📝 题号${i+1}：${e.type}</button>${i<student.essays.length-1?'<span style="width:1px;height:20px;background:#e0e0e0;margin:0 8px;"></span>':''}`
-  ).join('');
-  renderEssayRender(student, currentStudentTab);
-}
-
-function switchStudentEssay(index) {
-  currentStudentTab = index;
-  const s = getStudent(currentStudentId); if (!s) return;
-  renderIndividualView(s);
-  const content = document.getElementById('reportContent');
-  content.style.opacity = '0.3'; content.style.transition = 'opacity .15s';
-  setTimeout(() => { renderEssayRender(s, index); content.style.opacity = '1'; }, 150);
-}
-
-function renderEssayRender(student, essayIndex) {
-  const e = student.essays[essayIndex]; if (!e) return;
-  renderOverview(e); renderDimensions(e); renderText(e); renderHighlights(e); renderIssues(e); renderModelEssay(e);
-}
-
-function renderOverview(e) {
-  const lc = e.level==='excellent'?'level-excellent':e.level==='good'?'level-good':e.level==='pass'?'level-pass':'level-needs';
-  document.getElementById('overviewGrid').innerHTML = `<div class="overview-left"><div class="meta"><span class="meta-item">📌 <strong>题目：</strong>${e.title}</span><span class="meta-item">📋 <strong>文体：</strong>${e.type}</span><span class="meta-item">📝 <strong>字数：</strong>${e.wordCount}词</span></div><div class="score-row"><span class="score-main">${e.totalScore}</span><span class="score-full">/ ${e.fullScore}</span><span class="level-tag ${lc}">${e.levelLabel}</span></div><div class="comment-box"><div class="label">💬 AI 总评</div><div class="text">${e.comment}</div></div></div><div class="overview-right"><div class="chart-container"><canvas id="radarChart"></canvas></div></div>`;
-  setTimeout(() => drawRadar(e), 50);
-}
-
-function drawRadar(e) {
-  const c = document.getElementById('radarChart'); if (!c) return;
-  if (radarChartInstance) { radarChartInstance.destroy(); radarChartInstance = null; }
-  radarChartInstance = new Chart(c, {
-    type:'radar', data:{labels:e.dimensions.map(d=>d.name.split(' ')[0]),datasets:[{data:e.dimensions.map(d=>(d.score/d.full)*100),backgroundColor:'rgba(26,115,232,0.1)',borderColor:'#1a73e8',borderWidth:2,pointBackgroundColor:e.dimensions.map(d=>d.color),pointBorderColor:'#fff',pointBorderWidth:1,pointRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{r:{min:0,max:100,ticks:{stepSize:20,display:false},grid:{color:'#eef0f4'},angleLines:{color:'#eef0f4'},pointLabels:{font:{size:11},color:'#344054'}}}}
-  });
-}
-
-function renderDimensions(e) {
-  document.getElementById('dimensionList').innerHTML = e.dimensions.map((d,i)=>`
-    <div class="dimension-item" onclick="this.classList.toggle('open');this.querySelector('.dim-detail')?.classList.toggle('open')">
-      <div class="dim-header"><span class="dim-name">${d.name}</span><div class="dim-bar-wrap"><div class="dim-bar" style="width:${(d.score/d.full)*100}%;background:${d.color};"></div></div><span class="dim-score">${d.score}/${d.full}</span><span class="dim-arrow">▾</span></div>
-      <div class="dim-detail">${d.strengths.length?'<div><span class="tag green">✓</span> '+d.strengths.join('、')+'</div>':''}${d.weaknesses.length?'<div style="margin-top:4px;"><span class="tag red">△</span> '+d.weaknesses.join('、')+'</div>':''}</div>
-    </div>`).join('');
-}
-
-function renderText(e) {
-  var el = document.getElementById('originalText');
-  document.getElementById('textLegend').style.display = currentView === 'pure' ? 'none' : 'flex';
-  if (currentView === 'pure') { el.innerHTML = e.text.replace(/\n/g, '<br>'); return; }
-
-  var txt = e.text;
-  var ann = [];
-
-  function tryAdd(type, idx, searchText, sourceText) {
-    if (!searchText) return false;
-    var pos = sourceText.indexOf(searchText);
-    if (pos >= 0) {
-      ann.push({ start: pos, end: pos + searchText.length, type: type, idx: idx, matchText: searchText });
-      return true;
-    }
-    return false;
+  function placeholder(icon, title, desc) {
+    return `<div class="placeholder"><div class="ph-card">
+      <div class="ph-icon">${icon}</div>
+      <div class="ph-title">${title}</div>
+      <div class="ph-desc">${desc}</div>
+      <span class="ph-hint">该模块为原型占位 · 仅展示菜单结构</span>
+    </div></div>`;
   }
 
-  // Try matching annotations against the original text
-  (e.highlights || []).forEach(function (h, i) {
-    if (!tryAdd('highlight', i, h.text, txt)) {
-      // try whitespace-normalized
-      tryAdd('highlight', i, h.text.replace(/\s+/g, ' '), txt.replace(/\s+/g, ' '));
-    }
-  });
-  (e.issues || []).forEach(function (is, i) {
-    if (!tryAdd('issue', i, is.text, txt)) {
-      tryAdd('issue', i, is.text.replace(/\s+/g, ' '), txt.replace(/\s+/g, ' '));
-    }
-  });
-  (e.grammarErrors || []).forEach(function (er, i) {
-    var cl = er.original.replace(/[()\u2713\u2717\s]/g, '');
-    if (!tryAdd('error', i, cl, txt)) {
-      tryAdd('error', i, cl, txt.replace(/\s+/g, ''));
-    }
-  });
+  const mainContent = document.getElementById('mainContent');
+  const pageTitle = document.getElementById('pageTitle');
+  const pageMeta = document.getElementById('pageMeta');
 
-  ann.sort(function (a, b) { return a.start - b.start; });
-  var placed = [], final = [];
-  ann.forEach(function (a) {
-    if (!placed.some(function (p) { return a.start < p.end && a.end > p.start; })) {
-      placed.push(a);
-      final.push(a);
-    }
-  });
-
-  var html = '';
-  var last = 0;
-  final.forEach(function (a) {
-    if (a.start > last) html += esc(txt.slice(last, a.start));
-    var uid = a.type + '_' + a.idx;
-    var cls = a.type === 'highlight' ? 'hl' : a.type === 'issue' ? 'iss' : 'err';
-    var lb = a.type === 'highlight' ? '⭐亮点' : a.type === 'issue' ? '🔧待改进' : '⚠️错误';
-    var clr = a.type === 'highlight' ? '#f59e0b' : '#6366f1';
-    html += '<span class="annot-span" data-uid="' + uid + '">';
-    html += '<span class="' + cls + '" onclick="tg(' + "'" + uid + "'" + ')">' + esc(a.matchText) + '</span>';
-    html += '<span style="font-size:11px;color:' + clr + ';cursor:pointer;font-weight:500;margin-left:2px;" onclick="tg(' + "'" + uid + "'" + ')">' + lb + '</span>';
-    html += '</span>';
-    // tooltip
-    html += '<div class="annot-tooltip" id="tp_' + uid + '">';
-    if (a.type === 'highlight') {
-      var h = e.highlights[a.idx];
-      html += '<div class="at-label highlight-label">⭐ ' + h.technique + '</div>';
-      html += '<div class="at-comment">' + h.comment + '</div>';
-      html += '<div class="at-comment" style="font-size:12px;color:#667085;">效果：' + h.effect + '</div>';
-    } else if (a.type === 'issue') {
-      var is = e.issues[a.idx];
-      html += '<div class="at-label issue-label">🔧 ' + is.type + ' · ' + is.severity + '优先级</div>';
-      html += '<div class="at-comment">' + is.comment + '</div>';
-      html += '<div class="at-label issue-label" style="margin-top:4px;">建议修改为：</div>';
-      html += '<div class="at-suggestion">' + is.corrected + '</div>';
-    } else {
-      var er = e.grammarErrors[a.idx];
-      html += '<div class="at-label error-label">⚠️ ' + er.type + '</div>';
-      html += '<div class="at-comment"><span class="at-original">' + er.original + '</span> → ' + er.correction + '</div>';
-      html += '<div class="at-comment" style="font-size:12px;color:#667085;">' + er.explanation + '</div>';
-    }
-    html += '</div>';
-    last = a.end;
-  });
-  if (last < txt.length) html += esc(txt.slice(last));
-  el.innerHTML = html.replace(/\n/g, '<br>');
-
-  // Debug: if student has highlights/issues but none detected, show a note
-  var totalHighlights = (e.highlights || []).length;
-  var totalIssues = (e.issues || []).length;
-  var detected = final.length;
-  if ((totalHighlights + totalIssues) > 0 && detected === 0) {
-    el.innerHTML += '<div style="margin-top:12px;padding:12px;background:#fff8e1;border-radius:8px;font-size:13px;color:#b8860b;">💡 <strong>标注模式</strong>：系统识别到 ' + (totalHighlights + totalIssues) + ' 处需要标注，以下展示标注详情。</div>';
-    (e.highlights || []).forEach(function (h, i) {
-      el.innerHTML += '<div style="margin:6px 0;padding:8px 12px;background:#fef7e0;border-radius:6px;border-left:3px solid #f59e0b;">⭐ <strong>亮点：</strong>' + esc(h.text) + '<br><span style="font-size:12px;color:#b8860b;">' + h.comment + '</span></div>';
-    });
-    (e.issues || []).forEach(function (is, i) {
-      el.innerHTML += '<div style="margin:6px 0;padding:8px 12px;background:#eef2ff;border-radius:6px;border-left:3px solid #6366f1;">🔧 <strong>待改进：</strong>' + esc(is.text) + '<br><span style="font-size:12px;color:#6366f1;">' + is.comment + '</span><br><span style="color:#1e7e34;">✅ ' + esc(is.corrected) + '</span></div>';
-    });
+  function switchPage(page) {
+    const cfg = pages[page];
+    if (!cfg) return;
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.toggle('active', el.dataset.page === page));
+    pageTitle.textContent = cfg.title;
+    pageMeta.textContent = cfg.meta;
+    mainContent.innerHTML = cfg.html;
   }
-}
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function tg(uid){const t=document.getElementById('tp_'+uid);if(!t)return;const o=t.classList.contains('open');document.querySelectorAll('.annot-tooltip').forEach(el=>el.classList.remove('open'));if(!o)t.classList.add('open')}
-document.addEventListener('click',e=>{if(!e.target.closest('.annot-span'))document.querySelectorAll('.annot-tooltip').forEach(el=>el.classList.remove('open'))});
-function switchView(btn,v){document.querySelectorAll('.view-switch button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentView=v;const s=getStudent(currentStudentId);if(s)renderText(s.essays[currentStudentTab])}
 
-function renderHighlights(e) {
-  document.getElementById('highlightList').innerHTML = (e.highlights||[]).map((h,i)=>`
-    <div class="card-item highlight-card ${i<1?'open':''}"><div class="card-header" onclick="this.closest('.card-item')?.classList.toggle('open')"><span class="card-icon">⭐</span><span class="card-text">${esc(h.text)}</span><span class="card-arrow">▾</span></div>
-    <div class="card-body"><div class="cb-row"><span class="cb-label">手法</span><span class="cb-value"><span class="tag" style="background:#fef7e0;color:#b8860b;">${h.technique}</span></span></div><div class="cb-row"><span class="cb-label">点评</span><span class="cb-value">${h.comment}</span></div><div class="cb-row"><span class="cb-label">效果</span><span class="cb-value" style="color:#667085;">${h.effect}</span></div></div></div>`).join('');
-  document.getElementById('highlightCount').textContent = (e.highlights||[]).length+'处';
-}
-function renderIssues(e) {
-  var html = '';
-  (e.issues||[]).forEach(function(is,i){
-    html += '<div class="card-item issue-card'+(i<1?' open':'')+'"><div class="card-header" onclick="this.closest(\'.card-item\')?.classList.toggle(\'open\')"><span class="card-icon">🔧</span><span class="card-text">'+esc(is.text)+'</span><span class="card-arrow">▾</span></div>';
-    html += '<div class="card-body"><div class="cb-row"><span class="cb-label">问题</span><span class="cb-value"><span class="tag" style="background:#eef2ff;color:#6366f1;">'+is.type+' · '+is.severity+'优先级</span></span></div><div class="cb-row"><span class="cb-label">说明</span><span class="cb-value" style="color:#667085;">'+is.comment+'</span></div><div class="cb-row"><span class="cb-label">示范</span><span class="cb-value" style="background:#e6f4ea;padding:6px 8px;border-radius:4px;">'+esc(is.corrected)+'</span></div></div></div>';
+  document.querySelectorAll('.menu-item').forEach(el => {
+    el.addEventListener('click', () => switchPage(el.dataset.page));
   });
-  (e.improvements||[]).forEach(function(imp,i){
-    var cls = (i===0 && !(e.issues||[]).length) ? ' open' : '';
-    html += '<div class="card-item issue-card'+cls+'"><div class="card-header" onclick="this.closest(\'.card-item\')?.classList.toggle(\'open\')"><span class="card-icon">📌</span><span class="card-text"><strong>'+imp.dimension+'</strong>：'+imp.problem+'</span><span class="card-arrow">▾</span></div>';
-    html += '<div class="card-body"><div class="cb-row"><span class="cb-label">方法</span><span class="cb-value">'+imp.method+'</span></div>';
-    if(imp.example) html += '<div class="cb-row"><span class="cb-label">示例</span><span class="cb-value" style="background:#e8f0fe;padding:6px 8px;border-radius:4px;">📝 '+imp.example+'</span></div>';
-    html += '</div></div>';
-  });
-  document.getElementById('issueList').innerHTML = html || '<div style="padding:16px;text-align:center;color:#98a2b3;font-size:13px;">暂无优化建议</div>';
-  document.getElementById('issueCount').textContent = ((e.issues||[]).length + (e.improvements||[]).length)+'条';
-}function renderErrorStats(e) {
-  const el=document.getElementById('errorChart');
-  if(!e.errorStats||!e.errorStats.length){el.innerHTML='<div style="color:#98a2b3;font-size:13px;text-align:center;padding:12px;">暂无显著错误</div>';return}
-  const t=e.errorStats.reduce((s,er)=>s+er.count,0);
-  el.innerHTML=e.errorStats.map(er=>`<div class="ec-item"><span class="ec-label">${er.label}</span><div class="ec-bar-wrap"><div class="ec-bar" style="width:${(er.count/t)*100}%;background:${er.color};"></div></div><span class="ec-count">${er.count}</span></div>`).join('');
-}
-function renderImprovements(e) {}
-function renderModelEssay(e) {
-  document.getElementById('modelEssay').innerHTML=`<div style="font-weight:600;font-size:14px;color:#344054;margin-bottom:8px;">📖 ${e.modelEssay.title}</div><div style="font-size:14px;color:#667085;line-height:1.8;padding:8px 12px;background:#fff;border-radius:6px;margin-bottom:8px;border-left:3px solid #1a73e8;">${e.modelEssay.excerpt}</div><div style="font-size:13px;color:#1a73e8;">💡 ${e.modelEssay.comment}</div>`;
-}
 
-// ============================================================
-// REVIEW MODE
-// ============================================================
-function toggleReview() {
-  if(currentPage==='class'){showIndividualView(getCurrentStudents()[0]?.id);setTimeout(()=>enterReview(),200);return}
-  if(isReviewMode){exitReview(true);return}
-  enterReview();
-}
-function enterReview(){isReviewMode=true;document.getElementById('reviewBanner').style.display='flex';const s=getStudent(currentStudentId);if(s)renderEssayRender(s,currentStudentTab)}
-function exitReview(save){
-  isReviewMode=false;document.getElementById('reviewBanner').style.display='none';
-  if(!save){const s=getStudent(currentStudentId);if(s)renderEssayRender(s,currentStudentTab)}
-}
-function publishReview(){exitReview(true);alert('✅ 报告已发布！\n\n学生：'+getStudent(currentStudentId).name+'\n报告已标记为"已复核"，学生端可见。')}
-
-// ============================================================
-// IMAGE VIEWER
-// ============================================================
-function openImageModal(studentId, essayIndex) {
-  const s = getStudent(studentId); if(!s) return;
-  const e = s.essays[essayIndex] || s.essays[0];
-  document.getElementById('imageModalBadge').textContent = s.name + ' · ' + (e?.type||'作文');
-  document.getElementById('imageModal').classList.add('open');
-}
-function closeImageModal() { document.getElementById('imageModal').classList.remove('open'); }
-
-// ============================================================
-// PDF / EXPORT
-// ============================================================
-function previewPdf(id) {
-  const s = getStudent(id); if(!s) return;
-  alert('📄 导出PDF：'+s.name+'（'+s.studentNo+'）\n\n班级：'+getCurrentClass().className+' · '+getCurrentClass().examName+'\n\n包含：所有题目的完整报告\n· 学生信息（姓名、学号、班级）\n· 作文画像、多维评分、原文批注\n· 亮点点评、问题修改建议、改进建议\n· 排版适合A4纸打印');
-}
-function startBatchDownload() {
-  if(!selectedStudents.size){alert('请先选择学生');return}
-  const names=getCurrentStudents().filter(s=>selectedStudents.has(s.id)).map(s=>s.name).join('、');
-  alert('📄 批量导出：'+selectedStudents.size+'人\n\n'+names+'\n\n将逐个生成PDF并打包下载');
-}
-function exportAllPdf() {
-  alert('📄 导出全部：'+getCurrentStudents().length+'人\n\n（原型演示效果）\n📊 导出进度：▓▓▓▓▓▓▓▓░░░░\n预计剩余时间：30秒\n生成完毕后自动打包下载');
-}
-
-
-// ============================================================
-// INIT
-// ============================================================
-renderClassSwitcher();
-showClassView();
+  // 默认激活「作文报告」，直接展示嵌入的作文批改报告
+  switchPage('essay');
 </script>
-<script src="annotations.js"></script>
-<script src="prototype-annotator.js"></script>
 </body>
 </html>
