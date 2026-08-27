@@ -60,11 +60,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .student-table tr:hover td{background:#fafbfc}
 .student-table .st-name{font-weight:600;cursor:pointer;color:#1a73e8}
 .student-table .st-name:hover{text-decoration:underline}
-.student-table .level-tag{padding:2px 10px;border-radius:10px;font-size:12px;font-weight:500;white-space:nowrap}
-.level-excellent{background:#fef7e0;color:#b8860b}
-.level-good{background:#e6f4ea;color:#1e7e34}
-.level-pass{background:#e8f0fe;color:#1a73e8}
-.level-needs{background:#fce8e6;color:#c5221f}
 .student-table input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:#1a73e8}
 .dimension-list{display:flex;flex-direction:column;gap:10px}
 .dimension-item{border:1px solid #eef0f4;border-radius:8px;padding:14px 16px;background:#fff}
@@ -294,13 +289,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
     <div class="toolbar no-print">
       <div class="search-box"><span>🔍</span><input type="text" id="studentSearch" placeholder="搜索姓名或学号..." oninput="renderStudentTable()"></div>
-      <select class="filter-select" id="levelFilter" onchange="renderStudentTable()">
-        <option value="all">全部等级</option>
-        <option value="excellent">优秀</option>
-        <option value="good">良好</option>
-        <option value="pass">及格</option>
-        <option value="needs">待提升</option>
-      </select>
     </div>
     <div class="report-section">
       <div class="section-title"><span class="icon">👥</span> 学生列表 <span class="badge-count" id="studentCount"></span><span style="margin-left:auto;"><button class="btn sm" onclick="exportAllPdf()">📄 导出全部（当前题目）</button></span></div>
@@ -391,7 +379,7 @@ const classDataList = [
     className: '高三(3)班', subject: '英语', examName: '2026年7月月考',
     students: [
       { id:'S001',name:'张小明',studentNo:'2024001',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:198,totalScore:22,fullScore:25,level:'excellent',levelLabel:'优秀',
+        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:198,totalScore:22,fullScore:25,
           comment:'文章情节设计合理，情感真挚，结尾升华主题恰到好处。',
           // 写作要求：教师配置智能批改时输入的自定义要求（最多 5 条、每条最多 150 字），系统逐条评分后汇总为总分。
           // name = 完整要求文本（屏幕超长截断悬浮查看、打印展示全文）；图表/列表用「要求N」序号标识，无固定枚举名称。
@@ -410,7 +398,7 @@ const classDataList = [
           modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat as I noticed the elderly man... I was torn — the clock was ticking toward my exam..."',comment:'开篇环境描写+内心独白引人入胜。' },
           errorStats:[{ label:'表达可更地道',count:2,color:'#f59e0b' }]
         },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:152,totalScore:23,fullScore:25,level:'excellent',levelLabel:'优秀',
+        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:152,totalScore:23,fullScore:25,
           comment:'要点齐全，结构清晰，语言得体。语气亲切而不失正式。',
           dimensions:[{ name:'内容要点齐全，建议具体可操作',score:9,full:10,weight:.35,strengths:['要点齐全','建议具体'],weaknesses:[],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:7,full:7,weight:.25,strengths:['逻辑清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:5,full:6,weight:.30,strengths:['词汇丰富','语气得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:2,full:2,weight:.10,strengths:['格式规范'],weaknesses:[],color:'#6366f1' }],
           text:'Dear Mike,\n\nI\'m sorry to hear that you\'re having trouble adapting to the new school. It\'s completely normal to feel this way, but I have some suggestions that might help.\n\nFirst and foremost, try to join some clubs. This is an excellent way to make new friends. Besides, don\'t be afraid to start conversations — a simple "hello" can open the door to a wonderful friendship.\n\nSecondly, if you\'re struggling with your studies, ask your teachers for assistance.\n\nLast but not least, be patient with yourself. I\'m confident that you will soon feel at home here.\n\nYours sincerely,\nLi Hua',
@@ -422,7 +410,7 @@ const classDataList = [
         }]
       },
       { id:'S002',name:'李小红',studentNo:'2024002',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:175,totalScore:20,fullScore:25,level:'good',levelLabel:'良好',
+        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:175,totalScore:20,fullScore:25,
           comment:'故事完整，情感真实。语言基本规范，在用词丰富度上还有提升空间。',
           dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:5,full:6,weight:.2,strengths:['情节完整'],weaknesses:['深度略不足'],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:5,full:6,weight:.2,strengths:['情感真实'],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:4,full:5,weight:.2,strengths:['段落分明'],weaknesses:['过渡略生硬'],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:4,full:5,weight:.2,strengths:['语法准确'],weaknesses:['词汇偏简单'],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:2,full:3,weight:.2,strengths:['书写工整'],weaknesses:[],color:'#c5221f' }],
           text:'The old man stood at the bus stop. He looked cold. I wanted to help him but I was in a hurry. Then I remembered what my mother said: "Be kind to others." So I went to him and gave him some money.\n\nThe old man was very happy. He said thank you to me. I felt very good. Then I ran to school.\n\nI think helping others is very important. We should always be kind to people around us.',
@@ -433,7 +421,7 @@ const classDataList = [
           modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat..."',comment:'细节描写丰富，值得学习。' },
           errorStats:[{ label:'词汇偏简单',count:3,color:'#f59e0b' },{ label:'句式单一',count:2,color:'#6366f1' }]
         },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:138,totalScore:19,fullScore:25,level:'good',levelLabel:'良好',
+        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:138,totalScore:19,fullScore:25,
           comment:'结构完整，要点基本齐全。部分表达偏口语化。',
           dimensions:[{ name:'内容要点齐全，建议具体可操作',score:7,full:10,weight:.35,strengths:['要点基本齐全'],weaknesses:['建议不够具体'],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:6,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:4,full:6,weight:.30,strengths:['语法基本正确'],weaknesses:['口语化偏重'],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:2,full:2,weight:.10,strengths:['格式正确'],weaknesses:[],color:'#6366f1' }],
           text:'Dear Mike,\n\nI know you are having a hard time. Don\'t worry too much. Here are my ideas.\n\nFirst, you can join some clubs. It\'s a good way to make new friends. Second, ask your teacher for help.\n\nLast, just be yourself. I hope you will be happy soon.\n\nYours,\nLi Hua',
@@ -445,7 +433,7 @@ const classDataList = [
         }]
       },
       { id:'S003',name:'王大力',studentNo:'2024003',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:155,totalScore:14,fullScore:25,level:'pass',levelLabel:'及格',
+        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:155,totalScore:14,fullScore:25,
           comment:'基本完成续写任务，但存在较多语法错误。',
           dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:4,full:6,weight:.2,strengths:['情节方向正确'],weaknesses:['内容单薄'],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:3,full:6,weight:.2,strengths:[],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:3,full:5,weight:.2,strengths:['有分段意识'],weaknesses:['结构松散'],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:3,full:5,weight:.2,strengths:[],weaknesses:['语法错误较多'],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:1,full:3,weight:.2,strengths:['可辨认'],weaknesses:['拼写较多'],color:'#c5221f' }],
           text:'The old man standed at the bus stop. He feeled cold. I think I should help him but I also need to go to school. So I give him some money.\n\nHe say thank you to me. I say you are welcome. Then I go to school. I feeled happy.\n\nI think helping is good. We must help others when they need.',
@@ -458,7 +446,7 @@ const classDataList = [
           modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat..."',comment:'注意作者如何用细节描写让故事生动。' },
           errorStats:[{ label:'不规则动词错误',count:4,color:'#c5221f' },{ label:'时态不一致',count:2,color:'#f59e0b' }]
         },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:120,totalScore:13,fullScore:25,level:'pass',levelLabel:'及格',
+        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:120,totalScore:13,fullScore:25,
           comment:'基本格式正确，但语法错误较多。',
           dimensions:[{ name:'内容要点齐全，建议具体可操作',score:5,full:10,weight:.35,strengths:['有基本建议'],weaknesses:['内容简单'],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:4,full:7,weight:.25,strengths:['有结构意识'],weaknesses:['衔接词不当'],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:3,full:6,weight:.30,strengths:[],weaknesses:['语法错误多'],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:1,full:2,weight:.10,strengths:[],weaknesses:['标点不规范'],color:'#6366f1' }],
           text:'Dear Mike,\n\nI know you feel bad in new school. Don\'t worry. I have some advise for you.\n\nFirst, make some friend. It will make you happy. Second, ask teacher for help.\n\nLast, don\'t give up.\n\nYours,\nLi Hua',
@@ -470,7 +458,7 @@ const classDataList = [
         }]
       },
       { id:'S004',name:'赵欣然',studentNo:'2024004',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:190,totalScore:24,fullScore:25,level:'excellent',levelLabel:'优秀',
+        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:190,totalScore:24,fullScore:25,
           comment:'情节设计巧妙，情感层次丰富，语言表达精准老练。',
           dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:6,full:6,weight:.2,strengths:['情节设计巧妙'],weaknesses:[],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:6,full:6,weight:.2,strengths:['立意深刻'],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:5,full:5,weight:.2,strengths:['行文流畅','首尾呼应'],weaknesses:[],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:5,full:5,weight:.2,strengths:['用词精准','句式丰富'],weaknesses:[],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:2,full:3,weight:.2,strengths:['书写美观'],weaknesses:[],color:'#c5221f' }],
           text:'The biting wind cut through my coat as I noticed the elderly man at the bus stop, his shoulders hunched against the cold. I was torn — the final exam was only 20 minutes away, yet something held me back.\n\n"What would I want someone to do if it were my grandfather?" The answer came before the question finished forming.\n\nI approached him. His weary eyes met mine. I bought him a ticket and waited with him.\n\n"Thank you," he whispered, his voice trembling. "You reminded me that there is still kindness in this world."\n\nAs I ran to school, late but light-hearted, I realized that kindness is not just an action — it\'s a choice that defines who we are.',
@@ -480,7 +468,7 @@ const classDataList = [
           modelEssay:{ title:'A Kind Deed (满分范文)',excerpt:'"The biting wind cut through my coat..." (全文)',comment:'本文就是范文级别，开头设问和结尾升华值得全班学习。' },
           errorStats:[]
         },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:158,totalScore:24,fullScore:25,level:'excellent',levelLabel:'优秀',
+        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:158,totalScore:24,fullScore:25,
           comment:'语言地道、语气得体、结构严谨。',
           dimensions:[{ name:'内容要点齐全，建议具体可操作',score:9,full:10,weight:.35,strengths:['建议全面具体'],weaknesses:[],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:7,full:7,weight:.25,strengths:['逻辑严密'],weaknesses:[],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:6,full:6,weight:.30,strengths:['地道流畅','语气得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:2,full:2,weight:.10,strengths:['完美'],weaknesses:[],color:'#6366f1' }],
           text:'Dear Mike,\n\nI was sorry to learn that you\'re having difficulty adjusting. Please don\'t be discouraged — it\'s perfectly natural.\n\nTo begin with, I\'d recommend getting involved in activities. Not only will this help you meet like-minded friends, but it will also give you a sense of belonging.\n\nAdditionally, if you find the coursework challenging, don\'t hesitate to seek help.\n\nAbove all, give yourself time to adapt. Rome wasn\'t built in a day, and neither is a sense of belonging.\n\nWishing you all the best.\n\nYours sincerely,\nLi Hua',
@@ -492,7 +480,7 @@ const classDataList = [
         }]
       },
       { id:'S005',name:'陈思远',studentNo:'2024005',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:165,totalScore:16,fullScore:25,level:'good',levelLabel:'良好',
+        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:165,totalScore:16,fullScore:25,
           comment:'故事完整。部分中式英语影响阅读流畅度。',
           dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:5,full:6,weight:.2,strengths:['情节合理'],weaknesses:[],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:4,full:6,weight:.2,strengths:[],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:4,full:5,weight:.2,strengths:['结构完整'],weaknesses:['衔接可改进'],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:2,full:5,weight:.2,strengths:[],weaknesses:['中式英语较多'],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:1,full:3,weight:.2,strengths:['可辨认'],weaknesses:['拼写有误'],color:'#c5221f' }],
           text:'I saw an old man at the bus stop. He looked very cold. I think in my heart I should help him. So I give him my money.\n\nHe very happy and say thank you many times.\n\nFrom this thing I learn that help others is help ourselves.',
@@ -502,7 +490,7 @@ const classDataList = [
           modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat..."',comment:'学习如何用细节描写让故事生动。' },
           errorStats:[{ label:'中式英语',count:4,color:'#c5221f' },{ label:'时态不一致',count:2,color:'#f59e0b' }]
         },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:130,totalScore:16,fullScore:25,level:'good',levelLabel:'良好',
+        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:130,totalScore:16,fullScore:25,
           comment:'格式正确，建议合理。但中式英语较多。',
           dimensions:[{ name:'内容要点齐全，建议具体可操作',score:7,full:10,weight:.35,strengths:['建议合理'],weaknesses:['不够具体'],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:5,full:7,weight:.25,strengths:['结构完整'],weaknesses:['衔接生硬'],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:3,full:6,weight:.30,strengths:[],weaknesses:['中式英语'],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:1,full:2,weight:.10,strengths:[],weaknesses:['格式小错误'],color:'#6366f1' }],
           text:'Dear Mike,\n\nWelcome to our school! I know you are not happy now. I will give you some advice.\n\nFirst, you should make more friends. Second, ask teacher if you have question. Teacher are friendly.\n\nYours,\nLi Hua',
@@ -518,7 +506,7 @@ const classDataList = [
     className: '高三(5)班', subject: '英语', examName: '2026年7月月考',
     students: [
       { id:'S101',name:'刘佳怡',studentNo:'2024101',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:185,totalScore:21,fullScore:25,level:'excellent',levelLabel:'优秀',
+        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:185,totalScore:21,fullScore:25,
           comment:'情感丰富，语言流畅，对原文理解准确。结尾主题升华自然。',
           dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:5,full:6,weight:.2,strengths:['理解准确'],weaknesses:[],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:5,full:6,weight:.2,strengths:['情感丰富'],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:4,full:5,weight:.2,strengths:['结构完整'],weaknesses:[],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:5,full:5,weight:.2,strengths:['语言流畅'],weaknesses:[],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:2,full:3,weight:.2,strengths:['规范'],weaknesses:[],color:'#c5221f' }],
           text:'I noticed an elderly man standing alone at the bus stop. He looked tired and cold. I knew I had to help him. I offered him my umbrella and some warm tea I had just bought.\n\nHe smiled at me and said, "Thank you, dear. You are very kind."\n\nI smiled back and felt a warmth spreading through my heart. Sometimes the smallest gestures can make the biggest difference.\n\nFrom this experience, I learned that kindness is a language that everyone understands. It costs nothing but means everything.',
@@ -528,7 +516,7 @@ const classDataList = [
           modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"Sometimes the smallest gestures can make the biggest difference..."',comment:'对比手法的运用值得学习。' },
           errorStats:[]
         },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:148,totalScore:22,fullScore:25,level:'excellent',levelLabel:'优秀',
+        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:148,totalScore:22,fullScore:25,
           comment:'要点齐全，表达得体，语言流畅。',
           dimensions:[{ name:'内容要点齐全，建议具体可操作',score:8,full:10,weight:.35,strengths:['要点齐全'],weaknesses:[],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:6,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:6,full:6,weight:.30,strengths:['表达得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:2,full:2,weight:.10,strengths:['规范'],weaknesses:[],color:'#6366f1' }],
           text:'Dear Mike,\n\nI\'m sorry to hear about your difficulties adjusting to the new school. It\'s normal to feel this way, and I\'d like to share some thoughts.\n\nFirst, why not join some clubs? It\'s a great way to meet people with similar interests. Second, don\'t hesitate to reach out to your classmates — most people are friendly and willing to help.\n\nI hope you settle in soon.\n\nYours,\nLi Hua',
@@ -540,7 +528,7 @@ const classDataList = [
         }]
       },
       { id:'S102',name:'周浩然',studentNo:'2024102',essays:[
-        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:160,totalScore:17,fullScore:25,level:'good',levelLabel:'良好',
+        { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:160,totalScore:17,fullScore:25,
           comment:'情节合理，语言通顺。词汇偏简单，句式变化可加强。',
           dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:5,full:6,weight:.2,strengths:['情节合理'],weaknesses:['细节不够'],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:4,full:6,weight:.2,strengths:[],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:4,full:5,weight:.2,strengths:['结构清晰'],weaknesses:[],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:3,full:5,weight:.2,strengths:[],weaknesses:['词汇偏简单'],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:1,full:3,weight:.2,strengths:['认真'],weaknesses:[],color:'#c5221f' }],
           text:'I saw an old man at the bus stop. He was cold. I wanted to help. So I gave him my scarf. He said thank you. I felt happy.',
@@ -550,7 +538,7 @@ const classDataList = [
           modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"Sometimes the smallest gestures can make the biggest difference..."',comment:'注意句式变化带来的阅读体验差异。' },
           errorStats:[{ label:'句式单一',count:3,color:'#f59e0b' }]
         },
-        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:125,totalScore:18,fullScore:25,level:'good',levelLabel:'良好',
+        { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:125,totalScore:18,fullScore:25,
           comment:'结构完整，但语言较简单，缺少正式感。',
           dimensions:[{ name:'内容要点齐全，建议具体可操作',score:7,full:10,weight:.35,strengths:['结构完整'],weaknesses:['语言简单'],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:5,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:4,full:6,weight:.30,strengths:[],weaknesses:['缺少正式感'],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:2,full:2,weight:.10,strengths:['正确'],weaknesses:[],color:'#6366f1' }],
           text:'Dear Mike,\n\nI know you feel bad. But don\'t worry. I want to help you.\n\nFirst, make friends. It is good. Second, ask teachers. They are nice.\n\nYours,\nLi Hua',
@@ -566,7 +554,7 @@ const classDataList = [
     className: '高二(1)班', subject: '语文', examName: '2026年7月期末考',
     students: [
       { id:'S201',name:'孙文博',studentNo:'2024201',essays:[
-        { title:'命题作文 — 谈坚持',type:'议论文',wordCount:780,totalScore:34,fullScore:40,level:'good',levelLabel:'良好',
+        { title:'命题作文 — 谈坚持',type:'议论文',wordCount:780,totalScore:34,fullScore:40,
           comment:'论点明确，论据较为充实。结构完整，但在论证深度和语言文采上还有提升空间。',
           dimensions:[{ name:'立意明确，中心突出，观点有深度',score:7,full:10,weight:.25,strengths:['论点明确'],weaknesses:['论证深度不够'],color:'#1a73e8' },{ name:'结构严谨，层次分明，论证有逻辑',score:8,full:10,weight:.25,strengths:['结构完整','层次清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言流畅，富有文采，恰当运用修辞',score:6,full:10,weight:.25,strengths:['通顺流畅'],weaknesses:['文采不足','修辞较少'],color:'#1e7e34' },{ name:'书写规范，卷面整洁，标点正确',score:8,full:10,weight:.25,strengths:['字迹工整'],weaknesses:[],color:'#6366f1' }],
           text:'坚持，是通往成功的必经之路。古今中外，无数事例证明了这一点。\n\n王羲之练字，日复一日，将一池清水染成了墨色，最终成为一代书圣。爱迪生发明电灯，失败了上千次仍然不放弃，最终为人类带来了光明。这些故事告诉我们，只有坚持不懈，才能达到成功的彼岸。\n\n然而，坚持并不是盲目的固执。在坚持的同时，我们也要学会思考和调整方向。如果方向错了，再多的坚持也只是徒劳。\n\n作为一名高中生，我们在学习中也需要坚持。数学题不会做，多思考几遍；英语单词记不住，多背几遍。只要我们不放弃，终会有所收获。',
@@ -577,7 +565,7 @@ const classDataList = [
           modelEssay:{ title:'谈坚持 (优秀范文)',excerpt:'"坚持，不是盲目地固守，而是在认清方向后的执着前行..."',comment:'对"坚持"的定义有新意，避免了套路化表达。' },
           errorStats:[{ label:'开头套路化',count:1,color:'#f59e0b' },{ label:'文采不足',count:3,color:'#1a73e8' }]
         },
-        { title:'微写作 — 推荐一本书',type:'应用文',wordCount:220,totalScore:32,fullScore:40,level:'good',levelLabel:'良好',
+        { title:'微写作 — 推荐一本书',type:'应用文',wordCount:220,totalScore:32,fullScore:40,
           comment:'推荐理由充分，语言流畅。但结构可以更紧凑。',
           dimensions:[{ name:'推荐对象明确，推荐理由充分',score:8,full:10,weight:.25,strengths:['推荐理由充分'],weaknesses:[],color:'#1a73e8' },{ name:'结构清晰，条理分明',score:7,full:10,weight:.25,strengths:['条理清晰'],weaknesses:['结构略松散'],color:'#f59e0b' },{ name:'语言流畅，有感染力',score:7,full:10,weight:.25,strengths:['语言流畅'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范，卷面整洁',score:10,full:10,weight:.25,strengths:['优秀'],weaknesses:[],color:'#6366f1' }],
           text:'我推荐大家阅读《百年孤独》。这本小说是马尔克斯的代表作，讲述了布恩迪亚家族七代人的传奇故事。\n\n读完这本书，我深深感受到孤独是人类共同的情感。但与此同时，书中也展现了爱与希望的力量。\n\n推荐理由：第一，语言优美，充满想象力。第二，故事引人入胜。第三，能引发深刻思考。',
@@ -589,7 +577,7 @@ const classDataList = [
         }]
       },
       { id:'S202',name:'林雨桐',studentNo:'2024202',essays:[
-        { title:'命题作文 — 谈坚持',type:'议论文',wordCount:820,totalScore:36,fullScore:40,level:'excellent',levelLabel:'优秀',
+        { title:'命题作文 — 谈坚持',type:'议论文',wordCount:820,totalScore:36,fullScore:40,
           comment:'论点深刻，论据新颖，语言富有文采。结构严谨，层层递进，展现了较高的写作水平。',
           dimensions:[{ name:'立意明确，中心突出，观点有深度',score:9,full:10,weight:.25,strengths:['论点深刻','论据新颖'],weaknesses:[],color:'#1a73e8' },{ name:'结构严谨，层次分明，论证有逻辑',score:9,full:10,weight:.25,strengths:['结构严谨','层层递进'],weaknesses:[],color:'#f59e0b' },{ name:'语言流畅，富有文采，恰当运用修辞',score:9,full:10,weight:.25,strengths:['文采斐然','修辞丰富'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范，卷面整洁，标点正确',score:9,full:10,weight:.25,strengths:['卷面整洁'],weaknesses:[],color:'#6366f1' }],
           text:'坚持，是水滴石穿的执着，是铁杵磨针的毅力，更是暗夜行路时心中不灭的那盏灯。\n\n然而，真正的坚持不是盲目的固守，而是在认清方向后的执着前行。司马迁忍辱负重著《史记》，支撑他的不仅是坚持二字，更是"究天人之际，通古今之变"的史家使命。\n\n坚持需要智慧。古人云："行百里者半九十。"最后十里往往最难，但也最接近成功。如果没有方向的坚持如同无头苍蝇，那么半途而废则是对梦想最大的辜负。\n\n在这个快节奏的时代，坚持更显珍贵。让我们学会在浮躁中沉淀，在困境中坚守，让坚持成为人生最亮丽的底色。',
@@ -599,7 +587,7 @@ const classDataList = [
           modelEssay:{ title:'谈坚持 (满分范文)',excerpt:'"坚持，是水滴石穿的执着，是铁杵磨针的毅力..." (全文)',comment:'本文就是范文级别，排比开篇气势恢宏，引经据典论证有力。' },
           errorStats:[]
         },
-        { title:'微写作 — 推荐一本书',type:'应用文',wordCount:250,totalScore:38,fullScore:40,level:'excellent',levelLabel:'优秀',
+        { title:'微写作 — 推荐一本书',type:'应用文',wordCount:250,totalScore:38,fullScore:40,
           comment:'推荐理由充分，语言优美，有感染力。',
           dimensions:[{ name:'推荐对象明确，推荐理由充分',score:9,full:10,weight:.25,strengths:['推荐有深度'],weaknesses:[],color:'#1a73e8' },{ name:'结构清晰，条理分明',score:9,full:10,weight:.25,strengths:['逻辑清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言流畅，有感染力',score:10,full:10,weight:.25,strengths:['语言优美'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范，卷面整洁',score:10,full:10,weight:.25,strengths:['优秀'],weaknesses:[],color:'#6366f1' }],
           text:'如果要选一本能改变人生态度的书，我会推荐余华的《活着》。\n\n这本书讲述了主人公福贵在苦难中活下去的故事。每一次读到福贵失去至亲的情节，我都忍不住落泪。但奇怪的是，读完后的感觉不是绝望，而是一种对生命深深的敬畏。\n\n余华用最朴素的文字，写出了最深沉的情感。他告诉我们：活着本身就是一种力量。',
@@ -911,10 +899,8 @@ function closeModelScanModal() { document.getElementById('modelScanModal').class
 // ============================================================
 function renderStudentTable() {
   const search = document.getElementById('studentSearch').value.toLowerCase();
-  const lv = document.getElementById('levelFilter').value;
   let filtered = getCurrentStudents().filter(s => {
-    if (!s.name.includes(search) && !s.studentNo.includes(search)) return false;
-    return lv==='all' || s.essays[currentEssayTab]?.level === lv;
+    return s.name.includes(search) || s.studentNo.includes(search);
   });
   filtered.sort((a,b) => (b.essays[currentEssayTab]?.totalScore||0) - (a.essays[currentEssayTab]?.totalScore||0));
   document.getElementById('studentCount').textContent = filtered.length + '人';
@@ -926,8 +912,7 @@ function renderStudentTable() {
   filtered.forEach(s => {
     html += `<tr><td><span class="st-name" onclick="showIndividualView('${s.id}')">${s.name}</span></td><td style="color:#98a2b3;font-size:12px;">${s.studentNo}</td>`;
     s.essays.forEach((e,i) => {
-      const lc = e.level==='excellent'?'level-excellent':e.level==='good'?'level-good':e.level==='pass'?'level-pass':'level-needs';
-      html += `<td style="text-align:center;${i===currentEssayTab?'background:#f0f5ff;':''}"><strong>${e.totalScore}</strong>/${e.fullScore}<br><span class="level-tag ${lc}" style="font-size:10px;">${e.levelLabel}</span></td>`;
+      html += `<td style="text-align:center;${i===currentEssayTab?'background:#f0f5ff;':''}"><strong>${e.totalScore}</strong>/${e.fullScore}</td>`;
     });
     html += `<td style="text-align:center"><button class="btn sm" onclick="showIndividualView('${s.id}')">查看报告</button></td></tr>`;
   });
@@ -1007,10 +992,9 @@ function renderEssayRender(student, essayIndex) {
 }
 
 function renderOverview(e) {
-  const lc = e.level==='excellent'?'level-excellent':e.level==='good'?'level-good':e.level==='pass'?'level-pass':'level-needs';
   const dims = dimsOf(e);
   const hasDims = dims.length > 0;
-  const left = `<div class="overview-left"><div class="meta"><span class="meta-item">📌 <strong>题目：</strong>${e.title}</span><span class="meta-item">📋 <strong>文体：</strong>${e.type}</span><span class="meta-item">📝 <strong>字数：</strong>${e.wordCount}词</span></div><div class="score-row"><span class="score-main">${e.totalScore}</span><span class="score-full">/ ${e.fullScore}</span><span class="level-tag ${lc}">${e.levelLabel}</span></div><div class="comment-box"><div class="label">💬 AI 总评</div><div class="text">${e.comment}</div></div></div>`;
+  const left = `<div class="overview-left"><div class="meta"><span class="meta-item">📌 <strong>题目：</strong>${e.title}</span><span class="meta-item">📋 <strong>文体：</strong>${e.type}</span><span class="meta-item">📝 <strong>字数：</strong>${e.wordCount}词</span></div><div class="score-row"><span class="score-main">${e.totalScore}</span><span class="score-full">/ ${e.fullScore}</span></div><div class="comment-box"><div class="label">💬 AI 总评</div><div class="text">${e.comment}</div></div></div>`;
   const right = hasDims ? `<div class="overview-right"><div class="chart-container"><canvas id="radarChart"></canvas></div></div>` : '';
   const grid = document.getElementById('overviewGrid');
   grid.innerHTML = left + right;
@@ -1246,13 +1230,12 @@ function previewPdf(id, mode) {
   };
 
   var addEssay = function(student, es, essayIdx) {
-    var lc = es.level==='excellent'?'优秀':es.level==='good'?'良好':es.level==='pass'?'及格':'待提升';
     html += '<div style="page-break-after:'+(essayIdx===0&&student.essays.length>1?'always':'')+';"></div>';
     html += '<div class="header"><h1>✏️ 作文批改报告</h1><div class="info">'+student.name+'（'+student.studentNo+'） · '+clz.className+' · '+clz.examName+'</div></div>';
 
     // Overview
     html += '<div style="font-size:13px;color:#667085;margin-bottom:4px">题目：'+es.title+' · 文体：'+es.type+' · 字数：'+es.wordCount+'词</div>';
-    html += '<div class="score-row">'+es.totalScore+'/'+es.fullScore+' <span style="font-size:13px;font-weight:500;color:#667085;margin-left:8px;">'+lc+'</span></div>';
+    html += '<div class="score-row">'+es.totalScore+'/'+es.fullScore+'</div>';
     html += '<div class="comment-box">'+es.comment+'</div>';
 
     // Dimensions
