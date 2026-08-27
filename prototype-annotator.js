@@ -35,10 +35,12 @@
  *   快捷键 Ctrl+Shift+.  或  网址加 ?annotate
  *   控制台 __pa_enable()
  *
- * 数据持久化：
- *   编辑后点侧栏「保存 annotations.js」→ 下载文件 → 覆盖项目目录中同名文件
- *   localStorage 自动保存，刷新不丢失
- *   首次打开从 annotations.js 读取种子数据
+ * 基于文件的工作流（annotations.js 是唯一数据源，不读 localStorage）：
+ *   1. 页面加载时以 annotations.js 的内容为准
+ *   2. 编辑后点侧栏「保存 annotations.js」→ 直接写回项目目录同名文件
+ *      （需通过本地服务 start.bat 打开页面；双击 file:// 打开时浏览器禁止写
+ *        磁盘，此时退回"下载副本"，请手动覆盖项目目录中的 annotations.js）
+ *   3. 覆盖后的文件提交 Git，其他人拉取后打开页面即可看到全部标注
  *
  * ============================================================
  */
@@ -169,27 +171,12 @@
   }
 
   // ============================================================
-  // 加载 annotations.js（通过 <script> 标签引入，file:// 和 https:// 都可用）
+  // 加载 annotations.js（唯一数据源，只从这里读，不读 localStorage）
   // ============================================================
   function loadAnnotations() {
-    // 1. 尝试从 localStorage 恢复（实时持久化）
-    var saved = false;
-    try {
-      var old = localStorage.getItem('pa_data');
-      if (old) {
-        var parsed = JSON.parse(old);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          _annotations = parsed;
-          saved = true;
-        }
-      }
-    } catch(e) {}
-
-    // 2. 首次打开用 annotations.js 作为种子
-    if (!saved && window.__pa_data && Array.isArray(window.__pa_data) && window.__pa_data.length > 0) {
+    // annotations.js 通过 <script> 标签引入后挂在 window.__pa_data 上
+    if (window.__pa_data && Array.isArray(window.__pa_data) && window.__pa_data.length > 0) {
       _annotations = JSON.parse(JSON.stringify(window.__pa_data));
-      // 自动保存到 localStorage，以后刷新直接读
-      try { localStorage.setItem('pa_data', JSON.stringify(_annotations)); } catch(e) {}
     }
 
     _jsonLoaded = true;
@@ -234,6 +221,31 @@
   function exportToFile() {
     var json = JSON.stringify(_annotations, null, 2);
     var jsContent = 'var __pa_data = ' + json + ';\n';
+
+    // 通过本地服务（start.bat 或 node server.js）访问时，直接写回 annotations.js
+    if (window.location.protocol !== 'file:') {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/save-annotations', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4) return;
+        if (xhr.status === 200) {
+          alert('✅ 已保存到 annotations.js');
+        } else {
+          downloadAsFile(jsContent);
+        }
+      };
+      try {
+        xhr.send(JSON.stringify({ content: jsContent }));
+        return;
+      } catch (e) { /* 退回下载 */ }
+    }
+
+    // file:// 双击打开：浏览器禁止写磁盘，退回下载副本（不打扰）
+    downloadAsFile(jsContent);
+  }
+
+  function downloadAsFile(jsContent) {
     var blob = new Blob([jsContent], { type: 'text/javascript' });
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
@@ -251,10 +263,9 @@
   function getReqs() { return _annotations; }
   function saveReqs(arr) { _annotations = arr; }
   function syncPaData() {
+    // 只更新内存态，落盘由「保存 annotations.js」按钮写回文件完成
     try {
-      var data = JSON.parse(JSON.stringify(_annotations));
-      window.__pa_data = data;
-      localStorage.setItem('pa_data', JSON.stringify(data));
+      window.__pa_data = JSON.parse(JSON.stringify(_annotations));
     } catch(e) {}
   }
   // 迁移旧数据格式（只处理坐标格式，不修改 view 归属）
@@ -424,7 +435,8 @@
   // Backdoors
   // ============================================================
   document.addEventListener('keydown', function (e) {
-    if (e.key === '.' && e.ctrlKey && e.shiftKey) {
+    // Shift+句号在多数布局上产出 '>'，故用 e.code 判断，避免依赖字符
+    if ((e.code === 'Period' || e.key === '.' || e.key === '>') && e.ctrlKey && e.shiftKey) {
       e.preventDefault();
       if (editMode) disableEdit(); else enableEdit();
     }

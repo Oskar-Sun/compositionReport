@@ -32,6 +32,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .class-switcher button{padding:5px 14px;border:none;border-radius:6px;font-size:13px;cursor:pointer;background:transparent;color:#667085;transition:all .15s;font-weight:500;font-family:inherit;white-space:nowrap}
 .class-switcher button:hover{background:rgba(255,255,255,.6);color:#344054}
 .class-switcher button.active{background:#fff;color:#1a1a2e;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.subject-switcher{display:flex;align-items:center;gap:4px;background:#f2f4f7;border-radius:8px;padding:3px}
+.subject-switcher .subject-label{font-size:12px;color:#98a2b3;padding:0 4px 0 8px}
+.subject-switcher button{padding:5px 14px;border:none;border-radius:6px;font-size:13px;cursor:pointer;background:transparent;color:#667085;transition:all .15s;font-weight:500;font-family:inherit;white-space:nowrap}
+.subject-switcher button:hover{background:rgba(255,255,255,.6);color:#344054}
+.subject-switcher button.active{background:#1a73e8;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:#667085;margin-bottom:16px;flex-wrap:wrap}
 .breadcrumb a{cursor:pointer;color:#1a73e8;text-decoration:none}
 .breadcrumb a:hover{text-decoration:underline}
@@ -64,7 +69,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .dimension-list{display:flex;flex-direction:column;gap:10px}
 .dimension-item{border:1px solid #eef0f4;border-radius:8px;padding:14px 16px;background:#fff}
 .dimension-item .dim-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.dimension-item .dim-name{font-weight:600;font-size:14px;color:#344054}
+.dimension-item .dim-name{font-weight:600;font-size:14px;color:#344054;flex:1;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dimension-item .dim-req{flex:0 0 auto;font-size:12px;font-weight:600;color:#1a73e8;background:#e8f0fe;padding:2px 8px;border-radius:4px;white-space:nowrap}
 .dimension-item .dim-score{font-size:13px;font-weight:600;color:#1a1a2e;margin-left:auto;background:#f0f2f5;padding:2px 10px;border-radius:999px;white-space:nowrap}
 .dimension-item .dim-comment{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#667085;line-height:1.7}
 .dimension-item .dim-pos{color:#1e7e34}
@@ -175,6 +181,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .showcase-card .sc-body .sc-comment{font-size:12px;color:#1a73e8;margin-top:8px;padding-top:8px;border-top:1px solid #eef0f4}
 .showcase-card .sc-actions{padding:8px 16px 12px;display:flex;gap:6px;flex-wrap:wrap}
 .showcase-card .sc-badge{font-size:11px;background:#e6f4ea;color:#1e7e34;padding:2px 8px;border-radius:8px;display:inline-flex;align-items:center;gap:3px}
+.showcase-card .sc-thumb{position:relative;height:180px;overflow:hidden;cursor:zoom-in;background:#fbf7ee;border-bottom:1px solid #eef0f4}
+.showcase-card .sc-thumb .zoom-hint{position:absolute;bottom:8px;right:8px;z-index:3;background:rgba(0,0,0,.5);color:#fff;font-size:11px;padding:3px 8px;border-radius:6px;opacity:0;transition:opacity .15s}
+.showcase-card .sc-thumb:hover .zoom-hint{opacity:1}
+.scan-paper{position:relative;background-color:#fbf7ee;overflow:hidden;box-shadow:inset 0 0 40px rgba(140,120,80,.06)}
+.scan-paper::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center, rgba(255,255,255,0) 55%, rgba(120,100,60,.10) 100%)}
+.scan-paper.lined{background-image:repeating-linear-gradient(to bottom, transparent 0, transparent 31px, #d8deea 31px, #d8deea 32px)}
+.scan-paper.grid{background-image:repeating-linear-gradient(to bottom, transparent 0, transparent 31px, #e3d6c2 31px, #e3d6c2 32px),repeating-linear-gradient(to right, transparent 0, transparent 31px, #eee2cf 31px, #eee2cf 32px)}
+.scan-paper .sp-text{position:relative;z-index:1;font-size:15px;line-height:32px;padding:12px 16px;white-space:pre-wrap;color:#3b3b3b;word-break:break-word}
 /* Modal */
 .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
@@ -218,9 +232,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .footer-note{text-align:center;padding:20px;font-size:12px;color:#98a2b3}
 @media print{
   body{background:#fff;padding:0}
-  .no-print,.btn,.function-tip,.review-banner,.class-essay-tabs,.view-switch,.class-switcher{display:none!important}
+  .no-print,.btn,.function-tip,.review-banner,.class-essay-tabs,.view-switch,.class-switcher,.subject-switcher{display:none!important}
   .report-section{box-shadow:none;border:1px solid #ddd;page-break-inside:avoid}
   .annot-tooltip{display:block!important;box-shadow:none;border:1px solid #ddd}
+  .dimension-item .dim-name{-webkit-line-clamp:unset;display:block;overflow:visible;white-space:normal}
 }
 </style>
 </head>
@@ -231,6 +246,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   <div class="top-bar">
     <div class="left">
       <span class="title">✏️ 作文批改报告</span>
+      <div class="subject-switcher no-print" id="subjectSwitcher"></div>
       <div class="class-switcher no-print" id="classSwitcher"></div>
     </div>
     <div class="right no-print">
@@ -264,7 +280,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       <div class="class-stats" id="classStats"></div>
       <div class="chart-grid" id="chartGrid">
         <div class="chart-box"><div class="cb-title">📊 分数段分布</div><canvas id="scoreDistChart"></canvas></div>
-        <div class="chart-box" id="dimAvgBox"><div class="cb-title">📈 各维度平均得分率</div><canvas id="dimAvgChart"></canvas></div>
+        <div class="chart-box" id="dimAvgBox"><div class="cb-title">📈 各写作要求平均得分率</div><canvas id="dimAvgChart"></canvas></div>
       </div>
     </div>
     <div class="report-section fade-in">
@@ -307,7 +323,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 
     <div id="reportContent">
       <div class="report-section fade-in"><div class="section-title"><span class="icon">📊</span> 作文画像</div><div class="overview-grid" id="overviewGrid"></div></div>
-      <div class="report-section fade-in" id="dimensionSection"><div class="section-title"><span class="icon">🎯</span> 评分维度点评</div><div id="dimensionList"></div></div>
+      <div class="report-section fade-in" id="dimensionSection"><div class="section-title"><span class="icon">🎯</span> 写作要求点评</div><div id="dimensionList"></div></div>
       <div class="report-section fade-in">
         <div class="section-title"><span class="icon">📄</span> 原文批注</div>
         <div class="view-switch no-print">
@@ -353,6 +369,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
+<!-- ===== MODEL ESSAY SCAN MODAL ===== -->
+<div class="modal-overlay" id="modelScanModal" onclick="if(event.target===this)closeModelScanModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modelScanTitle">📄 优秀范文扫描件</span>
+      <button class="modal-close" onclick="closeModelScanModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modelScanBody"></div>
+  </div>
+</div>
+
 
 
 <script>
@@ -366,7 +393,15 @@ const classDataList = [
       { id:'S001',name:'张小明',studentNo:'2024001',essays:[
         { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:198,totalScore:22,fullScore:25,level:'excellent',levelLabel:'优秀',
           comment:'文章情节设计合理，情感真挚，结尾升华主题恰到好处。',
-          dimensions:[{ name:'内容 Content',score:9,full:10,weight:.35,strengths:['情节设计合理','情感真挚'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:6,full:7,weight:.25,strengths:['段落清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:5,full:6,weight:.30,strengths:['词汇丰富','句式多样'],weaknesses:['个别搭配可优化'],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['书写工整'],weaknesses:[],color:'#6366f1' }],
+          // 写作要求：教师配置智能批改时输入的自定义要求（最多 5 条、每条最多 150 字），系统逐条评分后汇总为总分。
+          // name = 完整要求文本（屏幕超长截断悬浮查看、打印展示全文）；图表/列表用「要求N」序号标识，无固定枚举名称。
+          dimensions:[
+            { name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀', score:6,full:6,weight:.2,strengths:['情节合理','衔接自然'],weaknesses:[],color:'#1a73e8' },
+            { name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣', score:5,full:6,weight:.2,strengths:['情感真挚','主题积极'],weaknesses:[],color:'#f59e0b' },
+            { name:'结构完整，段落层次分明，详略得当，逻辑连贯', score:5,full:5,weight:.2,strengths:['段落清晰'],weaknesses:['个别过渡可优化'],color:'#1e7e34' },
+            { name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意', score:4,full:5,weight:.2,strengths:['词汇丰富','句式多样'],weaknesses:['个别搭配可优化'],color:'#6366f1' },
+            { name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求', score:2,full:3,weight:.2,strengths:['书写工整'],weaknesses:[],color:'#c5221f' }
+          ],
           text:'The old man stood at the bus stop, shivering in the cold wind. He looked at his watch and sighed deeply. I was about to hurry past when my mother\'s words echoed in my mind: "A small act of kindness can make a big difference."\n\nWithout hesitation, I walked over and asked, "Sir, do you need help?" He told me he had missed his bus and had no money for another. I pressed my last five yuan into his palm.\n\nTears welled up in his eyes. "Thank you, young man. You have a heart of gold."\n\nAs I ran to school, I realized that kindness is like a boomerang — it always comes back. Helping him made my heart warmer than any exam score ever could.',
           highlights:[{ text:'"A small act of kindness can make a big difference."',technique:'引语运用',comment:'引用母亲的话自然引出主题。',effect:'承上启下' },{ text:'Tears welled up in his eyes. "Thank you, young man. You have a heart of gold."',technique:'细节描写',comment:'"tears welled up"细腻刻画老人的感动。',effect:'情感渲染到位' },{ text:'kindness is like a boomerang — it always comes back',technique:'比喻修辞',comment:'将善意比作回旋镖，形象生动。',effect:'形象升华主题' }],
           issues:[{ text:'I was about to hurry past when my mother\'s words echoed in my mind',type:'衔接',severity:'低',comment:'转折略快。',suggestion:'增加"但是"延迟',corrected:'I was about to hurry past — the exam was only 20 minutes away — when my mother\'s words suddenly echoed in my mind.' }],
@@ -377,7 +412,7 @@ const classDataList = [
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:152,totalScore:23,fullScore:25,level:'excellent',levelLabel:'优秀',
           comment:'要点齐全，结构清晰，语言得体。语气亲切而不失正式。',
-          dimensions:[{ name:'内容 Content',score:9,full:10,weight:.35,strengths:['要点齐全','建议具体'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:7,full:7,weight:.25,strengths:['逻辑清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:5,full:6,weight:.30,strengths:['词汇丰富','语气得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['格式规范'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'内容要点齐全，建议具体可操作',score:9,full:10,weight:.35,strengths:['要点齐全','建议具体'],weaknesses:[],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:7,full:7,weight:.25,strengths:['逻辑清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:5,full:6,weight:.30,strengths:['词汇丰富','语气得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:2,full:2,weight:.10,strengths:['格式规范'],weaknesses:[],color:'#6366f1' }],
           text:'Dear Mike,\n\nI\'m sorry to hear that you\'re having trouble adapting to the new school. It\'s completely normal to feel this way, but I have some suggestions that might help.\n\nFirst and foremost, try to join some clubs. This is an excellent way to make new friends. Besides, don\'t be afraid to start conversations — a simple "hello" can open the door to a wonderful friendship.\n\nSecondly, if you\'re struggling with your studies, ask your teachers for assistance.\n\nLast but not least, be patient with yourself. I\'m confident that you will soon feel at home here.\n\nYours sincerely,\nLi Hua',
           highlights:[{ text:'a simple "hello" can open the door to a wonderful friendship',technique:'比喻',comment:'用"open the door"形象表达。',effect:'亲切自然' }],
           issues:[],grammarErrors:[],
@@ -389,7 +424,7 @@ const classDataList = [
       { id:'S002',name:'李小红',studentNo:'2024002',essays:[
         { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:175,totalScore:20,fullScore:25,level:'good',levelLabel:'良好',
           comment:'故事完整，情感真实。语言基本规范，在用词丰富度上还有提升空间。',
-          dimensions:[{ name:'内容 Content',score:8,full:10,weight:.35,strengths:['情节完整','情感真实'],weaknesses:['深度略不足'],color:'#1a73e8' },{ name:'结构 Organization',score:5,full:7,weight:.25,strengths:['段落分明'],weaknesses:['过渡略生硬'],color:'#f59e0b' },{ name:'语言 Language',score:5,full:6,weight:.30,strengths:['语法准确'],weaknesses:['词汇偏简单'],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['书写工整'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:5,full:6,weight:.2,strengths:['情节完整'],weaknesses:['深度略不足'],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:5,full:6,weight:.2,strengths:['情感真实'],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:4,full:5,weight:.2,strengths:['段落分明'],weaknesses:['过渡略生硬'],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:4,full:5,weight:.2,strengths:['语法准确'],weaknesses:['词汇偏简单'],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:2,full:3,weight:.2,strengths:['书写工整'],weaknesses:[],color:'#c5221f' }],
           text:'The old man stood at the bus stop. He looked cold. I wanted to help him but I was in a hurry. Then I remembered what my mother said: "Be kind to others." So I went to him and gave him some money.\n\nThe old man was very happy. He said thank you to me. I felt very good. Then I ran to school.\n\nI think helping others is very important. We should always be kind to people around us.',
           highlights:[{ text:'"Be kind to others."',technique:'引用',comment:'引用母亲教诲，简单有效。',effect:'行为动机合理' }],
           issues:[{ text:'The old man was very happy. He said thank you to me.',type:'表达',severity:'中',comment:'句式连续单调。',suggestion:'合并句子',corrected:'The old man\'s face lit up with a grateful smile as he thanked me.' },{ text:'I felt very good.',type:'词汇',severity:'中',comment:'过于口语化。',suggestion:'更丰富表达',corrected:'A warm sense of fulfillment flooded over me.' }],
@@ -400,7 +435,7 @@ const classDataList = [
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:138,totalScore:19,fullScore:25,level:'good',levelLabel:'良好',
           comment:'结构完整，要点基本齐全。部分表达偏口语化。',
-          dimensions:[{ name:'内容 Content',score:7,full:10,weight:.35,strengths:['要点基本齐全'],weaknesses:['建议不够具体'],color:'#1a73e8' },{ name:'结构 Organization',score:6,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:4,full:6,weight:.30,strengths:['语法基本正确'],weaknesses:['口语化偏重'],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['格式正确'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'内容要点齐全，建议具体可操作',score:7,full:10,weight:.35,strengths:['要点基本齐全'],weaknesses:['建议不够具体'],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:6,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:4,full:6,weight:.30,strengths:['语法基本正确'],weaknesses:['口语化偏重'],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:2,full:2,weight:.10,strengths:['格式正确'],weaknesses:[],color:'#6366f1' }],
           text:'Dear Mike,\n\nI know you are having a hard time. Don\'t worry too much. Here are my ideas.\n\nFirst, you can join some clubs. It\'s a good way to make new friends. Second, ask your teacher for help.\n\nLast, just be yourself. I hope you will be happy soon.\n\nYours,\nLi Hua',
           highlights:[],issues:[{ text:'Don\'t worry too much.',type:'表达',severity:'中',comment:'偏口语化。',suggestion:'更正式表达',corrected:'There is no need to worry excessively.' }],
           grammarErrors:[],
@@ -412,7 +447,7 @@ const classDataList = [
       { id:'S003',name:'王大力',studentNo:'2024003',essays:[
         { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:155,totalScore:14,fullScore:25,level:'pass',levelLabel:'及格',
           comment:'基本完成续写任务，但存在较多语法错误。',
-          dimensions:[{ name:'内容 Content',score:6,full:10,weight:.35,strengths:['情节方向正确'],weaknesses:['内容单薄'],color:'#1a73e8' },{ name:'结构 Organization',score:4,full:7,weight:.25,strengths:['有分段意识'],weaknesses:['结构松散'],color:'#f59e0b' },{ name:'语言 Language',score:3,full:6,weight:.30,strengths:[],weaknesses:['语法错误较多'],color:'#1e7e34' },{ name:'书写 Mechanics',score:1,full:2,weight:.10,strengths:['可辨认'],weaknesses:['拼写较多'],color:'#6366f1' }],
+          dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:4,full:6,weight:.2,strengths:['情节方向正确'],weaknesses:['内容单薄'],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:3,full:6,weight:.2,strengths:[],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:3,full:5,weight:.2,strengths:['有分段意识'],weaknesses:['结构松散'],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:3,full:5,weight:.2,strengths:[],weaknesses:['语法错误较多'],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:1,full:3,weight:.2,strengths:['可辨认'],weaknesses:['拼写较多'],color:'#c5221f' }],
           text:'The old man standed at the bus stop. He feeled cold. I think I should help him but I also need to go to school. So I give him some money.\n\nHe say thank you to me. I say you are welcome. Then I go to school. I feeled happy.\n\nI think helping is good. We must help others when they need.',
           highlights:[],issues:[
             { text:'The old man standed at the bus stop.',type:'语法',severity:'高',comment:'"standed"不是正确过去式。',suggestion:'学习不规则动词',corrected:'The old man stood at the bus stop.' },
@@ -425,7 +460,7 @@ const classDataList = [
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:120,totalScore:13,fullScore:25,level:'pass',levelLabel:'及格',
           comment:'基本格式正确，但语法错误较多。',
-          dimensions:[{ name:'内容 Content',score:5,full:10,weight:.35,strengths:['有基本建议'],weaknesses:['内容简单'],color:'#1a73e8' },{ name:'结构 Organization',score:4,full:7,weight:.25,strengths:['有结构意识'],weaknesses:['衔接词不当'],color:'#f59e0b' },{ name:'语言 Language',score:3,full:6,weight:.30,strengths:[],weaknesses:['语法错误多'],color:'#1e7e34' },{ name:'书写 Mechanics',score:1,full:2,weight:.10,strengths:[],weaknesses:['标点不规范'],color:'#6366f1' }],
+          dimensions:[{ name:'内容要点齐全，建议具体可操作',score:5,full:10,weight:.35,strengths:['有基本建议'],weaknesses:['内容简单'],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:4,full:7,weight:.25,strengths:['有结构意识'],weaknesses:['衔接词不当'],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:3,full:6,weight:.30,strengths:[],weaknesses:['语法错误多'],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:1,full:2,weight:.10,strengths:[],weaknesses:['标点不规范'],color:'#6366f1' }],
           text:'Dear Mike,\n\nI know you feel bad in new school. Don\'t worry. I have some advise for you.\n\nFirst, make some friend. It will make you happy. Second, ask teacher for help.\n\nLast, don\'t give up.\n\nYours,\nLi Hua',
           highlights:[],issues:[{ text:'I have some advise for you.',type:'语法',severity:'高',comment:'"advise"是动词，名词是"advice"。',suggestion:'区分advise/advice',corrected:'I have some advice for you.' }],
           grammarErrors:[{ original:'advise',type:'词性混淆',correction:'advice',explanation:'advise是动词，advice是名词' }],
@@ -437,7 +472,7 @@ const classDataList = [
       { id:'S004',name:'赵欣然',studentNo:'2024004',essays:[
         { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:190,totalScore:24,fullScore:25,level:'excellent',levelLabel:'优秀',
           comment:'情节设计巧妙，情感层次丰富，语言表达精准老练。',
-          dimensions:[{ name:'内容 Content',score:10,full:10,weight:.35,strengths:['情节设计巧妙','立意深刻'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:7,full:7,weight:.25,strengths:['行文流畅','首尾呼应'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:5,full:6,weight:.30,strengths:['用词精准','句式丰富'],weaknesses:[],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['书写美观'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:6,full:6,weight:.2,strengths:['情节设计巧妙'],weaknesses:[],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:6,full:6,weight:.2,strengths:['立意深刻'],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:5,full:5,weight:.2,strengths:['行文流畅','首尾呼应'],weaknesses:[],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:5,full:5,weight:.2,strengths:['用词精准','句式丰富'],weaknesses:[],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:2,full:3,weight:.2,strengths:['书写美观'],weaknesses:[],color:'#c5221f' }],
           text:'The biting wind cut through my coat as I noticed the elderly man at the bus stop, his shoulders hunched against the cold. I was torn — the final exam was only 20 minutes away, yet something held me back.\n\n"What would I want someone to do if it were my grandfather?" The answer came before the question finished forming.\n\nI approached him. His weary eyes met mine. I bought him a ticket and waited with him.\n\n"Thank you," he whispered, his voice trembling. "You reminded me that there is still kindness in this world."\n\nAs I ran to school, late but light-hearted, I realized that kindness is not just an action — it\'s a choice that defines who we are.',
           highlights:[{ text:'The biting wind cut through my coat as I noticed the elderly man at the bus stop, his shoulders hunched against the cold.',technique:'环境+细节描写',comment:'开篇画面感极强。',effect:'营造氛围' },{ text:'"What would I want someone to do if it were my grandfather?"',technique:'设问修辞',comment:'换位思考引出决定。',effect:'思想深度凸显' },{ text:'kindness is not just an action — it\'s a choice that defines who we are',technique:'对偶+升华',comment:'结尾掷地有声。',effect:'深刻有力' }],
           issues:[],grammarErrors:[],
@@ -447,7 +482,7 @@ const classDataList = [
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:158,totalScore:24,fullScore:25,level:'excellent',levelLabel:'优秀',
           comment:'语言地道、语气得体、结构严谨。',
-          dimensions:[{ name:'内容 Content',score:9,full:10,weight:.35,strengths:['建议全面具体'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:7,full:7,weight:.25,strengths:['逻辑严密'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:6,full:6,weight:.30,strengths:['地道流畅','语气得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['完美'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'内容要点齐全，建议具体可操作',score:9,full:10,weight:.35,strengths:['建议全面具体'],weaknesses:[],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:7,full:7,weight:.25,strengths:['逻辑严密'],weaknesses:[],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:6,full:6,weight:.30,strengths:['地道流畅','语气得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:2,full:2,weight:.10,strengths:['完美'],weaknesses:[],color:'#6366f1' }],
           text:'Dear Mike,\n\nI was sorry to learn that you\'re having difficulty adjusting. Please don\'t be discouraged — it\'s perfectly natural.\n\nTo begin with, I\'d recommend getting involved in activities. Not only will this help you meet like-minded friends, but it will also give you a sense of belonging.\n\nAdditionally, if you find the coursework challenging, don\'t hesitate to seek help.\n\nAbove all, give yourself time to adapt. Rome wasn\'t built in a day, and neither is a sense of belonging.\n\nWishing you all the best.\n\nYours sincerely,\nLi Hua',
           highlights:[{ text:'Not only will this help you meet like-minded friends, but it will also give you a sense of belonging.',technique:'倒装句',comment:'Not only倒装结构熟练。',effect:'强调好处' },{ text:'Rome wasn\'t built in a day, and neither is a sense of belonging.',technique:'谚语活用',comment:'巧妙改编谚语。',effect:'说服力强' }],
           issues:[],grammarErrors:[],
@@ -459,7 +494,7 @@ const classDataList = [
       { id:'S005',name:'陈思远',studentNo:'2024005',essays:[
         { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:165,totalScore:16,fullScore:25,level:'good',levelLabel:'良好',
           comment:'故事完整。部分中式英语影响阅读流畅度。',
-          dimensions:[{ name:'内容 Content',score:7,full:10,weight:.35,strengths:['情节合理'],weaknesses:['部分中式思维'],color:'#1a73e8' },{ name:'结构 Organization',score:5,full:7,weight:.25,strengths:['结构完整'],weaknesses:['衔接可改进'],color:'#f59e0b' },{ name:'语言 Language',score:3,full:6,weight:.30,strengths:[],weaknesses:['中式英语较多'],color:'#1e7e34' },{ name:'书写 Mechanics',score:1,full:2,weight:.10,strengths:['可辨认'],weaknesses:['拼写有误'],color:'#6366f1' }],
+          dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:5,full:6,weight:.2,strengths:['情节合理'],weaknesses:[],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:4,full:6,weight:.2,strengths:[],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:4,full:5,weight:.2,strengths:['结构完整'],weaknesses:['衔接可改进'],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:2,full:5,weight:.2,strengths:[],weaknesses:['中式英语较多'],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:1,full:3,weight:.2,strengths:['可辨认'],weaknesses:['拼写有误'],color:'#c5221f' }],
           text:'I saw an old man at the bus stop. He looked very cold. I think in my heart I should help him. So I give him my money.\n\nHe very happy and say thank you many times.\n\nFrom this thing I learn that help others is help ourselves.',
           highlights:[],issues:[{ text:'I think in my heart I should help him.',type:'表达',severity:'中',comment:'"in my heart"是中式表达。',suggestion:'改为地道表达',corrected:'I felt that I should help him.' },{ text:'He very happy and say thank you many times.',type:'语法',severity:'高',comment:'缺少be动词，时态不一致。',suggestion:'补充动词',corrected:'He was very happy and thanked me repeatedly.' }],
           grammarErrors:[{ original:'He very happy',type:'系动词缺失',correction:'He was very happy',explanation:'形容词作表语需加be动词' }],
@@ -469,7 +504,7 @@ const classDataList = [
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:130,totalScore:16,fullScore:25,level:'good',levelLabel:'良好',
           comment:'格式正确，建议合理。但中式英语较多。',
-          dimensions:[{ name:'内容 Content',score:7,full:10,weight:.35,strengths:['建议合理'],weaknesses:['不够具体'],color:'#1a73e8' },{ name:'结构 Organization',score:5,full:7,weight:.25,strengths:['结构完整'],weaknesses:['衔接生硬'],color:'#f59e0b' },{ name:'语言 Language',score:3,full:6,weight:.30,strengths:[],weaknesses:['中式英语'],color:'#1e7e34' },{ name:'书写 Mechanics',score:1,full:2,weight:.10,strengths:[],weaknesses:['格式小错误'],color:'#6366f1' }],
+          dimensions:[{ name:'内容要点齐全，建议具体可操作',score:7,full:10,weight:.35,strengths:['建议合理'],weaknesses:['不够具体'],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:5,full:7,weight:.25,strengths:['结构完整'],weaknesses:['衔接生硬'],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:3,full:6,weight:.30,strengths:[],weaknesses:['中式英语'],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:1,full:2,weight:.10,strengths:[],weaknesses:['格式小错误'],color:'#6366f1' }],
           text:'Dear Mike,\n\nWelcome to our school! I know you are not happy now. I will give you some advice.\n\nFirst, you should make more friends. Second, ask teacher if you have question. Teacher are friendly.\n\nYours,\nLi Hua',
           highlights:[],issues:[{ text:'Teacher are very friendly.',type:'语法',severity:'高',comment:'名词复数+主谓一致。',suggestion:'注意名词复数和主谓一致',corrected:'The teachers are very friendly.' }],
           grammarErrors:[{ original:'Teacher are',type:'主谓一致',correction:'Teachers are',explanation:'可数名词应用复数' }],
@@ -485,7 +520,7 @@ const classDataList = [
       { id:'S101',name:'刘佳怡',studentNo:'2024101',essays:[
         { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:185,totalScore:21,fullScore:25,level:'excellent',levelLabel:'优秀',
           comment:'情感丰富，语言流畅，对原文理解准确。结尾主题升华自然。',
-          dimensions:[{ name:'内容 Content',score:8,full:10,weight:.35,strengths:['情感丰富','理解准确'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:6,full:7,weight:.25,strengths:['结构完整'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:5,full:6,weight:.30,strengths:['语言流畅'],weaknesses:[],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['规范'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:5,full:6,weight:.2,strengths:['理解准确'],weaknesses:[],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:5,full:6,weight:.2,strengths:['情感丰富'],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:4,full:5,weight:.2,strengths:['结构完整'],weaknesses:[],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:5,full:5,weight:.2,strengths:['语言流畅'],weaknesses:[],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:2,full:3,weight:.2,strengths:['规范'],weaknesses:[],color:'#c5221f' }],
           text:'I noticed an elderly man standing alone at the bus stop. He looked tired and cold. I knew I had to help him. I offered him my umbrella and some warm tea I had just bought.\n\nHe smiled at me and said, "Thank you, dear. You are very kind."\n\nI smiled back and felt a warmth spreading through my heart. Sometimes the smallest gestures can make the biggest difference.\n\nFrom this experience, I learned that kindness is a language that everyone understands. It costs nothing but means everything.',
           highlights:[{ text:'Sometimes the smallest gestures can make the biggest difference.',technique:'对比手法',comment:'"smallest"与"biggest"的对比简洁有力。',effect:'突出主题' },{ text:'kindness is a language that everyone understands',technique:'比喻',comment:'将善意比作通用语言，贴切动人。',effect:'引发共鸣' }],
           issues:[],grammarErrors:[],
@@ -495,7 +530,7 @@ const classDataList = [
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:148,totalScore:22,fullScore:25,level:'excellent',levelLabel:'优秀',
           comment:'要点齐全，表达得体，语言流畅。',
-          dimensions:[{ name:'内容 Content',score:8,full:10,weight:.35,strengths:['要点齐全'],weaknesses:[],color:'#1a73e8' },{ name:'结构 Organization',score:6,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:6,full:6,weight:.30,strengths:['表达得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['规范'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'内容要点齐全，建议具体可操作',score:8,full:10,weight:.35,strengths:['要点齐全'],weaknesses:[],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:6,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:6,full:6,weight:.30,strengths:['表达得体'],weaknesses:[],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:2,full:2,weight:.10,strengths:['规范'],weaknesses:[],color:'#6366f1' }],
           text:'Dear Mike,\n\nI\'m sorry to hear about your difficulties adjusting to the new school. It\'s normal to feel this way, and I\'d like to share some thoughts.\n\nFirst, why not join some clubs? It\'s a great way to meet people with similar interests. Second, don\'t hesitate to reach out to your classmates — most people are friendly and willing to help.\n\nI hope you settle in soon.\n\nYours,\nLi Hua',
           highlights:[{ text:'why not join some clubs?',technique:'建议句式',comment:'用"why not"提出建议，语气委婉亲切。',effect:'亲切自然' }],
           issues:[],grammarErrors:[],
@@ -507,7 +542,7 @@ const classDataList = [
       { id:'S102',name:'周浩然',studentNo:'2024102',essays:[
         { title:'读后续写 — A Kind Deed',type:'读后续写',wordCount:160,totalScore:17,fullScore:25,level:'good',levelLabel:'良好',
           comment:'情节合理，语言通顺。词汇偏简单，句式变化可加强。',
-          dimensions:[{ name:'内容 Content',score:7,full:10,weight:.35,strengths:['情节合理'],weaknesses:['细节不够'],color:'#1a73e8' },{ name:'结构 Organization',score:5,full:7,weight:.25,strengths:['结构清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:3,full:6,weight:.30,strengths:[],weaknesses:['词汇偏简单'],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['认真'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'情节设计合理，续写内容与原文衔接自然，人物言行符合前文设定，结尾不显突兀',score:5,full:6,weight:.2,strengths:['情节合理'],weaknesses:['细节不够'],color:'#1a73e8' },{ name:'情感真挚动人，主题积极向上，结尾升华立意，能引发读者共鸣',score:4,full:6,weight:.2,strengths:[],weaknesses:[],color:'#f59e0b' },{ name:'结构完整，段落层次分明，详略得当，逻辑连贯',score:4,full:5,weight:.2,strengths:['结构清晰'],weaknesses:[],color:'#1e7e34' },{ name:'语言流畅地道，词汇丰富，句式多样，恰当运用高级表达与修辞手法，语法正确无误，衔接词使用得当，避免中式英语，表达自然不刻意',score:3,full:5,weight:.2,strengths:[],weaknesses:['词汇偏简单'],color:'#6366f1' },{ name:'书写规范工整，卷面整洁，标点符号正确，格式符合要求',score:1,full:3,weight:.2,strengths:['认真'],weaknesses:[],color:'#c5221f' }],
           text:'I saw an old man at the bus stop. He was cold. I wanted to help. So I gave him my scarf. He said thank you. I felt happy.',
           highlights:[],issues:[{ text:'I saw an old man at the bus stop. He was cold. I wanted to help. So I gave him my scarf.',type:'表达',severity:'中',comment:'连续简单句，读起来节奏单一。',suggestion:'合并句子',corrected:'Seeing the old man shivering at the bus stop, I took off my scarf and wrapped it around him.' }],
           grammarErrors:[],
@@ -517,7 +552,7 @@ const classDataList = [
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:125,totalScore:18,fullScore:25,level:'good',levelLabel:'良好',
           comment:'结构完整，但语言较简单，缺少正式感。',
-          dimensions:[{ name:'内容 Content',score:7,full:10,weight:.35,strengths:['结构完整'],weaknesses:['语言简单'],color:'#1a73e8' },{ name:'结构 Organization',score:5,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言 Language',score:4,full:6,weight:.30,strengths:[],weaknesses:['缺少正式感'],color:'#1e7e34' },{ name:'书写 Mechanics',score:2,full:2,weight:.10,strengths:['正确'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'内容要点齐全，建议具体可操作',score:7,full:10,weight:.35,strengths:['结构完整'],weaknesses:['语言简单'],color:'#1a73e8' },{ name:'结构清晰，书信格式规范，逻辑连贯',score:5,full:7,weight:.25,strengths:['条理清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言得体流畅，语气亲切而不失正式',score:4,full:6,weight:.30,strengths:[],weaknesses:['缺少正式感'],color:'#1e7e34' },{ name:'书写工整，标点正确，卷面整洁',score:2,full:2,weight:.10,strengths:['正确'],weaknesses:[],color:'#6366f1' }],
           text:'Dear Mike,\n\nI know you feel bad. But don\'t worry. I want to help you.\n\nFirst, make friends. It is good. Second, ask teachers. They are nice.\n\nYours,\nLi Hua',
           highlights:[],issues:[{ text:'I know you feel bad. But don\'t worry.',type:'表达',severity:'中',comment:'过于口语化，缺乏正式感。',suggestion:'用更正式表达',corrected:'I understand you might be feeling down, but there is no need to worry.' }],
           grammarErrors:[],
@@ -533,7 +568,7 @@ const classDataList = [
       { id:'S201',name:'孙文博',studentNo:'2024201',essays:[
         { title:'命题作文 — 谈坚持',type:'议论文',wordCount:780,totalScore:34,fullScore:40,level:'good',levelLabel:'良好',
           comment:'论点明确，论据较为充实。结构完整，但在论证深度和语言文采上还有提升空间。',
-          dimensions:[{ name:'内容立意',score:7,full:10,weight:.25,strengths:['论点明确'],weaknesses:['论证深度不够'],color:'#1a73e8' },{ name:'结构逻辑',score:8,full:10,weight:.25,strengths:['结构完整','层次清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言表达',score:6,full:10,weight:.25,strengths:['通顺流畅'],weaknesses:['文采不足','修辞较少'],color:'#1e7e34' },{ name:'书写规范',score:8,full:10,weight:.25,strengths:['字迹工整'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'立意明确，中心突出，观点有深度',score:7,full:10,weight:.25,strengths:['论点明确'],weaknesses:['论证深度不够'],color:'#1a73e8' },{ name:'结构严谨，层次分明，论证有逻辑',score:8,full:10,weight:.25,strengths:['结构完整','层次清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言流畅，富有文采，恰当运用修辞',score:6,full:10,weight:.25,strengths:['通顺流畅'],weaknesses:['文采不足','修辞较少'],color:'#1e7e34' },{ name:'书写规范，卷面整洁，标点正确',score:8,full:10,weight:.25,strengths:['字迹工整'],weaknesses:[],color:'#6366f1' }],
           text:'坚持，是通往成功的必经之路。古今中外，无数事例证明了这一点。\n\n王羲之练字，日复一日，将一池清水染成了墨色，最终成为一代书圣。爱迪生发明电灯，失败了上千次仍然不放弃，最终为人类带来了光明。这些故事告诉我们，只有坚持不懈，才能达到成功的彼岸。\n\n然而，坚持并不是盲目的固执。在坚持的同时，我们也要学会思考和调整方向。如果方向错了，再多的坚持也只是徒劳。\n\n作为一名高中生，我们在学习中也需要坚持。数学题不会做，多思考几遍；英语单词记不住，多背几遍。只要我们不放弃，终会有所收获。',
           highlights:[{ text:'王羲之练字，日复一日，将一池清水染成了墨色，最终成为一代书圣。',technique:'用典',comment:'用王羲之练字的典故论证坚持，典型有力。',effect:'增强说服力' }],
           issues:[{ text:'坚持，是通往成功的必经之路。',type:'表达',severity:'低',comment:'开头略显套路化，可以更个性化。',suggestion:'用更有个人色彩的开头',corrected:'如果让我用一个词概括成功的秘诀，我会毫不犹豫地选择"坚持"。' }],
@@ -544,7 +579,7 @@ const classDataList = [
         },
         { title:'微写作 — 推荐一本书',type:'应用文',wordCount:220,totalScore:32,fullScore:40,level:'good',levelLabel:'良好',
           comment:'推荐理由充分，语言流畅。但结构可以更紧凑。',
-          dimensions:[{ name:'内容立意',score:8,full:10,weight:.25,strengths:['推荐理由充分'],weaknesses:[],color:'#1a73e8' },{ name:'结构逻辑',score:7,full:10,weight:.25,strengths:['条理清晰'],weaknesses:['结构略松散'],color:'#f59e0b' },{ name:'语言表达',score:7,full:10,weight:.25,strengths:['语言流畅'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范',score:10,full:10,weight:.25,strengths:['优秀'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'推荐对象明确，推荐理由充分',score:8,full:10,weight:.25,strengths:['推荐理由充分'],weaknesses:[],color:'#1a73e8' },{ name:'结构清晰，条理分明',score:7,full:10,weight:.25,strengths:['条理清晰'],weaknesses:['结构略松散'],color:'#f59e0b' },{ name:'语言流畅，有感染力',score:7,full:10,weight:.25,strengths:['语言流畅'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范，卷面整洁',score:10,full:10,weight:.25,strengths:['优秀'],weaknesses:[],color:'#6366f1' }],
           text:'我推荐大家阅读《百年孤独》。这本小说是马尔克斯的代表作，讲述了布恩迪亚家族七代人的传奇故事。\n\n读完这本书，我深深感受到孤独是人类共同的情感。但与此同时，书中也展现了爱与希望的力量。\n\n推荐理由：第一，语言优美，充满想象力。第二，故事引人入胜。第三，能引发深刻思考。',
           highlights:[{ text:'孤独是人类共同的情感。但与此同时，书中也展现了爱与希望的力量。',technique:'对比',comment:'将"孤独"与"爱与希望"并置，立意深刻。',effect:'升华主题' }],
           issues:[],grammarErrors:[],
@@ -556,7 +591,7 @@ const classDataList = [
       { id:'S202',name:'林雨桐',studentNo:'2024202',essays:[
         { title:'命题作文 — 谈坚持',type:'议论文',wordCount:820,totalScore:36,fullScore:40,level:'excellent',levelLabel:'优秀',
           comment:'论点深刻，论据新颖，语言富有文采。结构严谨，层层递进，展现了较高的写作水平。',
-          dimensions:[{ name:'内容立意',score:9,full:10,weight:.25,strengths:['论点深刻','论据新颖'],weaknesses:[],color:'#1a73e8' },{ name:'结构逻辑',score:9,full:10,weight:.25,strengths:['结构严谨','层层递进'],weaknesses:[],color:'#f59e0b' },{ name:'语言表达',score:9,full:10,weight:.25,strengths:['文采斐然','修辞丰富'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范',score:9,full:10,weight:.25,strengths:['卷面整洁'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'立意明确，中心突出，观点有深度',score:9,full:10,weight:.25,strengths:['论点深刻','论据新颖'],weaknesses:[],color:'#1a73e8' },{ name:'结构严谨，层次分明，论证有逻辑',score:9,full:10,weight:.25,strengths:['结构严谨','层层递进'],weaknesses:[],color:'#f59e0b' },{ name:'语言流畅，富有文采，恰当运用修辞',score:9,full:10,weight:.25,strengths:['文采斐然','修辞丰富'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范，卷面整洁，标点正确',score:9,full:10,weight:.25,strengths:['卷面整洁'],weaknesses:[],color:'#6366f1' }],
           text:'坚持，是水滴石穿的执着，是铁杵磨针的毅力，更是暗夜行路时心中不灭的那盏灯。\n\n然而，真正的坚持不是盲目的固守，而是在认清方向后的执着前行。司马迁忍辱负重著《史记》，支撑他的不仅是坚持二字，更是"究天人之际，通古今之变"的史家使命。\n\n坚持需要智慧。古人云："行百里者半九十。"最后十里往往最难，但也最接近成功。如果没有方向的坚持如同无头苍蝇，那么半途而废则是对梦想最大的辜负。\n\n在这个快节奏的时代，坚持更显珍贵。让我们学会在浮躁中沉淀，在困境中坚守，让坚持成为人生最亮丽的底色。',
           highlights:[{ text:'坚持，是水滴石穿的执着，是铁杵磨针的毅力，更是暗夜行路时心中不灭的那盏灯。',technique:'排比+递进',comment:'三个排比句层层递进，从具象到抽象，气势恢宏。',effect:'开篇有力，引人入胜' },{ text:'司马迁忍辱负重著《史记》，支撑他的不仅是坚持二字，更是"究天人之际，通古今之变"的史家使命。',technique:'引用+递进',comment:'引用名句深挖坚持背后的使命感和价值观。',effect:'论证深度凸显' }],
           issues:[],grammarErrors:[],
@@ -566,7 +601,7 @@ const classDataList = [
         },
         { title:'微写作 — 推荐一本书',type:'应用文',wordCount:250,totalScore:38,fullScore:40,level:'excellent',levelLabel:'优秀',
           comment:'推荐理由充分，语言优美，有感染力。',
-          dimensions:[{ name:'内容立意',score:9,full:10,weight:.25,strengths:['推荐有深度'],weaknesses:[],color:'#1a73e8' },{ name:'结构逻辑',score:9,full:10,weight:.25,strengths:['逻辑清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言表达',score:10,full:10,weight:.25,strengths:['语言优美'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范',score:10,full:10,weight:.25,strengths:['优秀'],weaknesses:[],color:'#6366f1' }],
+          dimensions:[{ name:'推荐对象明确，推荐理由充分',score:9,full:10,weight:.25,strengths:['推荐有深度'],weaknesses:[],color:'#1a73e8' },{ name:'结构清晰，条理分明',score:9,full:10,weight:.25,strengths:['逻辑清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言流畅，有感染力',score:10,full:10,weight:.25,strengths:['语言优美'],weaknesses:[],color:'#1e7e34' },{ name:'书写规范，卷面整洁',score:10,full:10,weight:.25,strengths:['优秀'],weaknesses:[],color:'#6366f1' }],
           text:'如果要选一本能改变人生态度的书，我会推荐余华的《活着》。\n\n这本书讲述了主人公福贵在苦难中活下去的故事。每一次读到福贵失去至亲的情节，我都忍不住落泪。但奇怪的是，读完后的感觉不是绝望，而是一种对生命深深的敬畏。\n\n余华用最朴素的文字，写出了最深沉的情感。他告诉我们：活着本身就是一种力量。',
           highlights:[{ text:'余华用最朴素的文字，写出了最深沉的情感。',technique:'对比',comment:'"朴素"与"深沉"的对比精准概括了余华的写作风格。',effect:'一语中的，点评到位' }],
           issues:[],grammarErrors:[],
@@ -581,14 +616,20 @@ const classDataList = [
 // ============================================================
 // STATE
 // ============================================================
-let currentClassIndex = 0;
+let currentClassIndex = -1;
+let currentSubject = classDataList[0].subject;
 let currentPage = 'class';
 let currentStudentId = null;
 let currentEssayTab = 0;
 let currentStudentTab = 0;
 let currentView = 'annotated';
 let isReviewMode = false;
-let modelEssays = [];
+let modelEssays = [
+  { studentId:'S001', essayIndex:0 },
+  { studentId:'S101', essayIndex:1 },
+  { studentId:'S202', essayIndex:0 },
+  { studentId:'S201', essayIndex:1 }
+];
 let distChartInstance = null;
 let dimAvgChartInstance = null;
 let radarChartInstance = null;
@@ -596,20 +637,56 @@ let radarChartInstance = null;
 // 调试开关：URL 加 ?noDims=1 可模拟「作文未录入评分维度」场景（不修改数据，仅渲染时置空）
 const FORCE_NO_DIMS = (() => { try { return new URLSearchParams(location.search).get('noDims') === '1'; } catch(e) { return false; } })();
 function dimsOf(essay) { return FORCE_NO_DIMS ? [] : ((essay && essay.dimensions) || []); }
+// 写作要求为用户自由文本、无固定名称：图表坐标轴展示要求的前几个字（第一个分句），完整内容在 tooltip/悬浮中展示
+function reqShort(d) {
+  const n = (d && d.name) || '';
+  const first = n.split('，')[0];
+  return first === n ? n : first + '…';
+}
 
-function getCurrentClass() { return classDataList[currentClassIndex]; }
-function getCurrentStudents() { return getCurrentClass().students; }
+function getSubjects() { return [...new Set(classDataList.map(c => c.subject))]; }
+function getVisibleClasses() { return classDataList.filter(c => c.subject === currentSubject); }
+function getCurrentStudents() {
+  const classes = getVisibleClasses();
+  if (currentClassIndex === -1) return classes.flatMap(c => c.students);
+  return classes[currentClassIndex].students;
+}
 function getStudent(id) { return getCurrentStudents().find(s => s.id === id); }
 function getStudentIndex(id) { return getCurrentStudents().findIndex(s => s.id === id); }
 function getCurrentEssayData() { return getCurrentStudents().map(s => s.essays[currentEssayTab]).filter(Boolean); }
+function getStudentClass(studentId) { return classDataList.find(c => c.students.some(s => s.id === studentId)); }
+function getCurrentClassLabel() { return currentClassIndex === -1 ? '全部班级' : getVisibleClasses()[currentClassIndex].className; }
 
 // ============================================================
-// CLASS SWITCHER
+// SUBJECT + CLASS SWITCHER
 // ============================================================
+function renderSubjectSwitcher() {
+  const el = document.getElementById('subjectSwitcher');
+  el.innerHTML = '<span class="subject-label">学科</span>' + getSubjects().map(s =>
+    `<button class="${s===currentSubject?'active':''}" onclick="switchSubject('${s}')">${s}</button>`
+  ).join('');
+}
+
+function switchSubject(subject) {
+  currentSubject = subject;
+  currentClassIndex = -1;
+  currentEssayTab = 0;
+  currentStudentTab = 0;
+  renderSubjectSwitcher();
+  renderClassSwitcher();
+  document.getElementById('classView').classList.remove('page-hidden');
+  document.getElementById('individualView').classList.add('page-hidden');
+  document.getElementById('reviewBanner').style.display = 'none';
+  isReviewMode = false;
+  updateBreadcrumb();
+  renderClassView();
+}
+
 function renderClassSwitcher() {
   const el = document.getElementById('classSwitcher');
-  el.innerHTML = classDataList.map((c,i) =>
-    `<button class="${i===currentClassIndex?'active':''}" onclick="switchClass(${i})">${c.className}</button>`
+  const items = [{ label: '全部班级', index: -1 }].concat(getVisibleClasses().map((c,i) => ({ label: c.className, index: i })));
+  el.innerHTML = items.map(it =>
+    `<button class="${it.index===currentClassIndex?'active':''}" onclick="switchClass(${it.index})">${it.label}</button>`
   ).join('');
 }
 
@@ -617,9 +694,6 @@ function switchClass(index) {
   currentClassIndex = index;
   currentEssayTab = 0;
   currentStudentTab = 0;
-  // Filter model essays for this class only
-  const currIds = new Set(getCurrentStudents().map(s => s.id));
-  modelEssays = modelEssays.filter(m => currIds.has(m.studentId));
   renderClassSwitcher();
   document.getElementById('classView').classList.remove('page-hidden');
   document.getElementById('individualView').classList.add('page-hidden');
@@ -633,12 +707,11 @@ function switchClass(index) {
 // BREADCRUMB
 // ============================================================
 function updateBreadcrumb() {
-  const c = getCurrentClass();
   if (currentPage === 'class') {
-    document.getElementById('breadcrumbCurrent').textContent = c.className + ' · ' + c.subject;
+    document.getElementById('breadcrumbCurrent').textContent = getCurrentClassLabel() + ' · ' + currentSubject;
   } else {
     const s = getStudent(currentStudentId);
-    document.getElementById('breadcrumbCurrent').textContent = s ? s.name + '的作文报告' : c.className;
+    document.getElementById('breadcrumbCurrent').textContent = s ? s.name + '的作文报告' : getCurrentClassLabel();
   }
 }
 
@@ -703,7 +776,7 @@ function renderClassStats() {
   const max = Math.max(...scores), min = Math.min(...scores);
   const total = scores.length;
 
-  document.getElementById('classEssayLabel').textContent = getCurrentClass().className + ' · ' + getCurrentEssayData()[0]?.type;
+  document.getElementById('classEssayLabel').textContent = getCurrentClassLabel() + ' · ' + (getCurrentEssayData()[0]?.type || '');
   document.getElementById('classStats').innerHTML = `
     <div class="class-stat highlight-stat"><div class="cs-value">${avg}</div><div class="cs-label">平均分</div></div>
     <div class="class-stat"><div class="cs-value">${max}</div><div class="cs-label">最高分</div></div>
@@ -742,8 +815,8 @@ function drawDimAvgChart(essays) {
   const dims = dimsOf(essays[0]);
   if (!dims.length) { c.getContext('2d').clearRect(0,0,c.width,c.height); return; }
   dimAvgChartInstance = new Chart(c, {
-    type:'bar', data:{labels:dims.map(d=>d.name.split(' ')[0]),datasets:[{data:dims.map((d,i)=>Math.round(essays.reduce((s,e)=>(e.dimensions[i]?.score||0)/(e.dimensions[i]?.full||1)+s,0)/essays.length*100)),backgroundColor:dims.map(d=>d.color),borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw+'%'}}},scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#f0f0f0'}},y:{ticks:{font:{size:11}}}}}
+    type:'bar', data:{labels:dims.map(reqShort),datasets:[{data:dims.map((d,i)=>{const withDim=essays.filter(e=>e.dimensions&&e.dimensions[i]);if(!withDim.length)return 0;return Math.round(withDim.reduce((s,e)=>(e.dimensions[i].score||0)/(e.dimensions[i].full||1)+s,0)/withDim.length*100);}),backgroundColor:dims.map(d=>d.color),borderRadius:4}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>items.length?dims[items[0].dataIndex].name:'',label:ctx=>'平均得分率 '+ctx.raw+'%'}}},scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#f0f0f0'}},y:{ticks:{font:{size:11}}}}}
   });
 }
 
@@ -781,15 +854,31 @@ function toggleClassErrors() {
 // ============================================================
 // MODEL ESSAY SHOWCASE
 // ============================================================
+function mockScanHtml(e, opts) {
+  const full = !!(opts && opts.full);
+  const text = (e && e.text) ? e.text : '';
+  const isChinese = /[一-龥]/.test(text);
+  const paperClass = isChinese ? 'grid' : 'lined';
+  const fontFamily = isChinese ? "'STKaiti','KaiTi','楷体','FangSong',serif" : "'Segoe Script','Bradley Hand','Comic Sans MS',cursive";
+  const minH = full ? 'min-height:520px;' : '';
+  return `<div class="scan-paper ${paperClass}" style="${minH}"><div class="sp-text" style="font-family:${fontFamily};">${esc(text)}</div></div>`;
+}
+
 function renderModelShowcase() {
   const grid = document.getElementById('showcaseGrid');
   const empty = document.getElementById('showcaseEmpty');
-  document.getElementById('showcaseCount').textContent = modelEssays.length + '篇';
-  if (!modelEssays.length) { grid.innerHTML=''; empty.style.display='block'; return; }
+  const visible = modelEssays.filter(m => getStudent(m.studentId));
+  document.getElementById('showcaseCount').textContent = visible.length + '篇';
+  if (!visible.length) { grid.innerHTML=''; empty.style.display='block'; return; }
   empty.style.display='none';
-  grid.innerHTML = modelEssays.map((m,i)=>{
-    const s = getStudent(m.studentId); if(!s) return '';
-    return `<div class="showcase-card"><div class="sc-header"><span class="sc-name">🏆 ${s.name}</span><span class="sc-score">${m.score}/${m.full}</span></div><div class="sc-body"><div style="font-size:12px;color:#98a2b3;margin-bottom:6px;">${m.essayTitle}</div><div class="sc-excerpt">"${m.excerpt||m.comment}"</div><div class="sc-comment">💡 ${m.teacherComment||'被标记为范文'}</div></div><div class="sc-actions"><span class="sc-badge">✅ 范文</span><button class="btn sm ghost" onclick="showIndividualView('${m.studentId}')">查看报告</button><button class="btn sm ghost" style="color:#c5221f;" onclick="removeModelEssay(${i})">取消标记</button></div></div>`;
+  grid.innerHTML = visible.map((m) => {
+    const s = getStudent(m.studentId);
+    const e = s.essays[m.essayIndex] || s.essays[0];
+    return `<div class="showcase-card">
+      <div class="sc-thumb" onclick="openModelScan('${s.id}',${m.essayIndex})" title="点击查看大图">${mockScanHtml(e)}<span class="zoom-hint">🔍 点击查看大图</span></div>
+      <div class="sc-header"><span class="sc-name">🏆 ${s.name}</span><span class="sc-score">${e.totalScore}/${e.fullScore}</span></div>
+      <div class="sc-actions"><span class="sc-badge">✅ 范文</span><button class="btn sm ghost" onclick="openModelScan('${s.id}',${m.essayIndex})">🔍 查看大图</button><button class="btn sm ghost" onclick="showIndividualView('${s.id}')">查看报告</button><button class="btn sm ghost" style="color:#c5221f;" onclick="removeModelEssay('${s.id}',${m.essayIndex})">取消标记</button></div>
+    </div>`;
   }).join('');
 }
 
@@ -798,11 +887,24 @@ function toggleModelEssay(studentId, essayIndex) {
   const e = s.essays[essayIndex]; if(!e) return;
   const idx = modelEssays.findIndex(m => m.studentId===studentId && m.essayIndex===essayIndex);
   if (idx >= 0) modelEssays.splice(idx,1);
-  else modelEssays.push({studentId,essayIndex,essayTitle:e.type,essayType:e.type,score:e.totalScore,full:e.fullScore,excerpt:(e.highlights?.[0]?.text||''),comment:e.comment.substring(0,60),teacherComment:'亮点突出，值得全班学习'});
+  else modelEssays.push({studentId,essayIndex});
   if (currentPage === 'class') renderModelShowcase();
 }
 
-function removeModelEssay(idx) { modelEssays.splice(idx,1); renderModelShowcase(); }
+function removeModelEssay(studentId, essayIndex) {
+  const idx = modelEssays.findIndex(m => m.studentId===studentId && m.essayIndex===essayIndex);
+  if (idx >= 0) modelEssays.splice(idx,1);
+  renderModelShowcase();
+}
+
+function openModelScan(studentId, essayIndex) {
+  const s = getStudent(studentId); if(!s) return;
+  const e = s.essays[essayIndex] || s.essays[0]; if(!e) return;
+  document.getElementById('modelScanTitle').textContent = '📄 ' + s.name + ' · ' + (e.type||'作文') + '（范文扫描件）';
+  document.getElementById('modelScanBody').innerHTML = '<div style="max-width:640px;margin:0 auto;text-align:left;">' + mockScanHtml(e, { full:true }) + '</div>';
+  document.getElementById('modelScanModal').classList.add('open');
+}
+function closeModelScanModal() { document.getElementById('modelScanModal').classList.remove('open'); }
 
 // ============================================================
 // STUDENT TABLE
@@ -863,11 +965,12 @@ function nextStudent() { navigateToStudent(1); }
 function renderIndividualView(student) {
   const bar = document.getElementById('studentBar');
   const isModel = modelEssays.some(m => m.studentId === student.id);
+  const sc = getStudentClass(student.id) || getVisibleClasses()[0];
   bar.innerHTML = `
     <div class="sb-avatar">${student.name[0]}</div>
     <div class="sb-info">
       <div class="sb-name">${student.name} <span style="font-weight:400;font-size:13px;color:#667085;">${student.studentNo}</span> ${isModel?'<span class="model-badge">🏆范文</span>':''}</div>
-      <div class="sb-detail">${getCurrentClass().className} · ${getCurrentClass().subject} · ${getCurrentClass().examName}</div>
+      <div class="sb-detail">${sc.className} · ${sc.subject} · ${sc.examName}</div>
     </div>
     <button class="btn ghost no-print" onclick="showClassView()" style="margin-left:auto;">← 返回班级</button>
     <button class="btn no-print" onclick="openImageModal('${student.id}',${currentStudentTab})">📸 原卷</button>
@@ -921,7 +1024,7 @@ function drawRadar(e) {
   const dims = dimsOf(e);
   if (!dims.length) return;
   radarChartInstance = new Chart(c, {
-    type:'radar', data:{labels:dims.map(d=>d.name.split(' ')[0]),datasets:[{data:dims.map(d=>(d.score/d.full)*100),backgroundColor:'rgba(26,115,232,0.1)',borderColor:'#1a73e8',borderWidth:2,pointBackgroundColor:dims.map(d=>d.color),pointBorderColor:'#fff',pointBorderWidth:1,pointRadius:4}]},
+    type:'radar', data:{labels:dims.map(reqShort),datasets:[{data:dims.map(d=>(d.score/d.full)*100),backgroundColor:'rgba(26,115,232,0.1)',borderColor:'#1a73e8',borderWidth:2,pointBackgroundColor:dims.map(d=>d.color),pointBorderColor:'#fff',pointBorderWidth:1,pointRadius:4}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{r:{min:0,max:100,ticks:{stepSize:20,display:false},grid:{color:'#eef0f4'},angleLines:{color:'#eef0f4'},pointLabels:{font:{size:11},color:'#344054'}}}}
   });
 }
@@ -931,11 +1034,14 @@ function renderDimensions(e) {
   const dims = dimsOf(e);
   if (!dims.length) { if (section) section.style.display = 'none'; document.getElementById('dimensionList').innerHTML = ''; return; }
   if (section) section.style.display = '';
-  document.getElementById('dimensionList').innerHTML = dims.map(d => {
+  document.getElementById('dimensionList').innerHTML = dims.map((d, i) => {
     const pos = (d.strengths && d.strengths.length) ? `<div class="dim-pos">✓ 优点：${d.strengths.join('、')}</div>` : '';
     const neg = (d.weaknesses && d.weaknesses.length) ? `<div class="dim-neg">△ 待改进：${d.weaknesses.join('、')}</div>` : '';
-    const none = (!pos && !neg) ? `<div class="dim-none">暂无该维度点评</div>` : '';
-    return `<div class="dimension-item"><div class="dim-header"><span class="dim-name">${d.name}</span><span class="dim-score">${d.score}/${d.full}</span></div><div class="dim-comment">${pos}${neg}${none}</div></div>`;
+    const none = (!pos && !neg) ? `<div class="dim-none">暂无该写作要求点评</div>` : '';
+    // name 为完整写作要求：屏幕超长截断（CSS line-clamp），title 属性用于鼠标悬浮展示全文
+    const fullName = esc(d.name || '');
+    const nameAttr = fullName.replace(/"/g, '&quot;');
+    return `<div class="dimension-item"><div class="dim-header"><span class="dim-req">要求${i + 1}</span><span class="dim-name" title="${nameAttr}">${fullName}</span><span class="dim-score">${d.score}/${d.full}</span></div><div class="dim-comment">${pos}${neg}${none}</div></div>`;
   }).join('');
 }
 
@@ -1108,7 +1214,7 @@ function closeImageModal() { document.getElementById('imageModal').classList.rem
 // ============================================================
 function previewPdf(id, mode) {
   const s = getStudent(id); if(!s) return;
-  const clz = getCurrentClass();
+  const clz = getStudentClass(id) || getVisibleClasses()[0];
   // Build printable HTML content
   var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' +
     'body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;padding:40px;color:#1a1a2e;font-size:13px;line-height:1.7}' +
@@ -1120,7 +1226,7 @@ function previewPdf(id, mode) {
     '.score-row{font-size:24px;font-weight:800;color:#1a73e8;margin:8px 0}' +
     '.comment-box{background:#f8f9fa;padding:12px;border-left:4px solid #1a73e8;border-radius:0 6px 6px 0;margin:8px 0}' +
     '.dim-item{margin:6px 0;padding:6px 12px;background:#f8f9fa;border-radius:4px}' +
-    '.dim-item .dim-name{font-weight:600}' +
+    '.dim-item .dim-name{font-weight:600;white-space:normal;line-height:1.6;margin-bottom:2px}' +
     '.tag{display:inline-block;padding:1px 8px;border-radius:4px;font-size:12px;margin-right:4px}' +
     '.tag.highlight{background:#fef7e0;color:#b8860b}' +
     '.tag.issue{background:#eef2ff;color:#6366f1}' +
@@ -1152,9 +1258,10 @@ function previewPdf(id, mode) {
     // Dimensions
     var dimHtml = '';
     dimsOf(es).forEach(function(d){
-      dimHtml += '<div class="dim-item"><span class="dim-name">'+d.name+'</span> '+d.score+'/'+d.full+'</div>';
+      // 打印/PDF 展示完整维度名（不截断），得分单独一行，长文本自动换行
+      dimHtml += '<div class="dim-item"><div class="dim-name">'+d.name+'</div><div style="font-size:12px;color:#667085;">得分：'+d.score+'/'+d.full+'</div></div>';
     });
-    if(dimHtml) addSection('多维评分', dimHtml);
+    if(dimHtml) addSection('写作要求评分', dimHtml);
 
     // Original text (annotated inline)
     var annHtml = annotatedTextHtml(es);
@@ -1222,6 +1329,7 @@ function exportAllPdf() {
 // ============================================================
 // INIT
 // ============================================================
+renderSubjectSwitcher();
 renderClassSwitcher();
 showClassView();
 </script>

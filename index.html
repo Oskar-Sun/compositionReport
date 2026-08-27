@@ -166,5 +166,17 @@
   // 默认激活「作文报告」，直接展示嵌入的作文批改报告
   switchPage('essay');
 </script>
+
+<!-- ========== 标注工具：外壳页（左侧菜单 + 顶部标题栏） ========== -->
+<script>
+  // 外壳页标注配置：把整个报告外壳当作一个视图，标注吸附到菜单/标题栏等区块
+  window.__pa_config = {
+    views: { shell: '.layout' },
+    sectionSelector: '.sidebar-brand, .nav-group-label, .menu-item, .sidebar-footer, .main-header, .main-content',
+    scrollContainer: '.layout'
+  };
+</script>
+<script src="annotations.js"></script>
+<script src="prototype-annotator.js"></script>
 </body>
 </html>
