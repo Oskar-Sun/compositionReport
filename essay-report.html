@@ -965,7 +965,7 @@ function switchStudentEssay(index) {
 
 function renderEssayRender(student, essayIndex) {
   const e = student.essays[essayIndex]; if (!e) return;
-  renderOverview(e); renderDimensions(e); renderText(e); renderHighlights(e); renderIssues(e);
+  renderOverview(e); renderDimensions(e); renderText(e); renderHighlights(e); renderIssues(e); renderErrorStats(e);
 }
 
 function renderOverview(e) {
