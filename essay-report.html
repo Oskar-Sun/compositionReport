@@ -209,10 +209,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .improve-item .imp-problem{font-size:13px;color:#667085;margin-bottom:4px}
 .improve-item .imp-method{font-size:13px;color:#344054;margin-bottom:4px}
 .improve-item .imp-example{font-size:13px;color:#1a73e8;background:#e8f0fe;padding:6px 10px;border-radius:4px;margin-top:4px}
-.model-essay{background:#fafbfc;border-radius:8px;padding:16px;border:1px solid #eef0f4}
-.model-essay .me-title{font-weight:600;font-size:14px;color:#344054;margin-bottom:8px}
-.model-essay .me-excerpt{font-size:14px;color:#667085;line-height:1.8;padding:8px 12px;background:#fff;border-radius:6px;margin-bottom:8px;border-left:3px solid #1a73e8}
-.model-essay .me-comment{font-size:13px;color:#1a73e8}
 .error-chart{display:flex;flex-direction:column;gap:6px}
 .ec-item{display:flex;align-items:center;gap:8px;font-size:13px}
 .ec-item .ec-label{min-width:80px;color:#667085}
@@ -331,7 +327,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
         <div class="card-list" id="issueList"></div>
         <div class="mt-16"><div class="section-title" style="font-size:14px;margin-bottom:8px">📊 错误分布</div><div class="error-chart" id="errorChart"></div></div>
       </div>
-            <div class="report-section fade-in"><div class="section-title"><span class="icon">📖</span> 参考范文</div><div class="model-essay" id="modelEssay"></div></div>
     </div>
     <div class="function-tip no-print">💡 点击标注展开批注 · 上一个/下一个切换学生 · 教师复核模式可编辑内容</div>
   </div>
@@ -395,7 +390,6 @@ const classDataList = [
           issues:[{ text:'I was about to hurry past when my mother\'s words echoed in my mind',type:'衔接',severity:'低',comment:'转折略快。',suggestion:'增加"但是"延迟',corrected:'I was about to hurry past — the exam was only 20 minutes away — when my mother\'s words suddenly echoed in my mind.' }],
           grammarErrors:[{ original:'he had missed his bus',type:'时态',correction:'✓ 正确',explanation:'过去完成时使用正确' }],
           improvements:[{ priority:1,dimension:'语言表达',problem:'部分表达可更地道',method:'积累高级表达',example:'"I walked over" → "I made my way over"' },{ priority:2,dimension:'内容细节',problem:'内心挣扎可更充分',method:'增加感官描写',example:'增加"biting wind"等环境描写' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat as I noticed the elderly man... I was torn — the clock was ticking toward my exam..."',comment:'开篇环境描写+内心独白引人入胜。' },
           errorStats:[{ label:'表达可更地道',count:2,color:'#f59e0b' }]
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:152,totalScore:23,fullScore:25,
@@ -405,7 +399,6 @@ const classDataList = [
           highlights:[{ text:'a simple "hello" can open the door to a wonderful friendship',technique:'比喻',comment:'用"open the door"形象表达。',effect:'亲切自然' }],
           issues:[],grammarErrors:[],
           improvements:[{ priority:1,dimension:'语言表达',problem:'可增加更高阶衔接词',method:'使用更具层次感的过渡词',example:'"Besides" → "What\'s more / Furthermore"' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I fully understand how challenging it can be to settle into a new environment — the unfamiliar faces..."',comment:'开头排比句式共情到位。' },
           errorStats:[]
         }]
       },
@@ -418,7 +411,6 @@ const classDataList = [
           issues:[{ text:'The old man was very happy. He said thank you to me.',type:'表达',severity:'中',comment:'句式连续单调。',suggestion:'合并句子',corrected:'The old man\'s face lit up with a grateful smile as he thanked me.' },{ text:'I felt very good.',type:'词汇',severity:'中',comment:'过于口语化。',suggestion:'更丰富表达',corrected:'A warm sense of fulfillment flooded over me.' }],
           grammarErrors:[{ original:'what my mother said',type:'措辞',correction:'what my mother had always said',explanation:'过去完成时更准确' }],
           improvements:[{ priority:1,dimension:'语言表达',problem:'词汇偏简单',method:'学习同义替换',example:'"He was happy" → "His face lit up with joy"' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat..."',comment:'细节描写丰富，值得学习。' },
           errorStats:[{ label:'词汇偏简单',count:3,color:'#f59e0b' },{ label:'句式单一',count:2,color:'#6366f1' }]
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:138,totalScore:19,fullScore:25,
@@ -428,7 +420,6 @@ const classDataList = [
           highlights:[],issues:[{ text:'Don\'t worry too much.',type:'表达',severity:'中',comment:'偏口语化。',suggestion:'更正式表达',corrected:'There is no need to worry excessively.' }],
           grammarErrors:[],
           improvements:[{ priority:1,dimension:'语言表达',problem:'口语化表达较多',method:'积累正式书信句式',example:'"Don\'t worry" → "There is no need to worry"' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I fully understand how challenging it can be..."',comment:'开头共情到位。' },
           errorStats:[{ label:'口语化表达',count:3,color:'#f59e0b' }]
         }]
       },
@@ -443,7 +434,6 @@ const classDataList = [
           ],
           grammarErrors:[{ original:'standed',type:'不规则动词',correction:'stood',explanation:'stand的过去式 stood' },{ original:'feeled',type:'不规则动词',correction:'felt',explanation:'feel的过去式 felt' }],
           improvements:[{ priority:1,dimension:'语言基础',problem:'不规则动词过去式不牢固',method:'整理常见不规则动词表',example:'stand→stood, feel→felt, say→said' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat..."',comment:'注意作者如何用细节描写让故事生动。' },
           errorStats:[{ label:'不规则动词错误',count:4,color:'#c5221f' },{ label:'时态不一致',count:2,color:'#f59e0b' }]
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:120,totalScore:13,fullScore:25,
@@ -453,7 +443,6 @@ const classDataList = [
           highlights:[],issues:[{ text:'I have some advise for you.',type:'语法',severity:'高',comment:'"advise"是动词，名词是"advice"。',suggestion:'区分advise/advice',corrected:'I have some advice for you.' }],
           grammarErrors:[{ original:'advise',type:'词性混淆',correction:'advice',explanation:'advise是动词，advice是名词' }],
           improvements:[{ priority:1,dimension:'语言基础',problem:'基础语法知识需巩固',method:'复习名词单复数、advise/advice区别',example:'区分advise/advice的用法' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I was sorry to learn..."',comment:'注意如何用委婉得体的语气提建议。' },
           errorStats:[{ label:'基础语法错误',count:3,color:'#c5221f' }]
         }]
       },
@@ -465,7 +454,6 @@ const classDataList = [
           highlights:[{ text:'The biting wind cut through my coat as I noticed the elderly man at the bus stop, his shoulders hunched against the cold.',technique:'环境+细节描写',comment:'开篇画面感极强。',effect:'营造氛围' },{ text:'"What would I want someone to do if it were my grandfather?"',technique:'设问修辞',comment:'换位思考引出决定。',effect:'思想深度凸显' },{ text:'kindness is not just an action — it\'s a choice that defines who we are',technique:'对偶+升华',comment:'结尾掷地有声。',effect:'深刻有力' }],
           issues:[],grammarErrors:[],
           improvements:[{ priority:1,dimension:'语言表达',problem:'已是优秀水平，可挑战更高级表达',method:'尝试更多修辞',example:'虚拟语气："Had I walked past him, I would have regretted it forever."' }],
-          modelEssay:{ title:'A Kind Deed (满分范文)',excerpt:'"The biting wind cut through my coat..." (全文)',comment:'本文就是范文级别，开头设问和结尾升华值得全班学习。' },
           errorStats:[]
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:158,totalScore:24,fullScore:25,
@@ -475,7 +463,6 @@ const classDataList = [
           highlights:[{ text:'Not only will this help you meet like-minded friends, but it will also give you a sense of belonging.',technique:'倒装句',comment:'Not only倒装结构熟练。',effect:'强调好处' },{ text:'Rome wasn\'t built in a day, and neither is a sense of belonging.',technique:'谚语活用',comment:'巧妙改编谚语。',effect:'说服力强' }],
           issues:[],grammarErrors:[],
           improvements:[{ priority:1,dimension:'内容细节',problem:'可进一步个性化建议',method:'根据具体困难给出针对性建议',example:'猜测具体困难："If you\'re worried about the language barrier..."' }],
-          modelEssay:{ title:'建议信 (满分范文)',excerpt:'"I was sorry to learn that you\'re having difficulty adjusting..."',comment:'倒装句+谚语活用，建议信典范。' },
           errorStats:[]
         }]
       },
@@ -487,7 +474,6 @@ const classDataList = [
           highlights:[],issues:[{ text:'I think in my heart I should help him.',type:'表达',severity:'中',comment:'"in my heart"是中式表达。',suggestion:'改为地道表达',corrected:'I felt that I should help him.' },{ text:'He very happy and say thank you many times.',type:'语法',severity:'高',comment:'缺少be动词，时态不一致。',suggestion:'补充动词',corrected:'He was very happy and thanked me repeatedly.' }],
           grammarErrors:[{ original:'He very happy',type:'系动词缺失',correction:'He was very happy',explanation:'形容词作表语需加be动词' }],
           improvements:[{ priority:1,dimension:'语言基础',problem:'中式英语较多',method:'每次写完检查每个句子',example:'"He very happy" → "He was very happy"' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"The biting wind cut through my coat..."',comment:'学习如何用细节描写让故事生动。' },
           errorStats:[{ label:'中式英语',count:4,color:'#c5221f' },{ label:'时态不一致',count:2,color:'#f59e0b' }]
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:130,totalScore:16,fullScore:25,
@@ -497,7 +483,6 @@ const classDataList = [
           highlights:[],issues:[{ text:'Teacher are very friendly.',type:'语法',severity:'高',comment:'名词复数+主谓一致。',suggestion:'注意名词复数和主谓一致',corrected:'The teachers are very friendly.' }],
           grammarErrors:[{ original:'Teacher are',type:'主谓一致',correction:'Teachers are',explanation:'可数名词应用复数' }],
           improvements:[{ priority:1,dimension:'语言基础',problem:'主谓一致需巩固',method:'逐句检查主谓搭配',example:'"Teacher is" → "Teachers are"' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I was sorry to learn..."',comment:'注意如何用委婉得体的语气提建议。' },
           errorStats:[{ label:'基础语法错误',count:3,color:'#c5221f' }]
         }]
       }]
@@ -513,7 +498,6 @@ const classDataList = [
           highlights:[{ text:'Sometimes the smallest gestures can make the biggest difference.',technique:'对比手法',comment:'"smallest"与"biggest"的对比简洁有力。',effect:'突出主题' },{ text:'kindness is a language that everyone understands',technique:'比喻',comment:'将善意比作通用语言，贴切动人。',effect:'引发共鸣' }],
           issues:[],grammarErrors:[],
           improvements:[{ priority:1,dimension:'语言表达',problem:'个别表达可更地道',method:'积累更地道的短语搭配',example:'"felt a warmth spreading" 不错，可进一步挑战更复杂句式' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"Sometimes the smallest gestures can make the biggest difference..."',comment:'对比手法的运用值得学习。' },
           errorStats:[]
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:148,totalScore:22,fullScore:25,
@@ -523,7 +507,6 @@ const classDataList = [
           highlights:[{ text:'why not join some clubs?',technique:'建议句式',comment:'用"why not"提出建议，语气委婉亲切。',effect:'亲切自然' }],
           issues:[],grammarErrors:[],
           improvements:[{ priority:1,dimension:'内容细节',problem:'建议可更具体',method:'' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I\'m sorry to hear about your difficulties..."',comment:'语气亲切自然，值得借鉴。' },
           errorStats:[]
         }]
       },
@@ -535,7 +518,6 @@ const classDataList = [
           highlights:[],issues:[{ text:'I saw an old man at the bus stop. He was cold. I wanted to help. So I gave him my scarf.',type:'表达',severity:'中',comment:'连续简单句，读起来节奏单一。',suggestion:'合并句子',corrected:'Seeing the old man shivering at the bus stop, I took off my scarf and wrapped it around him.' }],
           grammarErrors:[],
           improvements:[{ priority:1,dimension:'语言表达',problem:'句式单一，多为简单句',method:'学习用分词结构和定语从句连接句子',example:'"I saw... He was cold" → "Seeing the old man shivering at the bus stop, I..."' }],
-          modelEssay:{ title:'A Kind Deed (优秀范文)',excerpt:'"Sometimes the smallest gestures can make the biggest difference..."',comment:'注意句式变化带来的阅读体验差异。' },
           errorStats:[{ label:'句式单一',count:3,color:'#f59e0b' }]
         },
         { title:'应用文写作 — 建议信',type:'应用文写作',wordCount:125,totalScore:18,fullScore:25,
@@ -545,7 +527,6 @@ const classDataList = [
           highlights:[],issues:[{ text:'I know you feel bad. But don\'t worry.',type:'表达',severity:'中',comment:'过于口语化，缺乏正式感。',suggestion:'用更正式表达',corrected:'I understand you might be feeling down, but there is no need to worry.' }],
           grammarErrors:[],
           improvements:[{ priority:1,dimension:'语言表达',problem:'口语化严重',method:'积累正式书信常用表达',example:'"I know you feel bad" → "I understand you might be feeling a bit down"' }],
-          modelEssay:{ title:'建议信 (优秀范文)',excerpt:'"I\'m sorry to hear about your difficulties..."',comment:'注意语气上的差别。' },
           errorStats:[{ label:'口语化表达',count:3,color:'#f59e0b' }]
         }]
       }]
@@ -562,7 +543,6 @@ const classDataList = [
           issues:[{ text:'坚持，是通往成功的必经之路。',type:'表达',severity:'低',comment:'开头略显套路化，可以更个性化。',suggestion:'用更有个人色彩的开头',corrected:'如果让我用一个词概括成功的秘诀，我会毫不犹豫地选择"坚持"。' }],
           grammarErrors:[{ original:'失败的次数上千次',type:'语序',correction:'失败了上千次',explanation:'调整语序更通顺' }],
           improvements:[{ priority:1,dimension:'语言表达',problem:'文采不足，修辞手法少',method:'多积累排比、比喻、引用等修辞',example:'"坚持如同一把火炬，在黑暗中照亮前行的道路。"' }],
-          modelEssay:{ title:'谈坚持 (优秀范文)',excerpt:'"坚持，不是盲目地固守，而是在认清方向后的执着前行..."',comment:'对"坚持"的定义有新意，避免了套路化表达。' },
           errorStats:[{ label:'开头套路化',count:1,color:'#f59e0b' },{ label:'文采不足',count:3,color:'#1a73e8' }]
         },
         { title:'微写作 — 推荐一本书',type:'应用文',wordCount:220,totalScore:32,fullScore:40,
@@ -572,7 +552,6 @@ const classDataList = [
           highlights:[{ text:'孤独是人类共同的情感。但与此同时，书中也展现了爱与希望的力量。',technique:'对比',comment:'将"孤独"与"爱与希望"并置，立意深刻。',effect:'升华主题' }],
           issues:[],grammarErrors:[],
           improvements:[{ priority:1,dimension:'结构逻辑',problem:'结构可更紧凑',method:'用"首先、其次、最后"或递进结构',example:'可以按照"内容简介→读后感悟→推荐理由"的逻辑层层递进' }],
-          modelEssay:{ title:'推荐一本书 (优秀范文)',excerpt:'"如果要选一本陪伴我一生的书，我会选择《百年孤独》..."',comment:'推荐语有个性，不套模板。' },
           errorStats:[{ label:'结构可优化',count:1,color:'#f59e0b' }]
         }]
       },
@@ -584,7 +563,6 @@ const classDataList = [
           highlights:[{ text:'坚持，是水滴石穿的执着，是铁杵磨针的毅力，更是暗夜行路时心中不灭的那盏灯。',technique:'排比+递进',comment:'三个排比句层层递进，从具象到抽象，气势恢宏。',effect:'开篇有力，引人入胜' },{ text:'司马迁忍辱负重著《史记》，支撑他的不仅是坚持二字，更是"究天人之际，通古今之变"的史家使命。',technique:'引用+递进',comment:'引用名句深挖坚持背后的使命感和价值观。',effect:'论证深度凸显' }],
           issues:[],grammarErrors:[],
           improvements:[{ priority:1,dimension:'语言表达',problem:'已是优秀水平',method:'可尝试更个性化的表达',example:'结尾可增加个人化的感悟，让文章更有温度' }],
-          modelEssay:{ title:'谈坚持 (满分范文)',excerpt:'"坚持，是水滴石穿的执着，是铁杵磨针的毅力..." (全文)',comment:'本文就是范文级别，排比开篇气势恢宏，引经据典论证有力。' },
           errorStats:[]
         },
         { title:'微写作 — 推荐一本书',type:'应用文',wordCount:250,totalScore:38,fullScore:40,
@@ -594,7 +572,6 @@ const classDataList = [
           highlights:[{ text:'余华用最朴素的文字，写出了最深沉的情感。',technique:'对比',comment:'"朴素"与"深沉"的对比精准概括了余华的写作风格。',effect:'一语中的，点评到位' }],
           issues:[],grammarErrors:[],
           improvements:[{ priority:1,dimension:'内容细节',problem:'可适当增加具体情节引用',method:'引用书中1-2个具体细节让推荐更生动',example:'如"福贵背着生病的家珍走在雪地里的那个场景让我久久难忘"' }],
-          modelEssay:{ title:'推荐一本书 (满分范文)',excerpt:'"如果要选一本能改变人生态度的书，我会推荐《活着》..."',comment:'推荐语有真情实感，不套路。' },
           errorStats:[]
         }]
       }]
@@ -988,7 +965,7 @@ function switchStudentEssay(index) {
 
 function renderEssayRender(student, essayIndex) {
   const e = student.essays[essayIndex]; if (!e) return;
-  renderOverview(e); renderDimensions(e); renderText(e); renderHighlights(e); renderIssues(e); renderModelEssay(e);
+  renderOverview(e); renderDimensions(e); renderText(e); renderHighlights(e); renderIssues(e);
 }
 
 function renderOverview(e) {
@@ -1163,9 +1140,6 @@ function renderIssues(e) {
   el.innerHTML=e.errorStats.map(er=>`<div class="ec-item"><span class="ec-label">${er.label}</span><div class="ec-bar-wrap"><div class="ec-bar" style="width:${(er.count/t)*100}%;background:${er.color};"></div></div><span class="ec-count">${er.count}</span></div>`).join('');
 }
 function renderImprovements(e) {}
-function renderModelEssay(e) {
-  document.getElementById('modelEssay').innerHTML=`<div style="font-weight:600;font-size:14px;color:#344054;margin-bottom:8px;">📖 ${e.modelEssay.title}</div><div style="font-size:14px;color:#667085;line-height:1.8;padding:8px 12px;background:#fff;border-radius:6px;margin-bottom:8px;border-left:3px solid #1a73e8;">${e.modelEssay.excerpt}</div><div style="font-size:13px;color:#1a73e8;">💡 ${e.modelEssay.comment}</div>`;
-}
 
 // ============================================================
 // REVIEW MODE
@@ -1276,8 +1250,6 @@ function previewPdf(id, mode) {
       });
     }
     if(issHtml) addSection('优化建议', issHtml);
-
-    // 参考范文：打印版不展示（占用空间大）
   };
 
   if (mode === 'all' && s.essays.length > 1) {

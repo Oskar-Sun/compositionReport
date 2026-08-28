@@ -132,18 +132,6 @@ var __pa_data = [
     "done": true
   },
   {
-    "id": "p1785408863279",
-    "num": 16,
-    "view": "individual",
-    "sectionIdx": 5,
-    "offsetX": 403,
-    "offsetY": 79,
-    "text": "随机选取一篇参考范文",
-    "createdAt": "2026/7/30 18:54:23",
-    "updatedAt": "2026/7/30 18:54:34",
-    "done": true
-  },
-  {
     "id": "p1787212023726",
     "num": 17,
     "view": "individual",
