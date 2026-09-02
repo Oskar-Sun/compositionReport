@@ -71,13 +71,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .dimension-item .dim-pos{color:#1e7e34}
 .dimension-item .dim-neg{color:#c5221f}
 .dimension-item .dim-none{color:#98a2b3}
-.view-switch{display:flex;gap:4px;margin-bottom:12px;background:#f2f4f7;border-radius:8px;padding:3px;width:fit-content}
-.view-switch button{padding:6px 16px;border:none;border-radius:6px;font-size:13px;cursor:pointer;background:transparent;color:#667085;transition:all .15s;font-weight:500;font-family:inherit}
-.view-switch button.active{background:#fff;color:#1a1a2e;box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .text-content{font-size:15px;line-height:2;color:#344054;white-space:pre-wrap}
 .text-content .hl{background:#fef7e0;border-radius:3px;padding:1px 2px;cursor:pointer;border-bottom:2px solid #f59e0b}
 .text-content .iss{background:#eef2ff;border-radius:3px;padding:1px 2px;cursor:pointer;border-bottom:2px dashed #6366f1}
 .text-content .err{background:#fce8e6;border-radius:3px;padding:1px 2px;cursor:pointer;border-bottom:2px wavy #c5221f}
+.text-content .err-fix{font-family:Georgia,'Times New Roman','Songti SC',serif;color:#1e7e34;font-style:italic;font-weight:600;letter-spacing:.5px}
+.text-content .ok{background:#e6f4ea;border-radius:3px;padding:1px 2px;cursor:pointer;border-bottom:2px solid #1e7e34}
 .annot-tooltip{display:none;background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:12px;box-shadow:0 4px 12px rgba(0,0,0,.12);font-size:13px;margin:4px 0;position:relative}
 .annot-tooltip.open{display:block}
 .annot-tooltip .at-label{font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px}
@@ -87,7 +86,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .annot-tooltip .at-comment{color:#344054;margin-bottom:4px}
 .annot-tooltip .at-comment[contenteditable]{background:#fff;border:1px dashed #d0d5dd;border-radius:4px;padding:4px 6px;min-height:1.4em}
 .annot-tooltip .at-comment[contenteditable]:focus{outline:2px solid #1a73e8;border-color:transparent}
-.annot-tooltip .at-suggestion{color:#1e7e34;font-weight:500}
 .annot-tooltip .at-original{color:#c5221f;text-decoration:line-through}
 .text-legend{display:flex;gap:16px;margin-top:8px;padding:8px 0;border-top:1px solid #eef0f4;font-size:12px;color:#667085}
 .text-legend span{display:flex;align-items:center;gap:4px}
@@ -223,7 +221,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .footer-note{text-align:center;padding:20px;font-size:12px;color:#98a2b3}
 @media print{
   body{background:#fff;padding:0}
-  .no-print,.btn,.function-tip,.review-banner,.class-essay-tabs,.view-switch,.class-switcher,.subject-switcher{display:none!important}
+  .no-print,.btn,.function-tip,.review-banner,.class-essay-tabs,.class-switcher,.subject-switcher{display:none!important}
   .report-section{box-shadow:none;border:1px solid #ddd;page-break-inside:avoid}
   .annot-tooltip{display:block!important;box-shadow:none;border:1px solid #ddd}
   .dimension-item .dim-name{-webkit-line-clamp:unset;display:block;overflow:visible;white-space:normal}
@@ -310,10 +308,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       <div class="report-section fade-in" id="dimensionSection"><div class="section-title"><span class="icon">🎯</span> 写作要求点评</div><div id="dimensionList"></div></div>
       <div class="report-section fade-in">
         <div class="section-title"><span class="icon">📄</span> 原文批注</div>
-        <div class="view-switch no-print">
-          <button class="active" data-view="annotated" onclick="switchView(this,'annotated')">📝 批注模式</button>
-          <button data-view="pure" onclick="switchView(this,'pure')">📄 纯净原文</button>
-        </div>
         <div id="originalText" class="text-content"></div>
         <div class="text-legend" id="textLegend">
           <span><span class="dot highlight-dot"></span> 亮点句</span>
@@ -538,7 +532,7 @@ const classDataList = [
         { title:'命题作文 — 谈坚持',type:'议论文',wordCount:780,totalScore:34,fullScore:40,
           comment:'论点明确，论据较为充实。结构完整，但在论证深度和语言文采上还有提升空间。',
           dimensions:[{ name:'立意明确，中心突出，观点有深度',score:7,full:10,weight:.25,strengths:['论点明确'],weaknesses:['论证深度不够'],color:'#1a73e8' },{ name:'结构严谨，层次分明，论证有逻辑',score:8,full:10,weight:.25,strengths:['结构完整','层次清晰'],weaknesses:[],color:'#f59e0b' },{ name:'语言流畅，富有文采，恰当运用修辞',score:6,full:10,weight:.25,strengths:['通顺流畅'],weaknesses:['文采不足','修辞较少'],color:'#1e7e34' },{ name:'书写规范，卷面整洁，标点正确',score:8,full:10,weight:.25,strengths:['字迹工整'],weaknesses:[],color:'#6366f1' }],
-          text:'坚持，是通往成功的必经之路。古今中外，无数事例证明了这一点。\n\n王羲之练字，日复一日，将一池清水染成了墨色，最终成为一代书圣。爱迪生发明电灯，失败了上千次仍然不放弃，最终为人类带来了光明。这些故事告诉我们，只有坚持不懈，才能达到成功的彼岸。\n\n然而，坚持并不是盲目的固执。在坚持的同时，我们也要学会思考和调整方向。如果方向错了，再多的坚持也只是徒劳。\n\n作为一名高中生，我们在学习中也需要坚持。数学题不会做，多思考几遍；英语单词记不住，多背几遍。只要我们不放弃，终会有所收获。',
+          text:'坚持，是通往成功的必经之路。古今中外，无数事例证明了这一点。\n\n王羲之练字，日复一日，将一池清水染成了墨色，最终成为一代书圣。爱迪生发明电灯，失败的次数上千次仍然不放弃，最终为人类带来了光明。这些故事告诉我们，只有坚持不懈，才能达到成功的彼岸。\n\n然而，坚持并不是盲目的固执。在坚持的同时，我们也要学会思考和调整方向。如果方向错了，再多的坚持也只是徒劳。\n\n作为一名高中生，我们在学习中也需要坚持。数学题不会做，多思考几遍；英语单词记不住，多背几遍。只要我们不放弃，终会有所收获。',
           highlights:[{ text:'王羲之练字，日复一日，将一池清水染成了墨色，最终成为一代书圣。',technique:'用典',comment:'用王羲之练字的典故论证坚持，典型有力。',effect:'增强说服力' }],
           issues:[{ text:'坚持，是通往成功的必经之路。',type:'表达',severity:'低',comment:'开头略显套路化，可以更个性化。',suggestion:'用更有个人色彩的开头',corrected:'如果让我用一个词概括成功的秘诀，我会毫不犹豫地选择"坚持"。' }],
           grammarErrors:[{ original:'失败的次数上千次',type:'语序',correction:'失败了上千次',explanation:'调整语序更通顺' }],
@@ -587,7 +581,7 @@ let currentPage = 'class';
 let currentStudentId = null;
 let currentEssayTab = 0;
 let currentStudentTab = 0;
-let currentView = 'annotated';
+// 批注模式为唯一展示方式（已移除纯净原文切换）
 let isReviewMode = false;
 let modelEssays = [
   { studentId:'S001', essayIndex:0 },
@@ -1006,6 +1000,22 @@ function renderDimensions(e) {
   }).join('');
 }
 
+function findFuzzy(hay, needle) {
+  // 忽略空白模糊匹配，并返回映射回原文本的 [start,end)，找不到返回 null
+  var hs = hay.replace(/\s+/g, '');
+  var ns = needle.replace(/\s+/g, '');
+  var p = hs.indexOf(ns);
+  if (p < 0) return null;
+  var start = -1, end = -1, cnt = 0;
+  for (var i = 0; i < hay.length; i++) {
+    if (/\s/.test(hay[i])) continue;
+    if (cnt === p) start = i;
+    if (cnt === p + ns.length - 1) { end = i + 1; break; }
+    cnt++;
+  }
+  return (start >= 0 && end >= 0) ? { start: start, end: end } : null;
+}
+
 function findAnnotations(e) {
   var txt = e.text || '';
   var ann = [];
@@ -1022,76 +1032,116 @@ function findAnnotations(e) {
     if (!tryAdd('issue', i, is.text, txt)) tryAdd('issue', i, is.text.replace(/\s+/g, ' '), txt.replace(/\s+/g, ' '));
   });
   (e.grammarErrors || []).forEach(function (er, i) {
-    var cl = er.original.replace(/[()✓✗\s]/g, '');
-    if (!tryAdd('error', i, cl, txt)) tryAdd('error', i, cl, txt.replace(/\s+/g, ''));
+    var orig = (er.original || '').replace(/[()✓✗]/g, '').trim();
+    if (!orig) return;
+    if (!tryAdd('error', i, orig, txt)) {
+      var fz = findFuzzy(txt, orig);
+      if (fz) ann.push({ start: fz.start, end: fz.end, type: 'error', idx: i, matchText: txt.slice(fz.start, fz.end) });
+    }
   });
   ann.sort(function (a, b) { return a.start - b.start; });
   var placed = [], final = [];
   ann.forEach(function (a) {
-    if (!placed.some(function (p) { return a.start < p.end && a.end > p.start; })) { placed.push(a); final.push(a); }
+    var conflict = placed.filter(function (p) { return a.start < p.end && a.end > p.start; });
+    if (!conflict.length) { placed.push(a); final.push(a); }
+    else if (a.type === 'error' && conflict.every(function (p) { return p.start <= a.start && p.end >= a.end; })) {
+      // 语法错误被其他标注完全包含时保留，用于在句内做嵌套展示（删除线+内联修正）
+      placed.push(a); final.push(a);
+    }
   });
   return final;
 }
 
-function annotatedTextHtml(e) {
-  var txt = e.text || '';
-  var final = findAnnotations(e);
+function trimPunc(s) { return String(s || '').replace(/[。.！!？?\s]+$/, ''); }
+function oneSentence(parts) { var s = parts.join(''); return /[。.!！?？]$/.test(s) ? s : s + '。'; }
+
+function annotTooltip(e, a) {
   var html = '';
+  if (a.type === 'highlight') {
+    var h = e.highlights[a.idx];
+    html += '<div class="at-comment">' + oneSentence(['运用「' + h.technique + '」：' + trimPunc(h.comment), '，' + trimPunc(h.effect)]) + '</div>';
+  } else if (a.type === 'issue') {
+    var is = e.issues[a.idx];
+    html += '<div class="at-comment">' + oneSentence([trimPunc(is.comment) + '，建议改为：', trimPunc(is.corrected)]) + '</div>';
+  } else {
+    var er = e.grammarErrors[a.idx];
+    if (/✓|正确/.test(er.correction || '')) {
+      html += '<div class="at-label" style="color:#1e7e34;">✅ ' + er.type + '（使用正确）</div>';
+      html += '<div class="at-comment">' + er.explanation + '</div>';
+    } else {
+      html += '<div class="at-label error-label">⚠️ ' + er.type + '</div>';
+      html += '<div class="at-comment"><s>' + er.original + '</s> → ' + er.correction + '　<span style="color:#667085;">' + er.explanation + '</span></div>';
+    }
+  }
+  return '<div class="annot-tooltip" id="tp_' + a.type + '_' + a.idx + '">' + html + '</div>';
+}
+
+function renderAnnots(e, txt, anns, pdf, nested) {
+  // 递归渲染标注：支持语法错误嵌套在亮点/待改进句子内部（删除线+内联修正）
+  var out = '';
   var last = 0;
-  final.forEach(function (a) {
-    if (a.start > last) html += esc(txt.slice(last, a.start));
-    var cls = a.type === 'highlight' ? 'ann-hl' : a.type === 'issue' ? 'ann-iss' : 'ann-err';
-    html += '<span class="' + cls + '">' + esc(a.matchText) + '</span>';
+  for (var i = 0; i < anns.length; i++) {
+    var a = anns[i];
+    if (a.start > last) out += esc(txt.slice(last, a.start));
+    var inner = [];
+    var k = i + 1;
+    while (k < anns.length && anns[k].end <= a.end) { inner.push(anns[k]); k++; }
+    var uid = a.type + '_' + a.idx;
+    var tgon = "tg('" + uid + "')";
+    var cls = a.type === 'highlight' ? (pdf ? 'ann-hl' : 'hl') : a.type === 'issue' ? (pdf ? 'ann-iss' : 'iss') : (pdf ? 'ann-err' : 'err');
+    var lb = a.type === 'highlight' ? '⭐亮点' : a.type === 'issue' ? '🔧待改进' : '⚠️错误';
+    var clr = a.type === 'highlight' ? '#f59e0b' : '#6366f1';
+    if (a.type === 'error') {
+      var er = e.grammarErrors[a.idx];
+      var _corr = (er.correction || '').trim();
+      var _ok = /✓|正确/.test(_corr);
+      var _w = _corr.split(/\s+/).filter(Boolean);
+      var _short = _ok ? false : (_w.length <= 2 && _corr.length <= 20);
+      var fixCls = pdf ? 'ann-fix' : 'err-fix';
+      var titleAttr = nested ? ' title="' + esc(er.explanation || '') + '"' : '';
+      if (_ok) {
+        // 正确用法：绿色标记 + 「✅正确」，不套删除线
+        out += '<span class="' + (pdf ? 'ann-ok' : 'ok') + '"' + (titleAttr || ' onclick="' + tgon + '"') + '>' + esc(a.matchText) + '</span>';
+        if (!pdf && !nested) {
+          out += '<span style="font-size:11px;color:#1e7e34;cursor:pointer;font-weight:500;margin-left:2px;" onclick="' + tgon + '">✅正确</span>';
+          out += annotTooltip(e, a);
+        }
+      } else {
+        out += '<span class="' + cls + '"' + (titleAttr || ' onclick="' + tgon + '"') + '><s>' + esc(a.matchText) + '</s></span>';
+        if (_short) out += '<span class="' + fixCls + '">' + esc(_corr) + '</span>';
+        if (!pdf && !nested) {
+          out += '<span style="font-size:11px;color:' + clr + ';cursor:pointer;font-weight:500;margin-left:2px;" onclick="' + tgon + '">' + lb + '</span>';
+          out += annotTooltip(e, a);
+        }
+      }
+    } else {
+      var innerHtml = inner.length ? renderAnnots(e, txt, inner, pdf, true) : '';
+      if (pdf) {
+        out += '<span class="' + cls + '">' + (innerHtml || esc(a.matchText)) + '</span>';
+      } else {
+        out += '<span class="annot-span" data-uid="' + uid + '">';
+        out += '<span class="' + cls + '" onclick="' + tgon + '">' + (innerHtml || esc(a.matchText)) + '</span>';
+        out += '<span style="font-size:11px;color:' + clr + ';cursor:pointer;font-weight:500;margin-left:2px;" onclick="' + tgon + '">' + lb + '</span>';
+        out += '</span>';
+        out += annotTooltip(e, a);
+      }
+    }
+    i = k - 1;
     last = a.end;
-  });
-  if (last < txt.length) html += esc(txt.slice(last));
-  return html.replace(/\n/g, '<br>');
+  }
+  if (last < txt.length) out += esc(txt.slice(last));
+  return out;
+}
+
+function annotatedTextHtml(e) {
+  return renderAnnots(e, e.text || '', findAnnotations(e), true, false);
 }
 
 function renderText(e) {
   var el = document.getElementById('originalText');
-  document.getElementById('textLegend').style.display = currentView === 'pure' ? 'none' : 'flex';
-  if (currentView === 'pure') { el.innerHTML = e.text.replace(/\n/g, '<br>'); return; }
-
   var txt = e.text;
   var final = findAnnotations(e);
-
-  var html = '';
-  var last = 0;
-  final.forEach(function (a) {
-    if (a.start > last) html += esc(txt.slice(last, a.start));
-    var uid = a.type + '_' + a.idx;
-    var cls = a.type === 'highlight' ? 'hl' : a.type === 'issue' ? 'iss' : 'err';
-    var lb = a.type === 'highlight' ? '⭐亮点' : a.type === 'issue' ? '🔧待改进' : '⚠️错误';
-    var clr = a.type === 'highlight' ? '#f59e0b' : '#6366f1';
-    html += '<span class="annot-span" data-uid="' + uid + '">';
-    html += '<span class="' + cls + '" onclick="tg(' + "'" + uid + "'" + ')">' + esc(a.matchText) + '</span>';
-    html += '<span style="font-size:11px;color:' + clr + ';cursor:pointer;font-weight:500;margin-left:2px;" onclick="tg(' + "'" + uid + "'" + ')">' + lb + '</span>';
-    html += '</span>';
-    // tooltip
-    html += '<div class="annot-tooltip" id="tp_' + uid + '">';
-    if (a.type === 'highlight') {
-      var h = e.highlights[a.idx];
-      html += '<div class="at-label highlight-label">⭐ ' + h.technique + '</div>';
-      html += '<div class="at-comment">' + h.comment + '</div>';
-      html += '<div class="at-comment" style="font-size:12px;color:#667085;">效果：' + h.effect + '</div>';
-    } else if (a.type === 'issue') {
-      var is = e.issues[a.idx];
-      html += '<div class="at-label issue-label">🔧 ' + is.type + ' · ' + is.severity + '优先级</div>';
-      html += '<div class="at-comment">' + is.comment + '</div>';
-      html += '<div class="at-label issue-label" style="margin-top:4px;">建议修改为：</div>';
-      html += '<div class="at-suggestion">' + is.corrected + '</div>';
-    } else {
-      var er = e.grammarErrors[a.idx];
-      html += '<div class="at-label error-label">⚠️ ' + er.type + '</div>';
-      html += '<div class="at-comment"><span class="at-original">' + er.original + '</span> → ' + er.correction + '</div>';
-      html += '<div class="at-comment" style="font-size:12px;color:#667085;">' + er.explanation + '</div>';
-    }
-    html += '</div>';
-    last = a.end;
-  });
-  if (last < txt.length) html += esc(txt.slice(last));
-  el.innerHTML = html.replace(/\n/g, '<br>');
+  el.innerHTML = renderAnnots(e, txt, final, false, false).replace(/\n/g, '<br>');
 
   // Debug: if student has highlights/issues but none detected, show a note
   var totalHighlights = (e.highlights || []).length;
@@ -1110,26 +1160,22 @@ function renderText(e) {
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function tg(uid){const t=document.getElementById('tp_'+uid);if(!t)return;const o=t.classList.contains('open');document.querySelectorAll('.annot-tooltip').forEach(el=>el.classList.remove('open'));if(!o)t.classList.add('open')}
 document.addEventListener('click',e=>{if(!e.target.closest('.annot-span'))document.querySelectorAll('.annot-tooltip').forEach(el=>el.classList.remove('open'))});
-function switchView(btn,v){document.querySelectorAll('.view-switch button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentView=v;const s=getStudent(currentStudentId);if(s)renderText(s.essays[currentStudentTab])}
-
 function renderHighlights(e) {
   document.getElementById('highlightList').innerHTML = (e.highlights||[]).map((h,i)=>`
     <div class="card-item highlight-card ${i<1?'open':''}"><div class="card-header" onclick="this.closest('.card-item')?.classList.toggle('open')"><span class="card-icon">⭐</span><span class="card-text">${esc(h.text)}</span><span class="card-arrow">▾</span></div>
-    <div class="card-body"><div class="cb-row"><span class="cb-label">手法</span><span class="cb-value"><span class="tag" style="background:#fef7e0;color:#b8860b;">${h.technique}</span></span></div><div class="cb-row"><span class="cb-label">点评</span><span class="cb-value">${h.comment}</span></div><div class="cb-row"><span class="cb-label">效果</span><span class="cb-value" style="color:#667085;">${h.effect}</span></div></div></div>`).join('');
+    <div class="card-body"><div class="cb-row"><span class="cb-value">${oneSentence(['运用「'+h.technique+'」：'+trimPunc(h.comment), '，'+trimPunc(h.effect)])}</span></div></div></div>`).join('');
   document.getElementById('highlightCount').textContent = (e.highlights||[]).length+'处';
 }
 function renderIssues(e) {
   var html = '';
   (e.issues||[]).forEach(function(is,i){
     html += '<div class="card-item issue-card'+(i<1?' open':'')+'"><div class="card-header" onclick="this.closest(\'.card-item\')?.classList.toggle(\'open\')"><span class="card-icon">🔧</span><span class="card-text">'+esc(is.text)+'</span><span class="card-arrow">▾</span></div>';
-    html += '<div class="card-body"><div class="cb-row"><span class="cb-label">问题</span><span class="cb-value"><span class="tag" style="background:#eef2ff;color:#6366f1;">'+is.type+' · '+is.severity+'优先级</span></span></div><div class="cb-row"><span class="cb-label">说明</span><span class="cb-value" style="color:#667085;">'+is.comment+'</span></div><div class="cb-row"><span class="cb-label">示范</span><span class="cb-value" style="background:#e6f4ea;padding:6px 8px;border-radius:4px;">'+esc(is.corrected)+'</span></div></div></div>';
+    html += '<div class="card-body"><div class="cb-row"><span class="cb-value">'+oneSentence([trimPunc(is.comment)+'，建议改为：', trimPunc(is.corrected)])+'</span></div></div></div>';
   });
   (e.improvements||[]).forEach(function(imp,i){
     var cls = (i===0 && !(e.issues||[]).length) ? ' open' : '';
     html += '<div class="card-item issue-card'+cls+'"><div class="card-header" onclick="this.closest(\'.card-item\')?.classList.toggle(\'open\')"><span class="card-icon">📌</span><span class="card-text"><strong>'+imp.dimension+'</strong>：'+imp.problem+'</span><span class="card-arrow">▾</span></div>';
-    html += '<div class="card-body"><div class="cb-row"><span class="cb-label">方法</span><span class="cb-value">'+imp.method+'</span></div>';
-    if(imp.example) html += '<div class="cb-row"><span class="cb-label">示例</span><span class="cb-value" style="background:#e8f0fe;padding:6px 8px;border-radius:4px;">📝 '+imp.example+'</span></div>';
-    html += '</div></div>';
+    html += '<div class="card-body"><div class="cb-row"><span class="cb-value">'+imp.problem+'，'+imp.method+(imp.example?'，如「'+imp.example+'」':'')+'。</span></div></div></div>';
   });
   document.getElementById('issueList').innerHTML = html || '<div style="padding:16px;text-align:center;color:#98a2b3;font-size:13px;">暂无优化建议</div>';
   document.getElementById('issueCount').textContent = ((e.issues||[]).length + (e.improvements||[]).length)+'条';
@@ -1197,6 +1243,8 @@ function previewPdf(id, mode) {
     '.ann-hl{background:#fef7e0;border-bottom:2px solid #f59e0b;padding:0 1px}' +
     '.ann-iss{background:#eef2ff;border-bottom:2px dashed #6366f1;padding:0 1px}' +
     '.ann-err{background:#fce8e6;border-bottom:2px wavy #c5221f;padding:0 1px}' +
+    '.ann-fix{font-family:Georgia,"Times New Roman",serif;color:#1e7e34;font-style:italic;font-weight:600}' +
+    '.ann-ok{background:#e6f4ea;border-bottom:2px solid #1e7e34;padding:0 1px}' +
     '</style></head><body>';
 
   var addSection = function(title, content){
@@ -1232,7 +1280,7 @@ function previewPdf(id, mode) {
     if(es.highlights && es.highlights.length){
       var hlHtml = '';
       es.highlights.forEach(function(h){
-        hlHtml += '<div class="hl-block">⭐ '+h.text+'<br><span style="font-size:12px;color:#b8860b;">'+h.comment+'</span></div>';
+        hlHtml += '<div class="hl-block">⭐ '+h.text+'<br><span style="font-size:12px;color:#b8860b;">'+oneSentence(['运用「'+h.technique+'」：'+trimPunc(h.comment), '，'+trimPunc(h.effect)])+'</span></div>';
       });
       addSection('亮点句点评', hlHtml);
     }
@@ -1241,12 +1289,12 @@ function previewPdf(id, mode) {
     var issHtml = '';
     if(es.issues && es.issues.length){
       es.issues.forEach(function(is){
-        issHtml += '<div class="iss-block">🔧 '+is.text+'<br><span style="font-size:12px;color:#667085;">'+is.comment+'</span><br><span class="corrected">✅ '+is.corrected+'</span></div>';
+        issHtml += '<div class="iss-block">🔧 '+is.text+'<br><span style="font-size:12px;color:#667085;">'+oneSentence([trimPunc(is.comment)+'，建议改为：', trimPunc(is.corrected)])+'</span></div>';
       });
     }
     if(es.improvements && es.improvements.length){
       es.improvements.forEach(function(imp){
-        issHtml += '<div class="iss-block" style="border-left-color:#1a73e8;">📌 <strong>'+imp.dimension+'</strong>：'+imp.problem+'<br><span style="font-size:12px;color:#344054;">💡 '+imp.method+'</span>'+(imp.example?'<br><span style="font-size:12px;color:#1a73e8;">📝 '+imp.example+'</span>':'')+'</div>';
+        issHtml += '<div class="iss-block" style="border-left-color:#1a73e8;">📌 <strong>'+imp.dimension+'</strong>：'+imp.problem+'，'+imp.method+(imp.example?'，如「'+imp.example+'」':'')+'。</div>';
       });
     }
     if(issHtml) addSection('优化建议', issHtml);
